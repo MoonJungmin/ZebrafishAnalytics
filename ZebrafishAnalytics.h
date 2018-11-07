@@ -1,15 +1,56 @@
 #pragma once
 
-#include <QtWidgets/QMainWindow>
-#include "ui_ZebrafishAnalytics.h"
+
+#include <QMainWindow>
+
+#include "Source/controller/TopToolbar.h"
+#include "Source/controller/TopInterface.h"
+#include "Source/controller/Contents.h"
+
+#include "Source/controller/DialogNewProject.h"
+#include "Source/controller/DialogGenBGLayer.h"
+#include "Source/controller/DialogGenLBLayer.h"
+#include "Source/controller/DialogGenSRLayer.h"
+#include "Source/controller/DialogPreference.h"
+
+#include "Source/global.h"
+
+class QAction;
+class QActionGroup;
+class QLabel;
+class QMenu;
 
 class ZebrafishAnalytics : public QMainWindow
 {
 	Q_OBJECT
 
 public:
-	ZebrafishAnalytics(QWidget *parent = Q_NULLPTR);
+	ZebrafishAnalytics();
+
+
+
+protected:
+
+private slots:
+	void handleButton();
+	void handleNewProject();
+
+	void handleGenerateBGLayer();
+	void handleGenerateLBLayer();
+	void handleGenerateSRLayer();
+	void handlePreference();
+	void projectLoad();
+
 
 private:
-	Ui::ZebrafishAnalyticsClass ui;
+	void createMenus();
+	void createAction();
+	QMenu * fileMenu;
+	QAction *newProjectAction;
+	QAction *generateBackgroundLayer;
+	QAction *generateLabelLayer;
+	QAction *generateSubregionLayer;
+
+	QAction *preference;
+
 };

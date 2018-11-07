@@ -1,4 +1,9 @@
 <RCC>
-    <qresource prefix="ZebrafishAnalytics">
+    <qresource prefix="/ZebrafishAnalytics">
+        <file>Resources/icon_save.png</file>
+        <file>Resources/icon_open.png</file>
+        <file>Resources/icon_new.png</file>
+        <file>Resources/glsl/fshader.glsl</file>
+        <file>Resources/glsl/vshader.glsl</file>
     </qresource>
 </RCC>
