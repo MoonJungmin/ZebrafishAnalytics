@@ -25,41 +25,38 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 #include "qneblock.h"
 
-#include <QPen>
-#include <QGraphicsScene>
-#include <QFontMetrics>
-#include <QPainter>
-
-#include "qneport.h"
 
 QNEBlock::QNEBlock(QGraphicsItem *parent) : QGraphicsPathItem(parent)
 {
 	QPainterPath p;
-	p.addRoundedRect(-50, -15, 100, 30, 5, 5);
+	p.addRoundedRect(-50, -15, 80, 50, 5, 5);
 	setPath(p);
-	setPen(QPen(Qt::darkGreen));
-	setBrush(Qt::green);
+	setPen(QPen(node_color));
+	setBrush(node_color);
 	setFlag(QGraphicsItem::ItemIsMovable);
 	setFlag(QGraphicsItem::ItemIsSelectable);
-	horzMargin = 20;
-	vertMargin = 5;
+	horzMargin = 10;
+	vertMargin = 10;
 	width = horzMargin;
 	height = vertMargin;
+
+	
 }
 
-QNEPort* QNEBlock::addPort(const QString &name, bool isOutput, int flags, int ptr)
+QNEPort* QNEBlock::addPort(const QString &name, bool isOutput, int flags, int ptr, int align)
 {
 	QNEPort *port = new QNEPort(this);
 	port->setName(name);
 	port->setIsOutput(isOutput);
 	port->setNEBlock(this);
 	port->setPortFlags(flags);
+	port->setAlign(align);
 	port->setPtr(ptr);
 
 	QFontMetrics fm(scene()->font());
 	int w = fm.width(name);
-	int h = fm.height();
-	// port->setPos(0, height + h/2);
+	int h = fm.height() + 1;
+	//port->setPos(0, height + h/2);
 	if (w > width - horzMargin)
 		width = w + horzMargin;
 	height += h;
@@ -68,30 +65,75 @@ QNEPort* QNEBlock::addPort(const QString &name, bool isOutput, int flags, int pt
 	p.addRoundedRect(-width/2, -height/2, width, height, 5, 5);
 	setPath(p);
 
-	int y = -height / 2 + vertMargin + port->radius();
+	int y = -height / 2 + 15;//-height / 2 + vertMargin + port->radius();
+
+	int inputport_count = 0;
+	foreach(QGraphicsItem *port_, childItems()) {
+		QNEPort *port = (QNEPort*)port_;
+		if (port->portAlign() != QNEPort::Input) {
+			++inputport_count;
+		}
+	}
+
+	int inputport_y_step = 2 * height / inputport_count;
+	int inputport_y = inputport_y_step;
+
     foreach(QGraphicsItem *port_, childItems()) {
+		
 		if (port_->type() != QNEPort::Type)
 			continue;
 
 		QNEPort *port = (QNEPort*) port_;
-		if (port->isOutput())
-			port->setPos(width/2 + port->radius(), y);
-		else
-			port->setPos(-width/2 - port->radius(), y);
-		y += h;
+
+		if (port->portAlign() == QNEPort::Input) {
+			port->setPos(-width/2 - port->radius(), inputport_y);
+			inputport_y += inputport_y_step;
+		}
+		else if (port->portAlign() == QNEPort::Left) {
+			port->setPos(-width/2 , y);
+			y += port->portHeight() + 5;
+		}
+		else if (port->portAlign() == QNEPort::Center) {
+			if (port->portFlags() == QNEPort::DataWidgetPort) { y += 10; }
+			port->setPos(0 - port->portWidth()/2, y);
+			if (port->portFlags() == QNEPort::DataWidgetPort) { y += 10; }
+			y += port->portHeight() + 5;
+		}
+		else if (port->portAlign() == QNEPort::Right) {
+			port->setPos(width / 2 , y);
+			y += port->portHeight() + 5;
+		}
+		else if (port->portAlign() == QNEPort::Output) {
+			port->setPos(width / 2, 0);
+		}		
 	}
 
 	return port;
 }
+void QNEBlock::setBlockFlagAndSize(int aflags, int awidth, int aheight) {
+	mBlockFlags = aflags;
+	width = awidth;
+	height = aheight;
+}
+
+void QNEBlock::setInputData(std::vector<cell> *data_ptr) {
+	std::vector<cell>::iterator iter = data_ptr->begin();
+	for (iter = data_ptr->begin(); iter != data_ptr->end(); ++iter) {
+		CellIndexListInput.push_back(iter->index);
+		CellIndexListOutput.push_back(iter->index);
+	}
+}
+
+
 
 void QNEBlock::addInputPort(const QString &name)
 {
-	addPort(name, false);
+	addPort(name, false, 0,0, Input);
 }
 
 void QNEBlock::addOutputPort(const QString &name)
 {
-	addPort(name, true);
+	addPort(name, true, 0, 0, Output);
 }
 
 void QNEBlock::addInputPorts(const QStringList &names)
@@ -148,12 +190,14 @@ void QNEBlock::load(QDataStream &ds, QMap<quint64, QNEPort*> &portMap)
 		bool output;
 		int flags;
 		quint64 ptr;
+		int align;
 
 		ds >> ptr;
 		ds >> name;
 		ds >> output;
 		ds >> flags;
-		portMap[ptr] = addPort(name, output, flags, ptr);
+		ds >> align;
+		portMap[ptr] = addPort(name, output, flags, ptr, align);
 	}
 }
 
@@ -165,11 +209,11 @@ void QNEBlock::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 	Q_UNUSED(widget)
 
 	if (isSelected()) {
-		painter->setPen(QPen(Qt::darkYellow));
-		painter->setBrush(Qt::yellow);
+		painter->setPen(QPen(node_selected_color));
+		painter->setBrush(node_color);
 	} else {
-		painter->setPen(QPen(Qt::darkGreen));
-		painter->setBrush(Qt::green);
+		painter->setPen(QPen(node_color));
+		painter->setBrush(node_color);
 	}
 
 	painter->drawPath(path());
@@ -185,7 +229,7 @@ QNEBlock* QNEBlock::clone()
 		if (port_->type() == QNEPort::Type)
 		{
 			QNEPort *port = (QNEPort*) port_;
-			b->addPort(port->portName(), port->isOutput(), port->portFlags(), port->ptr());
+			b->addPort(port->portName(), port->isOutput(), port->portFlags(), port->ptr(), port->portAlign());
 		}
 	}
 

@@ -47,6 +47,21 @@ typedef struct {
 }label_layer;
 
 
+typedef struct {
+	long long x;
+	long long y;
+	long long z;
+}coord;
+
+typedef struct {
+	unsigned int index;
+	coord minbox;
+	coord maxbox;
+	QColor color;
+}cell;
+
+
+
 class Utils
 {
 public:

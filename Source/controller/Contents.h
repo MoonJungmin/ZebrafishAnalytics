@@ -7,11 +7,6 @@
 #include <QSizePolicy>
 #include <math.h>
 
-
-#include "Source/controller/node/qneblock.h"
-#include "Source/controller/node/qnodeseditor.h"
-#include "Source/controller/node/qneport.h"
-
 #include <QGraphicsScene>
 #include <QFileDialog>
 
@@ -20,6 +15,8 @@
 #include "Source/controller/TopInterface.h"
 #include "Source/view/ViewHistogramBox.h"
 #include "Source/view/ViewAxisGLWidget.h"
+#include "Source/view/ViewGraphEditor.h"
+
 
 class Contents : public QObject
 {
@@ -31,7 +28,7 @@ public:
 	~Contents();
 
 public slots:
-	void focusmanage_histogram(int index);
+	//void focusmanage_histogram(int index);
 
 private slots:
 	void handleProjectOn();
@@ -43,27 +40,23 @@ private slots:
 private:
 
 	void updateColorBox(QWidget *target, QColor color);
-
 	void LeftTabInit(QTabWidget *target, int width, int height);
 	void CenterTabInit(QTabWidget *target, int width, int height);
-	void RightTabInit(QTabWidget *target, int width, int height);
+	//void RightTabInit(QTabWidget *target, int width, int height);
 
 	void replaceTab(QTabWidget * tabs, int index, QWidget * replacement, QString label);
 
 
 	void CenterContentsOn();
-	void RightContentsOn();
-
-	void YZ_View(QGLWidget *widget);
-	void ZX_View(QGLWidget *widget);
+	//void RightContentsOn();
 
 	TopInterface *mInterface;
-
 	QWidget * mWidget;
 
 	QTabWidget *contents_left_tabwidget;
 	QTabWidget *contents_center_tabwidget;
-	QTabWidget *contents_right_tabwidget;
+	QVBoxLayout *contents_center_layout;
+
 
 	ViewAxisGLWidget *GL_XYAxis_Main;
 	ViewAxisGLWidget *GL_YZAxis_Main;
@@ -72,6 +65,12 @@ private:
 	ViewAxisGLWidget *GL_YZAxis_Sub;
 	ViewAxisGLWidget *GL_ZXAxis_Sub;
 
-	ViewHistogramBox *MorphoHistBox[5];
+
+	ViewGraphEditor *GraphEditorView;
+
+
+	//ViewHistogramBox *MorphoHistBox[5];
+
+	
 
 };

@@ -34,7 +34,7 @@ protected:
 private slots:
 	void handleButton();
 	void handleNewProject();
-
+	void handleOpenProject();
 	void handleGenerateBGLayer();
 	void handleGenerateLBLayer();
 	void handleGenerateSRLayer();

@@ -59,6 +59,11 @@ void ZebrafishAnalytics::createAction() {
 	newProjectAction->setStatusTip(tr("Generate Background Layer"));
 	connect(newProjectAction, &QAction::triggered, this, &ZebrafishAnalytics::handleNewProject);
 
+	newProjectAction = new QAction("Open Analytics Project", this);
+	newProjectAction->setShortcuts(QKeySequence::Open);
+	newProjectAction->setStatusTip(tr("Open Analytics Project"));
+	connect(newProjectAction, &QAction::triggered, this, &ZebrafishAnalytics::handleOpenProject);
+
 	generateBackgroundLayer = new QAction("Generate Background Layer", this);
 	generateBackgroundLayer->setShortcut(tr("CTRL+SHIFT+B"));
 	generateBackgroundLayer->setStatusTip(tr("Generate Background Layer"));
@@ -100,6 +105,22 @@ void ZebrafishAnalytics::handleNewProject() {
 	qDebug("New Project handle");
 	DialogNewProject *md = new DialogNewProject(this);
 	md->exec();
+
+}
+
+void ZebrafishAnalytics::handleOpenProject() {
+	qDebug("Open Project handle");
+	//QString filters("Background Layer file (*.aproj);;");
+	//QString dir = QFileDialog::getOpenFileName(this, "Open Directory", QDir::currentPath(), filters);
+	//qDebug() << "Open dir";
+	//qDebug() << dir;
+	//if (!mGlobals.CurrentProject->ProjectStatus) {
+	//	mGlobals.CurrentProject->ProjectOpen(dir);
+	//}
+	///*DialogNewProject *md = new DialogNewProject(mWidget);
+	//md->exec();*/
+
+	mGlobals.CurrentProject->ProjectOpen("E:/TestProject.aproj");
 
 }
 

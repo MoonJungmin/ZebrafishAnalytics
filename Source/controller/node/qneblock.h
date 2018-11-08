@@ -28,16 +28,33 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 #include <QGraphicsPathItem>
 
+#include <QPen>
+#include <QGraphicsScene>
+#include <QFontMetrics>
+#include <QPainter>
+#include <QDebug>
+#include <iostream>
+#include <list>
+#include <vector>
+
+#include "qneport.h"
+
+#include "Source/global.h"
+#include "Source/Utils.h"
+
+
 class QNEPort;
 
 class QNEBlock : public QGraphicsPathItem
 {
 public:
 	enum { Type = QGraphicsItem::UserType + 3 };
+	enum { OriginBlock = 1, DataBlock= 2, SubregionBlock = 3, FeatureBlock = 4, SimilarityBlock = 5, SetBlock = 6 };
+	enum { Input = 1, Left = 2, Center = 3, Right = 4, Output = 5};
 
     QNEBlock(QGraphicsItem *parent = 0);
 
-	QNEPort* addPort(const QString &name, bool isOutput, int flags = 0, int ptr = 0);
+	QNEPort* addPort(const QString &name, bool isOutput, int flags = 0, int ptr = 0, int align = 3);
 	void addInputPort(const QString &name);
 	void addOutputPort(const QString &name);
 	void addInputPorts(const QStringList &names);
@@ -50,14 +67,30 @@ public:
 
 	int type() const { return Type; }
 
-protected:
-	QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+	void setInputData(std::vector<cell> *data_ptr);
+	void setBlockFlagAndSize(int aflags, int awidth, int aheight);
+	std::list<unsigned int> CellIndexListInput;
+	std::list<unsigned int> CellIndexListOutput;
 
-private:
+
 	int horzMargin;
 	int vertMargin;
 	int width;
 	int height;
+
+
+protected:
+	QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+
+private:
+	int mBlockFlags;
+
+
+
+	QColor node_color = QColor("#555555");
+	QColor node_selected_color = QColor("#007acc");
+	QColor node_text_color = QColor("#e7e7e7");
+
 };
 
 #endif // QNEBLOCK_H

@@ -150,6 +150,12 @@
     <ClCompile Include="Source\Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\view\ViewGraphEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\controller\DialogAddNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="ZebrafishAnalytics.h">
@@ -210,6 +216,12 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="Source\view\ViewHistogramViewer.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Source\view\ViewGraphEditor.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Source\controller\DialogAddNode.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -445,5 +457,7 @@
     <Image Include="Source\view\theme\resource\darkstyle\icon_radiobutton_unchecked_pressed.png" />
     <Image Include="Source\view\theme\resource\darkstyle\icon_restore.png" />
     <Image Include="Source\view\theme\resource\darkstyle\icon_undock.png" />
+    <Image Include="Resources\icon_data.png" />
+    <Image Include="Resources\icon_subregion.png" />
   </ItemGroup>
 </Project>

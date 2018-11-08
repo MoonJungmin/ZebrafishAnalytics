@@ -26,63 +26,40 @@ void Contents::initialize(QLayout *parent_layout, TopInterface *aTopInterface) {
 	contents_left_widget->setStyleSheet("background-color:(35,35,35);");
 	contents_left_layout->addWidget(contents_left_widget);
 
-	QVBoxLayout *contents_center_layout = new QVBoxLayout;
+	contents_center_layout = new QVBoxLayout;
 	contents_center_layout->setAlignment(Qt::AlignCenter);
 	contents_center_layout->setMargin(1);
 	QWidget *contents_center_widget = new QWidget;
 	contents_center_tabwidget = new QTabWidget(contents_center_widget);
 	contents_center_widget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	contents_center_widget->setFixedSize(1300, 870 * 0.60);
+	contents_center_widget->setFixedSize(1600, 870 * 0.60);
 
 	contents_center_widget->setStyleSheet("background-color:(35,35,35);");
 	contents_center_layout->addWidget(contents_center_widget);
 
-
-	QGraphicsScene* scene = new QGraphicsScene();
-	QGraphicsView *view = new QGraphicsView();
-	view->setScene(scene);
-	view->setRenderHint(QPainter::Antialiasing, true);
-
-	QNodesEditor *nodesEditor = new QNodesEditor(this);
-	nodesEditor->install(scene);
-
-	QNEBlock *b = new QNEBlock(0);
-	scene->addItem(b);
-	b->addPort("Name", 0, QNEPort::NamePort);
-	b->addPort("Type", 0, QNEPort::TypePort);
-	b->addInputPort("in1");
-
-	b->addOutputPort("out1");
-
-	b = b->clone();
-	b->setPos(150, 0);
-	b = b->clone();
-	b->setPos(150, 150);
-
-	contents_center_layout->addWidget(view);
-
-
-
-	QVBoxLayout *contents_right_layout = new QVBoxLayout;
+	GraphEditorView = new ViewGraphEditor(mWidget);
+	GraphEditorView->initialize(contents_center_layout);
+	
+	/*QVBoxLayout *contents_right_layout = new QVBoxLayout;
 	contents_right_layout->setAlignment(Qt::AlignCenter);
-	contents_right_layout->setMargin(1);
-	QWidget *contents_right_widget = new QWidget;
+	contents_right_layout->setMargin(1);*/
+	/*QWidget *contents_right_widget = new QWidget;
 	contents_right_tabwidget = new QTabWidget(contents_right_widget);
 	contents_right_widget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	contents_right_widget->setFixedSize(300, 870);
 	contents_right_widget->setStyleSheet("background-color:(35,35,35);");
 	contents_right_layout->addWidget(contents_right_widget);
-
+*/
 
 	LeftTabInit(contents_left_tabwidget, contents_left_widget->width(), contents_left_widget->height());
 	CenterTabInit(contents_center_tabwidget, contents_center_widget->width(), contents_center_widget->height());
 	
 	//mGlobals.CurrentProject->setViewInfoXY(contents_center_widget->width(), contents_center_widget->height());
-	RightTabInit(contents_right_tabwidget, contents_right_widget->width(), contents_right_widget->height());
+	//RightTabInit(contents_right_tabwidget, contents_right_widget->width(), contents_right_widget->height());
 
 	parent_layout->addItem(contents_left_layout);
 	parent_layout->addItem(contents_center_layout);
-	parent_layout->addItem(contents_right_layout);
+	//parent_layout->addItem(contents_right_layout);
 }
 
 void Contents::LeftTabInit(QTabWidget *target, int width, int height) {
@@ -104,14 +81,14 @@ void Contents::CenterTabInit(QTabWidget *target, int width, int height) {
 	target->addTab(new QWidget(), "YZ");
 	target->addTab(new QWidget(), "ZX");
 }
-
-void Contents::RightTabInit(QTabWidget *target, int width, int height) {
-	//target->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	target->setFixedSize(width, height);
-	qDebug() << " Right size " << width << height;
-	target->addTab(new QWidget(), "Morphology Feature");
-	target->addTab(new QWidget(), "2D Scatter plot");
-}
+//
+//void Contents::RightTabInit(QTabWidget *target, int width, int height) {
+//	//target->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+//	target->setFixedSize(width, height);
+//	qDebug() << " Right size " << width << height;
+//	target->addTab(new QWidget(), "Morphology Feature");
+//	target->addTab(new QWidget(), "2D Scatter plot");
+//}
 
 
 void Contents::replaceTab(QTabWidget * tabs, int index, QWidget * replacement, QString label)
@@ -132,54 +109,55 @@ void Contents::updateAllWidget(int index, bool scaleflag) {
 void Contents::handleProjectOn() {
 	qDebug() << "Project On";
 	CenterContentsOn();
+	GraphEditorView->addOrigin();
 }
 void Contents::handleAnalyticsOn() {
 	qDebug() << "Analytics On";
-	RightContentsOn();
-	contents_right_tabwidget->setCurrentIndex(0);
+	//RightContentsOn();
+	//contents_right_tabwidget->setCurrentIndex(0);
 }
-
-void Contents::RightContentsOn() {
-	QVBoxLayout *HistListLayout = new QVBoxLayout;
-	QString nameList[5] = { "Volume", "Surfacearea", "Sphericity", "Eccentricity", "Intensity" };
-
-	for (int k = 0; k < 5; ++k) {
-		
-		MorphoHistBox[k] = new ViewHistogramBox(mWidget);
-
-		switch (k) {
-			case 0:
-				MorphoHistBox[k]->Init(nameList[k], k, &mGlobals.CurrentProject->mAnalytics->volumeHist);
-				break;
-			case 1:
-				MorphoHistBox[k]->Init(nameList[k], k, &mGlobals.CurrentProject->mAnalytics->surfaceareaHist);
-				break;
-			case 2:
-				MorphoHistBox[k]->Init(nameList[k], k, &mGlobals.CurrentProject->mAnalytics->sphericityHist);
-				break;
-			case 3:
-				MorphoHistBox[k]->Init(nameList[k], k, &mGlobals.CurrentProject->mAnalytics->eccentricityHist);
-				break;
-			case 4:
-				MorphoHistBox[k]->Init(nameList[k], k, &mGlobals.CurrentProject->mAnalytics->intensityHist);
-				break;
-		}
-		
-		HistListLayout->addWidget(MorphoHistBox[k]->HistBoxFrame);
-		connect(MorphoHistBox[k], SIGNAL(focusedHist(int)), this, SLOT(focusmanage_histogram(int)));
-
-	}
-
-/*
-	QWidget *HistListWidget = new QWidget();
-	HistListWidget->setLayout(HistListLayout);*/
-	QScrollArea* scroller = new QScrollArea;
-	scroller->horizontalScrollBar()->setEnabled(false);
-	scroller->setLayout(HistListLayout);
-
-	replaceTab(contents_right_tabwidget, 0, scroller, "Morphology Feature");
-
-}
+//
+//void Contents::RightContentsOn() {
+//	QVBoxLayout *HistListLayout = new QVBoxLayout;
+//	QString nameList[5] = { "Volume", "Surfacearea", "Sphericity", "Eccentricity", "Intensity" };
+//
+//	for (int k = 0; k < 5; ++k) {
+//		
+//		MorphoHistBox[k] = new ViewHistogramBox(mWidget);
+//
+//		switch (k) {
+//			case 0:
+//				MorphoHistBox[k]->Init(nameList[k], k, &mGlobals.CurrentProject->mAnalytics->volumeHist);
+//				break;
+//			case 1:
+//				MorphoHistBox[k]->Init(nameList[k], k, &mGlobals.CurrentProject->mAnalytics->surfaceareaHist);
+//				break;
+//			case 2:
+//				MorphoHistBox[k]->Init(nameList[k], k, &mGlobals.CurrentProject->mAnalytics->sphericityHist);
+//				break;
+//			case 3:
+//				MorphoHistBox[k]->Init(nameList[k], k, &mGlobals.CurrentProject->mAnalytics->eccentricityHist);
+//				break;
+//			case 4:
+//				MorphoHistBox[k]->Init(nameList[k], k, &mGlobals.CurrentProject->mAnalytics->intensityHist);
+//				break;
+//		}
+//		
+//		HistListLayout->addWidget(MorphoHistBox[k]->HistBoxFrame);
+//		connect(MorphoHistBox[k], SIGNAL(focusedHist(int)), this, SLOT(focusmanage_histogram(int)));
+//
+//	}
+//
+///*
+//	QWidget *HistListWidget = new QWidget();
+//	HistListWidget->setLayout(HistListLayout);*/
+//	QScrollArea* scroller = new QScrollArea;
+//	scroller->horizontalScrollBar()->setEnabled(false);
+//	scroller->setLayout(HistListLayout);
+//
+//	replaceTab(contents_right_tabwidget, 0, scroller, "Morphology Feature");
+//
+//}
 
 
 void Contents::CenterContentsOn() {
@@ -249,14 +227,14 @@ void Contents::updateColorBox(QWidget *target, QColor color) {
 
 }
 
-
-void Contents::focusmanage_histogram(int index) {
-	for (int i = 0; i < 5; ++i) {
-		if (i == index) {
-			MorphoHistBox[i]->FocusedIn();
-		}
-		else {
-			MorphoHistBox[i]->FocusedOut();
-		}
-	}
-}
+//
+//void Contents::focusmanage_histogram(int index) {
+//	for (int i = 0; i < 5; ++i) {
+//		if (i == index) {
+//			MorphoHistBox[i]->FocusedIn();
+//		}
+//		else {
+//			MorphoHistBox[i]->FocusedOut();
+//		}
+//	}
+//}

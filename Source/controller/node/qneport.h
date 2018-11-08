@@ -27,6 +27,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #define QNEPORT_H
 
 #include <QGraphicsPathItem>
+#include <QGraphicsProxyWidget>
+#include <QPushButton>
+#include <QLabel>
+#include <QHBoxLayout>
+
+#include "qneblock.h"
 
 class QNEBlock;
 class QNEConnection;
@@ -35,7 +41,17 @@ class QNEPort : public QGraphicsPathItem
 {
 public:
 	enum { Type = QGraphicsItem::UserType + 1 };
-	enum { NamePort = 1, TypePort = 2 };
+	enum { Input = 1, Left = 2, Center = 3, Right = 4, Output = 5 };
+	enum { 
+		NamePort = 1,
+		TypePort = 2,
+		DataWidgetPort = 3,
+		DataSizePort = 4,
+		AnnotationPort = 5,
+	};
+
+
+
 
     QNEPort(QGraphicsItem *parent = 0);
 	~QNEPort();
@@ -43,6 +59,7 @@ public:
 	void setNEBlock(QNEBlock*);
 	void setName(const QString &n);
 	void setIsOutput(bool o);
+	void setAlign(int a);
 	int radius();
 	bool isOutput();
 	QVector<QNEConnection*>& connections();
@@ -50,15 +67,19 @@ public:
 
 	const QString& portName() const { return name; }
 	int portFlags() const { return m_portFlags; }
-
+	int portAlign() const { return m_portAlign; }
 	int type() const { return Type; }
+
+	int portWidth() const { return m_width; }
+	int portHeight() const { return m_height; }
 
 	QNEBlock* block() const;
 
 	quint64 ptr();
 	void setPtr(quint64);
-
 	bool isConnected(QNEPort*);
+
+	
 
 protected:
 	QVariant itemChange(GraphicsItemChange change, const QVariant &value);
@@ -73,6 +94,9 @@ private:
 	QVector<QNEConnection*> m_connections;
 	int m_portFlags;
 	quint64 m_ptr;
+	int m_portAlign;
+	int m_width;
+	int m_height;
 };
 
 #endif // QNEPORT_H

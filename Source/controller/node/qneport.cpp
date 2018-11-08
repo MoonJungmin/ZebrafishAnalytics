@@ -69,6 +69,12 @@ void QNEPort::setName(const QString &n)
 	label->setPlainText(n);
 }
 
+void QNEPort::setAlign(int a)
+{
+	m_portAlign = a;
+}
+
+
 void QNEPort::setIsOutput(bool o)
 {
 	isOutput_ = o;
@@ -101,19 +107,102 @@ void QNEPort::setPortFlags(int f)
 {
 	m_portFlags = f;
 
-	if (m_portFlags & TypePort)
-	{
-		QFont font(scene()->font());
-		font.setItalic(true);
-		label->setFont(font);
-		setPath(QPainterPath());
-	} else if (m_portFlags & NamePort)
-	{
+	if (m_portFlags == NamePort) {
 		QFont font(scene()->font());
 		font.setBold(true);
+		//font.setBold(false);
 		label->setFont(font);
 		setPath(QPainterPath());
+		
+		
+		QFontMetrics fm(font);
+		m_width = fm.width(name);
+		m_height = fm.height();
+
+	} 
+	else if (m_portFlags == TypePort) {
+		QFont font(scene()->font());
+		font.setPointSize(8);
+		font.setBold(false);
+		label->setFont(font);
+		qDebug() << "TypePort";
+		setPath(QPainterPath());
+
+		QFontMetrics fm(font);
+		m_width = fm.width(name);
+		m_height = fm.height();
 	}
+	else if (m_portFlags == DataWidgetPort) {
+		QGraphicsProxyWidget* pMyProxy = new QGraphicsProxyWidget(this);
+		QLabel *icon_label = new QLabel;
+		QIcon icon("Resources/icon_data.png");
+		QPixmap pixmap = icon.pixmap(QSize(70, 70));
+		icon_label->setPixmap(pixmap);
+		pMyProxy->setWidget(icon_label);
+		qDebug() << "DataWidgetPort";
+		setPath(QPainterPath());
+
+		m_width = 70;
+		m_height = 70;
+	}
+	else if (m_portFlags == DataSizePort) {
+		QGraphicsProxyWidget* pMyProxy = new QGraphicsProxyWidget(this);
+		QWidget *widget = new QWidget;
+		widget->setStyleSheet("background-color:#555555;");
+
+		QHBoxLayout *layout = new QHBoxLayout;
+		layout->setContentsMargins(10, 0, 0, 0);
+		QLabel *title = new QLabel;
+		QFont font(scene()->font());
+		font.setPointSize(8);
+		font.setBold(true);
+		title->setFont(font);
+		title->setText("Data size :");
+
+		QLabel *count = new QLabel;
+		font.setBold(false);
+		count->setFont(font);
+		int size = m_block->CellIndexListInput.size();
+		count->setText(QString::fromStdString(std::to_string(size)));
+		layout->addWidget(title);
+		layout->addWidget(count);
+
+		widget->setLayout(layout);
+		pMyProxy->setWidget(widget);
+		setPath(QPainterPath());
+
+		m_width = widget->width();
+		m_height = widget->height();
+	}
+	else if (m_portFlags == AnnotationPort) {
+		QGraphicsProxyWidget* pMyProxy = new QGraphicsProxyWidget(this);
+		QWidget *widget = new QWidget;
+		widget->setStyleSheet("background-color:#555555;");
+		QHBoxLayout *layout = new QHBoxLayout;
+		layout->setContentsMargins(10, 0, 0, 0);
+		QLabel *title = new QLabel;
+		QFont font(scene()->font());
+		font.setPointSize(8);
+		font.setBold(true);
+		title->setFont(font);
+		title->setText("Annotation :");
+
+		QPushButton *btn = new QPushButton;
+		btn->setText("Check");
+
+		layout->addWidget(title);
+		layout->addWidget(btn);
+		
+		widget->setLayout(layout);
+		pMyProxy->setWidget(widget);
+
+		setPath(QPainterPath());
+
+		m_width = widget->width();
+		m_height = widget->height();
+	}
+
+
 }
 
 QNEBlock* QNEPort::block() const

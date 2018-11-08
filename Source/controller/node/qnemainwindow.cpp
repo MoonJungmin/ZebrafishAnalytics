@@ -85,7 +85,7 @@ QNEMainWindow::QNEMainWindow(QWidget *parent) :
 
     nodesEditor = new QNodesEditor(this);
     nodesEditor->install(scene);
-
+/*
 
     QNEBlock *b = new QNEBlock(0);
     scene->addItem(b);
@@ -102,7 +102,7 @@ QNEMainWindow::QNEMainWindow(QWidget *parent) :
     b->setPos(150, 0);
 
     b = b->clone();
-    b->setPos(150, 150);
+    b->setPos(150, 150);*/
 }
 
 QNEMainWindow::~QNEMainWindow()

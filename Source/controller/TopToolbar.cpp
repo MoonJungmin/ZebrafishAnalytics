@@ -25,9 +25,11 @@ void TopToolbar::initialize(QLayout *parent_layout) {
 	m_button3->setFixedSize(QSize(30, 30));
 	connect(m_button3, SIGNAL(released()), this, SLOT(handleOpenProject()));
 
-	QPushButton *m_button4 = new QPushButton("M", mWidget);
+	QPushButton *m_button4 = new QPushButton;
+	m_button4->setIcon(QIcon("Resources/icon_addnode.png"));
+	m_button4->setIconSize(QSize(20, 20));
 	m_button4->setFixedSize(QSize(30, 30));
-	connect(m_button4, SIGNAL(released()), mWidget, SLOT(handleButton()));
+	connect(m_button4, SIGNAL(released()), this, SLOT(handleAddNode()));
 
 	QPushButton *m_button5 = new QPushButton("M", mWidget);
 	m_button5->setFixedSize(QSize(30, 30));
@@ -77,4 +79,9 @@ void TopToolbar::handleOpenProject() {
 	}
 	/*DialogNewProject *md = new DialogNewProject(mWidget);
 	md->exec();*/
+}
+void TopToolbar::handleAddNode() {
+	qDebug("Open Add node handle");
+	DialogAddNode *md = new DialogAddNode(mWidget);
+	md->exec();
 }

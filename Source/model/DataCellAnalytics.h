@@ -15,21 +15,6 @@
 
 #include "Source/Utils.h"
 
-struct coord {
-	long long x;
-	long long y;
-	long long z;
-};
-
-struct cell {
-	std::list<int> selection;
-	unsigned int index;
-	coord minbox;
-	coord maxbox;
-	QColor color;
-};
-
-
 class DataCellAnalytics
 {
 public:

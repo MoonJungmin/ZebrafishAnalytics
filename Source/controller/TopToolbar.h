@@ -6,6 +6,7 @@
 #include <QIcon>
 
 #include "DialogNewProject.h"
+#include "DialogAddNode.h"
 
 class TopToolbar : public QObject
 {
@@ -20,7 +21,7 @@ private slots:
 	void handleNewProject();
 	void handleSaveProject();
 	void handleOpenProject();
-
+	void handleAddNode();
 
 private:
 	QWidget * mWidget;
