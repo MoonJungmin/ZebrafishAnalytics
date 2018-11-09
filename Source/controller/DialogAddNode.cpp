@@ -6,15 +6,15 @@ DialogAddNode::DialogAddNode(QWidget *parent) : QDialog(parent)
 	setModal(true);
 	setFocusPolicy(Qt::StrongFocus);
 	setFocus();
-	int nWidth = parent->width() / 2;
-	int nHeight = parent->height() / 2;
-	if (parent != NULL)
-		setGeometry(parent->x() + parent->width() / 2 - nWidth / 2,
-			parent->y() + parent->height() / 2 - nHeight / 2,
-			nWidth, nHeight);
-	else
+	int nWidth = 1920 / 2;
+	int nHeight = 1080 / 4;
+	if (parent != NULL) {
+		//setGeometry(parent->x() + parent->width() / 2 - nWidth / 2, parent->y() + parent->height() / 2 - nHeight / 2, nWidth, nHeight);
+		setGeometry(0 + 1920 / 2 - nWidth / 2, 0 + 1080 / 2 - nHeight / 2, nWidth, nHeight);
+	}
+	else {
 		resize(nWidth, nHeight);
-
+	}
 	QHBoxLayout *main_layout = new QHBoxLayout;
 	main_layout->setMargin(5);
 
@@ -56,136 +56,32 @@ DialogAddNode::DialogAddNode(QWidget *parent) : QDialog(parent)
 	QFont right_small_font("Arial", 9, QFont::Bold);
 	QFont right_small_contents_font("Arial", 9, QFont::Normal);
 
-	QHBoxLayout *nodetype_layout = new QHBoxLayout;
 
+	QHBoxLayout *nodename_layout = new QHBoxLayout;
+	QLabel *label_nodename = new QLabel(this);
+	label_nodename->setText("Node Name   ");
+	label_nodename->setFont(right_font);
+	node_name = new QLineEdit(this);
+	node_name->setPlaceholderText("Enter the node name.");
+	node_name->setFocus();
+	nodename_layout->addWidget(label_nodename);
+	nodename_layout->addWidget(node_name);
+
+
+	QHBoxLayout *nodetype_layout = new QHBoxLayout;
 	QLabel *label_nodetype = new QLabel(this);
 	label_nodetype->setText("Node Type   ");
 	label_nodetype->setFont(right_font);
 
-	nodetype_menu = new QComboBox(mWidget);
-	QStringList commands = { "Random color", "Morpological feature histogram threshold", "Selected cell" };
-	rendering_menu->addItems(commands);
-	rendering_menu->setFixedWidth(250);
+	node_type = new QComboBox(this);
+	node_type->addItems(node_type_list);
+	node_type->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+	connect(node_type, SIGNAL(currentIndexChanged(int)), this, SLOT(handleComboMenu(int)));
+
+	nodetype_layout->addWidget(label_nodetype);
+	nodetype_layout->addWidget(node_type);
 
 
-	label_size_x = new QLineEdit(this);
-	label_size_x->setPlaceholderText("0");
-	label_size_x->setFocus();
-
-	QLabel *label_size_y_title = new QLabel(this);
-	label_size_y_title->setText("Y :");
-	label_size_y_title->setFont(right_small_contents_font);
-
-	label_size_y = new QLineEdit(this);
-	label_size_y->setPlaceholderText("0");
-	label_size_y->setFocus();
-
-	QLabel *label_size_z_title = new QLabel(this);
-	label_size_z_title->setText("Z :");
-	label_size_z_title->setFont(right_small_contents_font);
-
-	label_size_z = new QLineEdit(this);
-	label_size_z->setPlaceholderText("0");
-	label_size_z->setFocus();
-
-
-	label_size_layout->addWidget(label_size);
-	label_size_layout->addWidget(label_size_x_title);
-	label_size_layout->addWidget(label_size_x);
-	label_size_layout->addWidget(label_size_y_title);
-	label_size_layout->addWidget(label_size_y);
-	label_size_layout->addWidget(label_size_z_title);
-	label_size_layout->addWidget(label_size_z);
-
-	QHBoxLayout *location_layout = new QHBoxLayout;
-
-	QLabel *location = new QLabel(this);
-	location->setText("Labeled Sequence Location");
-	location->setFont(right_font);
-
-	seedImagePath = new QLineEdit(this);
-	seedImagePath->setPlaceholderText("Type your labeled sequence location");
-	seedImagePath->setFocus();
-
-	QPushButton * location_find_btn = new QPushButton(this);
-	location_find_btn->setText("Find");
-	connect(location_find_btn, SIGNAL(released()), this, SLOT(find()));
-
-	location_layout->addWidget(location);
-	location_layout->addWidget(seedImagePath);
-	location_layout->addWidget(location_find_btn);
-
-	QHBoxLayout *image_info_layout = new QHBoxLayout;
-	exampleImage = new QLabel;
-	exampleImage->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	exampleImage->setAlignment(Qt::AlignCenter);
-
-	exampleImage->setText("No Image");
-	exampleImage->setFixedWidth(nHeight / 4);
-	exampleImage->setFixedHeight(nHeight / 4);
-	exampleImage->setFrameStyle(QFrame::Box | QFrame::Plain);
-	exampleImage->setVisible(false);
-	QVBoxLayout *image_info_right_layout = new QVBoxLayout;
-	image_info_right_layout->setAlignment(Qt::AlignTop);
-
-	QHBoxLayout *image_type_layout = new QHBoxLayout;
-	image_type_layout->setAlignment(Qt::AlignLeft);
-	image_type_title = new QLabel(this);
-	image_type_title->setText("labeled sequence type : ");
-	image_type_title->setFont(right_small_font);
-	image_type_title->setVisible(false);
-	image_type = new QLabel(this);
-	image_type->setVisible(false);
-	image_type->setFont(right_small_contents_font);
-	image_type_layout->addWidget(image_type_title);
-	image_type_layout->addWidget(image_type);
-
-	QHBoxLayout *image_size_layout = new QHBoxLayout;
-	image_size_layout->setAlignment(Qt::AlignLeft);
-	image_size_title = new QLabel(this);
-	image_size_title->setText("labeled sequence size : ");
-	image_size_title->setFont(right_small_font);
-	image_size_title->setVisible(false);
-	image_size = new QLabel(this);
-	image_size->setVisible(false);
-	image_size->setFont(right_small_contents_font);
-	image_size_layout->addWidget(image_size_title);
-	image_size_layout->addWidget(image_size);
-
-
-	image_info_right_layout->addLayout(image_type_layout);
-	image_info_right_layout->addLayout(image_size_layout);
-
-	image_info_layout->addWidget(exampleImage);
-	image_info_layout->addLayout(image_info_right_layout);
-
-
-	QHBoxLayout *save_location_layout = new QHBoxLayout;
-
-	QLabel *save_location = new QLabel(this);
-	save_location->setText("Labeled Layer Save Path");
-	save_location->setFont(right_font);
-
-	savepath = new QLineEdit(this);
-	savepath->setPlaceholderText("Type your labeled layer location");
-	savepath->setFocus();
-
-	QPushButton * save_location_find_btn = new QPushButton(this);
-	save_location_find_btn->setText("Find");
-	connect(save_location_find_btn, SIGNAL(released()), this, SLOT(find_save()));
-
-	save_location_layout->addWidget(save_location);
-	save_location_layout->addWidget(savepath);
-	save_location_layout->addWidget(save_location_find_btn);
-
-	mProgressLog = new QLabel(this);
-	mProgressLog->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	mProgressLog->setFont(right_font);
-	mProgressLog->setVisible(false);
-
-
-	mProgressbar = new QProgressBar;
-	mProgressbar->setVisible(false);
 
 	QHBoxLayout *filler_layout = new QHBoxLayout;
 	QWidget *filler = new QWidget;
@@ -198,7 +94,7 @@ DialogAddNode::DialogAddNode(QWidget *parent) : QDialog(parent)
 
 	QPushButton * done_btn = new QPushButton(this);
 	done_btn->setText("Generate");
-	connect(done_btn, SIGNAL(released()), this, SLOT(generate()));
+	connect(done_btn, SIGNAL(released()), this, SLOT(done()));
 
 	QPushButton * reject_btn = new QPushButton(this);
 	reject_btn->setText("Cancel");
@@ -207,163 +103,43 @@ DialogAddNode::DialogAddNode(QWidget *parent) : QDialog(parent)
 	btn_layout->addWidget(done_btn);
 	btn_layout->addWidget(reject_btn);
 
-	label_size_layout->setMargin(10);
-	right_layout->addLayout(label_size_layout);
-	location_layout->setMargin(10);
-	right_layout->addLayout(location_layout);
-	image_info_layout->setMargin(10);
-	right_layout->addLayout(image_info_layout);
-	save_location_layout->setMargin(10);
-	right_layout->addLayout(save_location_layout);
+
+	nodetype_layout->setMargin(10);
+	right_layout->addLayout(nodetype_layout);
+	nodename_layout->setMargin(10);
+	right_layout->addLayout(nodename_layout);
 
 	right_layout->addLayout(filler_layout);
-	right_layout->addWidget(mProgressLog);
-	right_layout->addWidget(mProgressbar);
+
 	right_layout->addLayout(btn_layout);
 
 	this->setLayout(main_layout);
 
 	main_layout->addLayout(left_layout);
 	main_layout->addWidget(vertical_line);
-	//main_layout->addLayout(right_layout);
-
-
+	main_layout->addLayout(right_layout);
 }
 
 DialogAddNode::~DialogAddNode()
 {
 }
 
-
-
-
-
-void DialogAddNode::find() {
-	QString dir = QFileDialog::getExistingDirectory(this, tr("Open labeled sequence directory"), QDir::currentPath(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-	if (!dir.isEmpty() && !dir.isNull()) {
-		seedImagePath->setText(dir);
-
-		QDir imageSeqDir(dir);
-		imageSeqDir.setNameFilters(QStringList() << "*.raw");
-		mImageList = imageSeqDir.entryList();
-
-
-		/*if (mImageList.size() > 0) {
-			image_path_check = true;
-			QString exampleImagePath = dir + "/" + mImageList.at(0);
-
-			int input_width, input_height;
-			input_width = label_size_x->text().toInt();
-			input_height = label_size_y->text().toInt();
-			unsigned int *raw_slice = new unsigned int[input_width*input_height];
-			ifstream raw_ifs(exampleImagePath.toStdString(), std::ifstream::binary);
-			raw_ifs.read((char *)&raw_slice[0], input_width*input_height * sizeof(unsigned int));
-
-
-			QImage *Img = new QImage(input_width, input_height, QImage::Format_RGB32);
-			Img->fill(Qt::black);
-			int rawDataCount = 0;
-
-			qDebug() << input_width;
-			qDebug() << input_height;
-			for (int y = 0; y<input_height; y++)
-			{
-				for (int x = 0; x<input_width; x++)
-				{
-					unsigned int temp = raw_slice[rawDataCount++];
-					if (temp != 0) {
-						Img->setPixel(x, y, qRgba(mGlobals.colorset[temp % 12][0], mGlobals.colorset[temp % 12][1], mGlobals.colorset[temp % 12][2], 100));
-					}
-					else {
-						Img->setPixel(x, y, qRgba(0, 0, 0, 100));
-					}
-				}
-			}
-			int width = exampleImage->width();
-			int height = exampleImage->height();
-			QPixmap *buffer = new QPixmap();
-
-			*buffer = QPixmap::fromImage(*Img);
-			float scaledFactor = (float)Img->height() / (float)height;
-
-			*buffer = buffer->scaled(Img->width() / scaledFactor, Img->height() / scaledFactor);
-			width = Img->width() / scaledFactor;
-			height = Img->height() / scaledFactor;
-			exampleImage->setFixedWidth(width);
-			exampleImage->setFixedHeight(height);
-			exampleImage->setPixmap(*buffer);
-			exampleImage->setVisible(true);
-
-
-			image_type_title->setVisible(true);
-			image_size_title->setVisible(true);
-			whole_volume_x = Img->width();
-			whole_volume_y = Img->height();
-			whole_volume_z = mImageList.size();
-
-			QString sizetext = "X: " + QString::number(Img->width()) + " Y: " + QString::number(Img->height()) + " Z: " + QString::number(mImageList.size());
-			qDebug() << mGlobals.mImageFormat[3];
-			image_type->setText("raw(unsigned int)");
-			image_size->setText(sizetext);
-
-			image_type->setVisible(true);
-			image_size->setVisible(true);
-		}
-		else {
-			QMessageBox::about(0, QString::fromStdString("Image load Error"), QString::fromStdString("Image load Error"));
-		}*/
-	}
-	qDebug() << "done";
+void DialogAddNode::handleComboMenu(int index) {
+	active_type = index;
 }
 
-void DialogAddNode::find_save() {
-
-	QString dir = QFileDialog::getExistingDirectory(this, tr("Labeled Layer directory"), QDir::currentPath(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-	//QString dir = QFileDialog::getExistingDirectory(this, tr("Open image sequence directory"), QDir::currentPath(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-	if (!dir.isEmpty() && !dir.isNull()) {
-		savepath->setText(dir);
-		save_path_check = true;
-	}
-}
 
 int DialogAddNode::exec()
 {
 	qDebug("BG");
 	activateWindow();
-
 	this->show();
 	return 1;
 }
 void DialogAddNode::done(int val)
 {
 	qDebug("done.");
-}
-
-void DialogAddNode::generate() {
-	mProgressbar->setVisible(true);
-	mProgressLog->setVisible(true);
-
-	ThreadGenLB *mThread = new ThreadGenLB(this);
-
-	mThread->setVolumeSize(whole_volume_x, whole_volume_y, whole_volume_z);
-	mThread->setPathInfo(savepath->text().toLocal8Bit().constData(), image_type->text().toLocal8Bit().constData(), seedImagePath->text().toLocal8Bit().constData());
-	mThread->start();
-
-	connect(mThread, SIGNAL(progress_generate_lb(float)), this, SLOT(update_progress(float)));
-	connect(mThread, SIGNAL(progress_generate_lb_log(QString)), this, SLOT(update_progress_log(QString)));
-	connect(mThread, SIGNAL(finish_generate_lb()), this, SLOT(accept()));
-
-}
-
-void DialogAddNode::update_progress_log(QString str) {
-	mProgressLog->setText(str);
-}
-
-
-void DialogAddNode::update_progress(float v) {
-	//qDebug("update value");
-	//qDebug() << v;
-	mProgressbar->setValue((int)v);
+	emit makenode(active_type, node_name->text());
 }
 
 void DialogAddNode::accept()

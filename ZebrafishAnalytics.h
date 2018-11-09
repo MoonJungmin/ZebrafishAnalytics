@@ -7,12 +7,6 @@
 #include "Source/controller/TopInterface.h"
 #include "Source/controller/Contents.h"
 
-#include "Source/controller/DialogNewProject.h"
-#include "Source/controller/DialogGenBGLayer.h"
-#include "Source/controller/DialogGenLBLayer.h"
-#include "Source/controller/DialogGenSRLayer.h"
-#include "Source/controller/DialogPreference.h"
-
 #include "Source/global.h"
 
 class QAction;
@@ -27,7 +21,12 @@ class ZebrafishAnalytics : public QMainWindow
 public:
 	ZebrafishAnalytics();
 
-
+	QDialog * mDialogGenBGLayer;
+	QDialog * mDialogAddNode;
+	QDialog * mDialogGenLBLayer;
+	QDialog * mDialogGenSRLayer;
+	QDialog * mDialogNewProject;
+	QDialog * mDialogPreference;
 
 protected:
 
@@ -43,6 +42,8 @@ private slots:
 
 
 private:
+	void initializeDialog();
+
 	void createMenus();
 	void createAction();
 	QMenu * fileMenu;

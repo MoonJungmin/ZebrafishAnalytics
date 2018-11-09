@@ -15,7 +15,6 @@
 #include "Source/Utils.h"
 
 
-
 class DataProject : public QObject
 {
 	Q_OBJECT
@@ -35,6 +34,8 @@ public:
 	bool AnalyticsStatus = false;
 	QString AnalyticsResultPath = "";
 	DataCellAnalytics *mAnalytics;
+
+
 
 	int DataSizeX = 0;
 	int DataSizeY = 0;

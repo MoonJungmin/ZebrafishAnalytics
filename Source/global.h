@@ -8,6 +8,7 @@
 #include <fstream>
 #include <string>
 #include <QDebug>
+#include <QDialog>
 #include <vector>
 #include <memory>
 #include <QStringList>
@@ -15,6 +16,7 @@
 
 #include "Source/model/DataProject.h"
 #include "Source/model/system/systeminfo.h"
+
 
 #include <string>
 #include <stdio.h>
@@ -42,7 +44,6 @@ public:
 	void loadSysinfo();
 
 	
-
 
 
 	Globals();

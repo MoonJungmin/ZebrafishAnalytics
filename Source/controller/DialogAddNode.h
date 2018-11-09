@@ -16,17 +16,14 @@ class DialogAddNode : public QDialog
 
 signals:
 	void thread_kill();
+	void makenode(int, QString);
 
 public slots:
 	int exec();
 	void done(int val);
 	void accept();
-	void generate();
 	void reject();
-	void find();
-	void find_save();
-	void update_progress(float v);
-	void update_progress_log(QString str);
+	void handleComboMenu(int index);
 
 public:
 	DialogAddNode(QWidget *parent);
@@ -34,39 +31,16 @@ public:
 
 
 private:
-	bool save_path_check = false;
-	bool image_path_check = false;
 
-	int whole_volume_x;
-	int whole_volume_y;
-	int whole_volume_z;
-
-	int sub_volume_x_count;
-	int sub_volume_y_count;
-	int sub_volume_z_count;
-
-	int sub_volume_size;
-
-	QStringList mImageList;
-	QLabel * exampleImage;
-
-	QLabel * image_type;
-	QLabel * image_type_title;
-	QLabel * image_size;
-	QLabel * image_size_title;
-
+	int active_type = 0;
+	QStringList node_type_list = { "Sub Data bucket", "Operation(Feature)", "Operation(Subregion)", "Operation(Set)", "Operation(Similarity)" };
 
 
 
 	QWidget * pWidget;
-	QLineEdit * seedImagePath;
+	
 
-	QLineEdit * label_size_x;
-	QLineEdit * label_size_y;
-	QLineEdit * label_size_z;
+	QLineEdit * node_name;
+	QComboBox * node_type;
 
-	QLineEdit * savepath;
-
-	QProgressBar *mProgressbar;
-	QLabel * mProgressLog;
 };

@@ -49,7 +49,7 @@ class QNEBlock : public QGraphicsPathItem
 {
 public:
 	enum { Type = QGraphicsItem::UserType + 3 };
-	enum { OriginBlock = 1, DataBlock= 2, SubregionBlock = 3, FeatureBlock = 4, SimilarityBlock = 5, SetBlock = 6 };
+	enum { OriginBlock = 1, DataBlock= 2, FeatureBlock = 3, SubregionBlock = 4, SimilarityBlock = 5, SetBlock = 6 };
 	enum { Input = 1, Left = 2, Center = 3, Right = 4, Output = 5};
 
     QNEBlock(QGraphicsItem *parent = 0);

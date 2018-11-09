@@ -41,8 +41,10 @@ ZebrafishAnalytics::ZebrafishAnalytics()
 	createAction();
 	createMenus();
 
+	initializeDialog();
 	QString message = tr("A context menu is available by right-clicking");
 	statusBar()->showMessage(message);
+
 }
 
 void ZebrafishAnalytics::createMenus() {
@@ -85,27 +87,37 @@ void ZebrafishAnalytics::createAction() {
 	connect(preference, &QAction::triggered, this, &ZebrafishAnalytics::handlePreference);
 
 }
+void ZebrafishAnalytics::initializeDialog() {
+	mDialogAddNode = new DialogAddNode(this);
+	mDialogGenBGLayer = new DialogGenBGLayer(this);
+	mDialogGenLBLayer = new DialogGenLBLayer(this);
+	mDialogGenSRLayer = new DialogGenSRLayer(this);
+	mDialogNewProject = new DialogNewProject(this);
+	mDialogPreference = new DialogPreference(this);
+}
+
 
 void ZebrafishAnalytics::handleGenerateBGLayer() {
-	DialogGenBGLayer *md = new DialogGenBGLayer(this);
-	md->exec();
+	mDialogGenBGLayer->exec();
 }
 
 void ZebrafishAnalytics::handleGenerateLBLayer() {
-	DialogGenLBLayer*md = new DialogGenLBLayer(this);
-	md->exec();
+	mDialogGenLBLayer->exec();
 }
 
 void ZebrafishAnalytics::handleGenerateSRLayer() {
-	DialogGenSRLayer *md = new DialogGenSRLayer(this);
-	md->exec();
+	mDialogGenSRLayer->exec();
 }
 
 void ZebrafishAnalytics::handleNewProject() {
 	qDebug("New Project handle");
-	DialogNewProject *md = new DialogNewProject(this);
-	md->exec();
+	mDialogNewProject->exec();
 
+}
+
+void ZebrafishAnalytics::handlePreference() {
+	qDebug("Preference");
+	mDialogPreference->exec();
 }
 
 void ZebrafishAnalytics::handleOpenProject() {
@@ -124,11 +136,6 @@ void ZebrafishAnalytics::handleOpenProject() {
 
 }
 
-void ZebrafishAnalytics::handlePreference() {
-	qDebug("Preference");
-	DialogPreference *md = new DialogPreference(this);
-	md->exec();
-}
 
 
 void ZebrafishAnalytics::handleButton() {
