@@ -11,10 +11,7 @@ Contents::~Contents()
 }
 
 
-void Contents::initialize(QLayout *parent_layout, TopInterface *aTopInterface) {
-	mInterface = aTopInterface;
-	connect(mGlobals.CurrentProject, SIGNAL(project_on()), this, SLOT(handleProjectOn()));
-	connect(mGlobals.CurrentProject, SIGNAL(analytics_on()), this, SLOT(handleAnalyticsOn()));
+void Contents::initialize(QLayout *parent_layout) {
 
 	QVBoxLayout *contents_left_layout = new QVBoxLayout;
 	contents_left_layout->setAlignment(Qt::AlignCenter);

@@ -6,6 +6,7 @@
 #include "Source/controller/TopToolbar.h"
 #include "Source/controller/TopInterface.h"
 #include "Source/controller/Contents.h"
+#include "Source/controller/DialogManager.h"
 
 #include "Source/global.h"
 
@@ -21,12 +22,8 @@ class ZebrafishAnalytics : public QMainWindow
 public:
 	ZebrafishAnalytics();
 
-	QDialog * mDialogGenBGLayer;
-	QDialog * mDialogAddNode;
-	QDialog * mDialogGenLBLayer;
-	QDialog * mDialogGenSRLayer;
-	QDialog * mDialogNewProject;
-	QDialog * mDialogPreference;
+
+
 
 protected:
 
@@ -39,10 +36,10 @@ private slots:
 	void handleGenerateSRLayer();
 	void handlePreference();
 	void projectLoad();
+	void handleProjectOn();
 
 
 private:
-	void initializeDialog();
 
 	void createMenus();
 	void createAction();
@@ -51,7 +48,13 @@ private:
 	QAction *generateBackgroundLayer;
 	QAction *generateLabelLayer;
 	QAction *generateSubregionLayer;
-
 	QAction *preference;
+
+
+	TopToolbar *mTopToolbar;
+	TopInterface *mTopInterface;
+	Contents *mContents;
+	DialogManager *mDialogManager;
+
 
 };

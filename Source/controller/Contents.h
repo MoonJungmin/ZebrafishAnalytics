@@ -31,8 +31,6 @@ public slots:
 	//void focusmanage_histogram(int index);
 
 private slots:
-	void handleProjectOn();
-	void handleAnalyticsOn();
 	void updateAllWidget(int index, bool scaleflag);
 
 	

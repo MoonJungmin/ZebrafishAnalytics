@@ -12,14 +12,14 @@ ZebrafishAnalytics::ZebrafishAnalytics()
 	top_toolbar_layout->setAlignment(Qt::AlignLeft);
 	top_toolbar_layout->setMargin(1);
 	QWidget *top_widget = new QWidget;
-	TopToolbar *mTopToolbar = new TopToolbar(top_widget);
+	mTopToolbar = new TopToolbar(top_widget);
 	mTopToolbar->initialize(top_toolbar_layout);
 
 	QHBoxLayout *top_interface_layout = new QHBoxLayout;
 	top_interface_layout->setAlignment(Qt::AlignLeft);
 	top_interface_layout->setMargin(1);
 	QWidget *top_interface_widget = new QWidget;
-	TopInterface *mTopInterface = new TopInterface(top_interface_widget);
+	mTopInterface = new TopInterface(top_interface_widget);
 	mTopInterface->initialize(top_interface_layout);
 
 	QHBoxLayout *contents_layout = new QHBoxLayout;
@@ -28,7 +28,7 @@ ZebrafishAnalytics::ZebrafishAnalytics()
 	QWidget *contents_widget = new QWidget;
 	contents_widget->setStyleSheet("background-color:red;");
 
-	Contents *mContents = new Contents(contents_widget);
+	mContents = new Contents(contents_widget);
 	mContents->initialize(contents_layout, mTopInterface);
 
 
@@ -41,9 +41,13 @@ ZebrafishAnalytics::ZebrafishAnalytics()
 	createAction();
 	createMenus();
 
-	initializeDialog();
+	mDialogManager = new DialogManager(this);
+
 	QString message = tr("A context menu is available by right-clicking");
 	statusBar()->showMessage(message);
+
+
+	connect(mGlobals.CurrentProject, SIGNAL(project_on()), this, SLOT(handleProjectOn()));
 
 }
 
@@ -87,37 +91,25 @@ void ZebrafishAnalytics::createAction() {
 	connect(preference, &QAction::triggered, this, &ZebrafishAnalytics::handlePreference);
 
 }
-void ZebrafishAnalytics::initializeDialog() {
-	mDialogAddNode = new DialogAddNode(this);
-	mDialogGenBGLayer = new DialogGenBGLayer(this);
-	mDialogGenLBLayer = new DialogGenLBLayer(this);
-	mDialogGenSRLayer = new DialogGenSRLayer(this);
-	mDialogNewProject = new DialogNewProject(this);
-	mDialogPreference = new DialogPreference(this);
-}
-
 
 void ZebrafishAnalytics::handleGenerateBGLayer() {
-	mDialogGenBGLayer->exec();
+	mDialogManager->mDialogGenBGLayer->exec();
 }
 
 void ZebrafishAnalytics::handleGenerateLBLayer() {
-	mDialogGenLBLayer->exec();
+	mDialogManager->mDialogGenLBLayer->exec();
 }
 
 void ZebrafishAnalytics::handleGenerateSRLayer() {
-	mDialogGenSRLayer->exec();
+	mDialogManager->mDialogGenSRLayer->exec();
 }
 
 void ZebrafishAnalytics::handleNewProject() {
-	qDebug("New Project handle");
-	mDialogNewProject->exec();
-
+	mDialogManager->mDialogNewProject->exec();
 }
 
 void ZebrafishAnalytics::handlePreference() {
-	qDebug("Preference");
-	mDialogPreference->exec();
+	mDialogManager->mDialogPreference->exec();
 }
 
 void ZebrafishAnalytics::handleOpenProject() {
@@ -136,6 +128,11 @@ void ZebrafishAnalytics::handleOpenProject() {
 
 }
 
+
+void ZebrafishAnalytics::handleProjectOn() {
+	qDebug("Project On master");
+
+}
 
 
 void ZebrafishAnalytics::handleButton() {

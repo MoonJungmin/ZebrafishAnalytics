@@ -23,6 +23,7 @@ private slots:
 	void handleOpenProject();
 	void handleAddNode();
 
+
 private:
 	QWidget * mWidget;
 };

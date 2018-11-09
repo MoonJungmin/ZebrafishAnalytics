@@ -7,11 +7,13 @@
 #include "DialogNewProject.h"
 #include "DialogPreference.h"
 
+#include <QWidget>
 
 class DialogManager
 {
 public:
 	DialogManager();
+	DialogManager(QWidget *parent);
 	~DialogManager();
 
 	QDialog * mDialogGenBGLayer;
@@ -20,5 +22,10 @@ public:
 	QDialog * mDialogGenSRLayer;
 	QDialog * mDialogNewProject;
 	QDialog * mDialogPreference;
+
+private:
+	QWidget *mWidget;
+	void initializeDialog();
+
 };
 

@@ -4,7 +4,6 @@ TopInterface::TopInterface(QWidget *parent)
 	: QObject(parent)
 {
 	mWidget = parent;
-
 }
 
 void TopInterface::initialize(QLayout *parent_layout) {
