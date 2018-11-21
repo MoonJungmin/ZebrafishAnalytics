@@ -5,8 +5,10 @@ TopToolbar::TopToolbar(QWidget *parent)
 {
 	mWidget = parent;
 }
-
-void TopToolbar::initialize(QLayout *parent_layout) {
+TopToolbar::TopToolbar(QWidget *parent, QLayout *parent_layout)
+	: QObject(parent)
+{
+	mWidget = parent;
 	QPushButton *m_button1 = new QPushButton;
 	m_button1->setIcon(QIcon("Resources/icon_new.png"));
 	m_button1->setIconSize(QSize(20, 20));
@@ -49,12 +51,18 @@ void TopToolbar::initialize(QLayout *parent_layout) {
 
 TopToolbar::~TopToolbar()
 {
+
 }
+
+//void TopToolbar::setDialogManager(DialogManager *ptr) {
+//	mDialogManager = ptr;
+//}
+
 
 void TopToolbar::handleNewProject() {
 	qDebug("New Project handle");
-	DialogNewProject *md = new DialogNewProject(mWidget);
-	md->exec();
+	
+	mGlobals.mDialogManager->mDialogNewProject->exec();
 }
 
 void TopToolbar::handleSaveProject() {
@@ -82,6 +90,5 @@ void TopToolbar::handleOpenProject() {
 }
 void TopToolbar::handleAddNode() {
 	qDebug("Open Add node handle");
-	DialogAddNode *md = new DialogAddNode(mWidget);
-	md->exec();
+	mGlobals.mDialogManager->mDialogAddNode->exec();
 }

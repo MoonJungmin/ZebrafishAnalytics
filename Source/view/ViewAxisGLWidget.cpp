@@ -99,14 +99,14 @@ void ViewAxisGLWidget::initializeGL()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32UI, blocksize, blocksize, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, 0);
 
-	CellTableWidth = sqrt(mGlobals.CurrentProject->mAnalytics->MaxCellCount)+1;
+	CellTableWidth = sqrt(mGlobals.CurrentProject->mLayerCell->MaxCellCount)+1;
 	long long lvalue = 1;
 	long long tablesize = lvalue * CellTableWidth * CellTableWidth * 3;
 	cell_color_data = new unsigned char[tablesize];
 
 
 	qDebug() << " Table Width : " << CellTableWidth;
-	qDebug() << " Cell Count : " << mGlobals.CurrentProject->mAnalytics->MaxCellCount;
+	qDebug() << " Cell Count : " << mGlobals.CurrentProject->mLayerCell->MaxCellCount;
 
 	glGenTextures(1, &CellColorTex);
 	glBindTexture(GL_TEXTURE_2D, CellColorTex);
@@ -244,7 +244,7 @@ std::vector<int> ViewAxisGLWidget::calcBlockIndexXY() {
 
 				int status = mGlobals.CurrentProject->mLayerBack->LoadBlockBySerialIndex(tempBlock1);
 				if (status != -1) {
-					mGlobals.CurrentProject->mLayerLabel->LoadBlockBySerialIndex(tempBlock2);
+					mGlobals.CurrentProject->mLayerCell->LoadBlockBySerialIndex(tempBlock2);
 					qDebug() << "status : " << status;
 					LoadIndexList.push_back(status);
 				}
@@ -263,14 +263,14 @@ std::vector<int> ViewAxisGLWidget::calcBlockIndexXY() {
 }
 
 void ViewAxisGLWidget::uploadCellColor(){
-	if (mGlobals.CurrentProject->mAnalytics->CellColorGPU_On == false) {
-		for (int i = 0; i < mGlobals.CurrentProject->mAnalytics->mCellList.size(); ++i) {
-			//qDebug() << mGlobals.CurrentProject->mAnalytics->mCellList.at(i).color.red() << " " << mGlobals.CurrentProject->mAnalytics->mCellList.at(i).color.green() << " " << mGlobals.CurrentProject->mAnalytics->mCellList.at(i).color.blue();
-			cell_color_data[3*i] = mGlobals.CurrentProject->mAnalytics->mCellList.at(i).color.red();
-			cell_color_data[3*i+1] = mGlobals.CurrentProject->mAnalytics->mCellList.at(i).color.green();
-			cell_color_data[3*i+2] = mGlobals.CurrentProject->mAnalytics->mCellList.at(i).color.blue();
+	if (mGlobals.CurrentProject->mLayerCell->CellColorGPU_On == false) {
+		for (int i = 0; i < mGlobals.CurrentProject->mLayerCell->mCellList.size(); ++i) {
+			//qDebug() << mGlobals.CurrentProject->mLayerCell->mCellList.at(i).color.red() << " " << mGlobals.CurrentProject->mLayerCell->mCellList.at(i).color.green() << " " << mGlobals.CurrentProject->mLayerCell->mCellList.at(i).color.blue();
+			cell_color_data[3*i] = mGlobals.CurrentProject->mLayerCell->mCellList.at(i).color.red();
+			cell_color_data[3*i+1] = mGlobals.CurrentProject->mLayerCell->mCellList.at(i).color.green();
+			cell_color_data[3*i+2] = mGlobals.CurrentProject->mLayerCell->mCellList.at(i).color.blue();
 		}
-		mGlobals.CurrentProject->mAnalytics->CellColorGPU_On = true;
+		mGlobals.CurrentProject->mLayerCell->CellColorGPU_On = true;
 	
 		glBindTexture(GL_TEXTURE_2D, CellColorTex);
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, CellTableWidth, CellTableWidth, GL_RGB, GL_UNSIGNED_BYTE, cell_color_data);
@@ -330,7 +330,7 @@ void ViewAxisGLWidget::paintGL()
 	for (int i = 0; i < IndexList.size(); ++i) {
 		
 		std::list<back_layer>::iterator iter_em = mGlobals.CurrentProject->mLayerBack->BlockList.begin();
-		std::list<label_layer>::iterator iter_lb = mGlobals.CurrentProject->mLayerLabel->BlockList.begin();;
+		std::list<label_layer>::iterator iter_lb = mGlobals.CurrentProject->mLayerCell->BlockList.begin();;
 
 		std::advance(iter_em, IndexList.at(i));
 		std::advance(iter_lb, IndexList.at(i));
@@ -402,7 +402,7 @@ void ViewAxisGLWidget::paintGL()
 
 	program->release();
 	mGlobals.CurrentProject->mLayerBack->removeBlock();
-	mGlobals.CurrentProject->mLayerLabel->removeBlock();
+	mGlobals.CurrentProject->mLayerCell->removeBlock();
 
 	drawCenterLine();
 	paintState = false;

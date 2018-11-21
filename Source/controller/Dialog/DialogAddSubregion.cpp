@@ -1,6 +1,6 @@
-#include "DialogAddNode.h"
+#include "DialogAddSubregion.h"
 
-DialogAddNode::DialogAddNode(QWidget *parent) : QDialog(parent)
+DialogAddSubregion::DialogAddSubregion(QWidget *parent) : QDialog(parent)
 {
 	pWidget = parent;
 	setModal(true);
@@ -34,7 +34,7 @@ DialogAddNode::DialogAddNode(QWidget *parent) : QDialog(parent)
 	QLabel *dialog_title = new QLabel(this);
 	dialog_title->setAlignment(Qt::AlignTop);
 	dialog_title->setMargin(5);
-	dialog_title->setText("Add Node");
+	dialog_title->setText("Add Subregion");
 	dialog_title->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	dialog_title->setMinimumWidth(nWidth / 4);
 
@@ -44,7 +44,7 @@ DialogAddNode::DialogAddNode(QWidget *parent) : QDialog(parent)
 	QLabel *dialog_contents = new QLabel(this);
 	dialog_contents->setMargin(5);
 	dialog_contents->setWordWrap(true);
-	dialog_contents->setText("Add a data bucket or selection operation.");
+	dialog_contents->setText("Please select the location of subregion data.");
 	QFont contents_font("Arial", 11, QFont::Normal);
 	dialog_contents->setFont(contents_font);
 
@@ -57,29 +57,33 @@ DialogAddNode::DialogAddNode(QWidget *parent) : QDialog(parent)
 	QFont right_small_contents_font("Arial", 9, QFont::Normal);
 
 
-	QHBoxLayout *nodename_layout = new QHBoxLayout;
-	QLabel *label_nodename = new QLabel(this);
-	label_nodename->setText("Node Name   ");
-	label_nodename->setFont(right_font);
-	node_name = new QLineEdit(this);
-	node_name->setPlaceholderText("Enter the node name.");
-	node_name->setFocus();
-	nodename_layout->addWidget(label_nodename);
-	nodename_layout->addWidget(node_name);
+	QHBoxLayout *subregionname_layout = new QHBoxLayout;
+	QLabel *label_subregionname = new QLabel(this);
+	label_subregionname->setText("Subregion Name   ");
+	label_subregionname->setFont(right_font);
+	SubregionName = new QLineEdit(this);
+	SubregionName->setPlaceholderText("Enter the subregion name.");
+	SubregionName->setFocus();
+	subregionname_layout->addWidget(label_subregionname);
+	subregionname_layout->addWidget(SubregionName);
 
 
-	QHBoxLayout *nodetype_layout = new QHBoxLayout;
-	QLabel *label_nodetype = new QLabel(this);
-	label_nodetype->setText("Node Type   ");
-	label_nodetype->setFont(right_font);
+	QHBoxLayout *subregionpath_layout = new QHBoxLayout;
+	QLabel *label_subregionpath= new QLabel(this);
+	label_subregionpath->setText("Subregion Path   ");
+	label_subregionpath->setFont(right_font);
 
-	node_type = new QComboBox(this);
-	node_type->addItems(node_type_list);
-	node_type->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	connect(node_type, SIGNAL(currentIndexChanged(int)), this, SLOT(handleComboMenu(int)));
+	SubregionPath = new QLineEdit(this);
+	SubregionPath->setPlaceholderText("Enter the subregion path.");
+	SubregionPath->setFocus();
 
-	nodetype_layout->addWidget(label_nodetype);
-	nodetype_layout->addWidget(node_type);
+	QPushButton *FindBtn = new QPushButton(this);
+	FindBtn->setText("Find");
+	connect(FindBtn, SIGNAL(released()), this, SLOT(handleFindbtn()));
+	
+	subregionpath_layout->addWidget(label_subregionpath);
+	subregionpath_layout->addWidget(SubregionPath);
+	subregionpath_layout->addWidget(FindBtn);
 
 
 
@@ -93,8 +97,8 @@ DialogAddNode::DialogAddNode(QWidget *parent) : QDialog(parent)
 	QHBoxLayout *btn_layout = new QHBoxLayout;
 
 	QPushButton * done_btn = new QPushButton(this);
-	done_btn->setText("Generate");
-	connect(done_btn, SIGNAL(released()), this, SLOT(done()));
+	done_btn->setText("Add");
+	connect(done_btn, SIGNAL(released()), this, SLOT(accept()));
 
 	QPushButton * reject_btn = new QPushButton(this);
 	reject_btn->setText("Cancel");
@@ -104,10 +108,10 @@ DialogAddNode::DialogAddNode(QWidget *parent) : QDialog(parent)
 	btn_layout->addWidget(reject_btn);
 
 
-	nodetype_layout->setMargin(10);
-	right_layout->addLayout(nodetype_layout);
-	nodename_layout->setMargin(10);
-	right_layout->addLayout(nodename_layout);
+	subregionname_layout->setMargin(10);
+	right_layout->addLayout(subregionname_layout);
+	subregionpath_layout->setMargin(10);
+	right_layout->addLayout(subregionpath_layout);
 
 	right_layout->addLayout(filler_layout);
 
@@ -120,36 +124,45 @@ DialogAddNode::DialogAddNode(QWidget *parent) : QDialog(parent)
 	main_layout->addLayout(right_layout);
 }
 
-DialogAddNode::~DialogAddNode()
+DialogAddSubregion::~DialogAddSubregion()
 {
 }
 
-void DialogAddNode::handleComboMenu(int index) {
-	active_type = index;
-}
 
-
-int DialogAddNode::exec()
+int DialogAddSubregion::exec()
 {
 	qDebug("BG");
 	activateWindow();
 	this->show();
 	return 1;
 }
-void DialogAddNode::done(int val)
+void DialogAddSubregion::done(int val)
 {
 	qDebug("done.");
-	emit makenode(active_type, node_name->text());
+
 }
 
-void DialogAddNode::accept()
+void DialogAddSubregion::accept()
 {
-	this->hide();
 	qDebug("Accept.");
+	// here!!!!!
+	this->hide();
 }
-void DialogAddNode::reject()
+void DialogAddSubregion::reject()
 {
 	emit thread_kill();
+
+	qDebug("Reject.");
+	this->hide();
+}
+
+void DialogAddSubregion::handleFindbtn()
+{
+	emit thread_kill();
+	
+	QString filters("Subregion Layer File (*.srl);;");
+	QString dir = QFileDialog::getOpenFileName(this, "Open Directory", QDir::currentPath(), filters);
+	SubregionPath->setText(dir);
 
 	qDebug("Reject.");
 	this->hide();

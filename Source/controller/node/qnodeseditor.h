@@ -39,6 +39,7 @@ class QNodesEditor : public QObject
 	Q_OBJECT
 public:
 	explicit QNodesEditor(QObject *parent = 0);
+	void removeThis(QGraphicsItem * ptr);
 
 	void install(QGraphicsScene *scene);
 

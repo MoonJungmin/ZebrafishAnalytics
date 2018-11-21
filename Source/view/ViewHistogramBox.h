@@ -77,20 +77,3 @@ private:
 	void updateCellColor();
 };
 
-class QColorDialogTester : public QWidget
-{
-public:
-	
-	QString onColor()
-	{
-		QColor color = QColorDialog::getColor(Qt::yellow, this);
-		if (color.isValid())
-		{
-			qDebug() << "Color Choosen : " << color.name();
-			return color.name();
-		}
-
-		return "";
-	}
-
-};

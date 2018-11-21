@@ -7,6 +7,9 @@
 #include <vector>
 #include <QColor>
 #include <cmath>
+#include <QWidget>
+#include <QColorDialog>
+
 
 typedef struct {
 	int x;
@@ -61,7 +64,6 @@ typedef struct {
 }cell;
 
 
-
 class Utils
 {
 public:
@@ -75,3 +77,20 @@ public:
 	~Utils();
 };
 
+class QColorDialogTester : public QWidget
+{
+public:
+
+	QString onColor()
+	{
+		QColor color = QColorDialog::getColor(Qt::yellow, this);
+		if (color.isValid())
+		{
+			//qDebug() << "Color Choosen : " << color.name();
+			return color.name();
+		}
+
+		return "";
+	}
+
+};

@@ -9,6 +9,7 @@ DialogManager::DialogManager()
 DialogManager::DialogManager(QWidget *parent)
 {
 	mWidget = parent;
+	initializeDialog();
 }
 
 
@@ -24,5 +25,9 @@ void DialogManager::initializeDialog() {
 	mDialogGenSRLayer = new DialogGenSRLayer(mWidget);
 	mDialogNewProject = new DialogNewProject(mWidget);
 	mDialogPreference = new DialogPreference(mWidget);
+	mDialogAddFeature = new DialogAddFeature(mWidget);
+	mDialogAddSubregion = new DialogAddSubregion(mWidget);
+	mDialogDetailFeature = new DialogDetailFeature(mWidget);
+
 }
 

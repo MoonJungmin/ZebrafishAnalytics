@@ -5,17 +5,21 @@
 #include <QtWidgets>
 #include <QIcon>
 
-#include "DialogNewProject.h"
-#include "DialogAddNode.h"
+#include "Dialog/DialogManager.h"
+//#include "DialogNewProject.h"
+//#include "DialogAddNode.h"
+class DialogManager;
 
 class TopToolbar : public QObject
 {
 	Q_OBJECT
 
 public:
-	void initialize(QLayout *parent_layout);
 	TopToolbar(QWidget *parent);
+	TopToolbar(QWidget *parent, QLayout *parent_layout);
 	~TopToolbar();
+
+	//void setDialogManager(DialogManager *ptr);
 
 private slots:
 	void handleNewProject();
@@ -26,4 +30,6 @@ private slots:
 
 private:
 	QWidget * mWidget;
+	//DialogManager *mDialogManager;
+	
 };

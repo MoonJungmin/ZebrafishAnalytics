@@ -13,21 +13,29 @@
 
 
 #include "Source/Utils.h"
-class LayerLabel
+class LayerCell
 {
 public:
-	LayerLabel();
-	~LayerLabel();
-	std::string layerPath;
-	std::ifstream mifs;
-	std::string infoPath;
-	std::ifstream info_ifs;
+	LayerCell();
+	~LayerCell();
+	std::string CellPath;
+	std::ifstream mLayerIFS;
+	std::ifstream mCellIFS;
+
+	
 	std::list<label_layer> BlockList;
 
 
-	void Init(std::string path);
+	std::vector<cell> mCellList;
+	long long MaxCellIndex;
+	long long MaxCellCount;
+	bool CellColorGPU_On = false;
+
+
+	void Init(std::string cell_path);
 	void headerReader();
-	void cellInfoReader();
+	void loadCellInformation();
+
 
 	int checkBlockIndex(int idx_x, int idx_y, int idx_z);
 	int LoadBlockBySerialIndex(label_layer tempblock);
@@ -46,5 +54,8 @@ private:
 	std::string DataPathYZ;
 	std::string DataPathZX;
 	
+
+
+
 };
 

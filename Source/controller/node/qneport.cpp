@@ -106,15 +106,18 @@ QVector<QNEConnection*>& QNEPort::connections()
 void QNEPort::setPortFlags(int f)
 {
 	m_portFlags = f;
+	QString backgroundcolor_style = "background-color:" + m_block->node_color.name();
 
 	if (m_portFlags == NamePort) {
 		QFont font(scene()->font());
+		font.setPointSize(12);
 		font.setBold(true);
 		//font.setBold(false);
 		label->setFont(font);
+
+
+	
 		setPath(QPainterPath());
-		
-		
 		QFontMetrics fm(font);
 		m_width = fm.width(name);
 		m_height = fm.height();
@@ -135,7 +138,22 @@ void QNEPort::setPortFlags(int f)
 	else if (m_portFlags == DataWidgetPort) {
 		QGraphicsProxyWidget* pMyProxy = new QGraphicsProxyWidget(this);
 		QLabel *icon_label = new QLabel;
-		QIcon icon("Resources/icon_data.png");
+		QIcon icon("Resources/icon_data_fish.png");
+		QPixmap pixmap = icon.pixmap(QSize(180, 94));
+		icon_label->setPixmap(pixmap);
+		pMyProxy->setWidget(icon_label);
+		qDebug() << "DataWidgetPort : " << pixmap.width() << " " << pixmap.height();
+		
+		setPath(QPainterPath());
+
+		m_width = 180;
+		m_height = 94;
+	}
+	else if (m_portFlags == SubregionWidgetPort) {
+		QGraphicsProxyWidget* pMyProxy = new QGraphicsProxyWidget(this);
+		QLabel *icon_label = new QLabel;
+		icon_label->setStyleSheet(backgroundcolor_style);
+		QIcon icon("Resources/icon_subregion.png");
 		QPixmap pixmap = icon.pixmap(QSize(70, 70));
 		icon_label->setPixmap(pixmap);
 		pMyProxy->setWidget(icon_label);
@@ -148,7 +166,7 @@ void QNEPort::setPortFlags(int f)
 	else if (m_portFlags == DataSizePort) {
 		QGraphicsProxyWidget* pMyProxy = new QGraphicsProxyWidget(this);
 		QWidget *widget = new QWidget;
-		widget->setStyleSheet("background-color:#555555;");
+		widget->setStyleSheet(backgroundcolor_style);
 
 		QHBoxLayout *layout = new QHBoxLayout;
 		layout->setContentsMargins(10, 0, 0, 0);
@@ -162,7 +180,7 @@ void QNEPort::setPortFlags(int f)
 		QLabel *count = new QLabel;
 		font.setBold(false);
 		count->setFont(font);
-		int size = m_block->CellIndexListInput.size();
+		int size = m_block->mBlock->CellIndexListInput.size();
 		count->setText(QString::fromStdString(std::to_string(size)));
 		layout->addWidget(title);
 		layout->addWidget(count);
@@ -174,32 +192,48 @@ void QNEPort::setPortFlags(int f)
 		m_width = widget->width();
 		m_height = widget->height();
 	}
-	else if (m_portFlags == AnnotationPort) {
+	else if (m_portFlags == SubregionDropdownPort) {
 		QGraphicsProxyWidget* pMyProxy = new QGraphicsProxyWidget(this);
 		QWidget *widget = new QWidget;
-		widget->setStyleSheet("background-color:#555555;");
+		widget->setStyleSheet(backgroundcolor_style);
+
 		QHBoxLayout *layout = new QHBoxLayout;
-		layout->setContentsMargins(10, 0, 0, 0);
-		QLabel *title = new QLabel;
+		layout->setContentsMargins(0, 0, 0, 0);
+		
 		QFont font(scene()->font());
 		font.setPointSize(8);
-		font.setBold(true);
-		title->setFont(font);
-		title->setText("Annotation :");
+		font.setBold(false);
 
-		QPushButton *btn = new QPushButton;
-		btn->setText("Check");
+		QComboBox *subregion_dropdown = new QComboBox(widget);
+		subregion_dropdown->setFont(font);
+		QStringList combolist;
 
-		layout->addWidget(title);
-		layout->addWidget(btn);
-		
+		for each (LayerSubregion subregion in mGlobals.CurrentProject->mSubregion)
+		{
+			qDebug() << QString::fromStdString(subregion.SubregionName);
+			combolist.append(QString::fromStdString(subregion.SubregionName));
+		}
+		subregion_dropdown->addItems(combolist);
+		//connect(subregion_dropdown, SIGNAL(currentIndexChanged(int)), this, SLOT(handleDropdownSubregion(int)));
+
+		layout->addWidget(subregion_dropdown);
+
 		widget->setLayout(layout);
 		pMyProxy->setWidget(widget);
-
 		setPath(QPainterPath());
 
 		m_width = widget->width();
 		m_height = widget->height();
+	}
+	else if (m_portFlags == ToolBoxPort) {
+		QGraphicsProxyWidget* pMyProxy = new QGraphicsProxyWidget(this);
+		
+		pMyProxy->setWidget(m_block->mBlock->ToolBox);
+
+		setPath(QPainterPath());
+
+		m_width = m_block->mBlock->ToolBox->width();
+		m_height = m_block->mBlock->ToolBox->height();
 	}
 
 
@@ -240,4 +274,11 @@ QVariant QNEPort::itemChange(GraphicsItemChange change, const QVariant &value)
 		}
 	}
 	return value;
+}
+
+void QNEPort::handleDropdownSubregion(int index) {
+	qDebug() << "Subregion " << index;
+}
+void QNEPort::handleDropdownFeature(int index) {
+	qDebug() << "Feature " << index;
 }

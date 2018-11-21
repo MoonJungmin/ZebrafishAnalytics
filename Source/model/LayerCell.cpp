@@ -1,64 +1,61 @@
-#include "LayerLabel.h"
+#include "LayerCell.h"
 
 
 
-LayerLabel::LayerLabel()
+LayerCell::LayerCell()
 {
 }
 
 
-LayerLabel::~LayerLabel()
+LayerCell::~LayerCell()
 {
 }
 
-void LayerLabel::Init(std::string path) {
-	layerPath = path;
-	mifs.open(layerPath, std::ifstream::binary);
-
+void LayerCell::Init(std::string cell_path) {
+	CellPath = cell_path;
+	mLayerIFS.open(CellPath + "header.lbl", std::ifstream::binary);
+	mCellIFS.open(CellPath + "cell.dat", std::ifstream::binary);
 
 	this->headerReader();
+	this->loadCellInformation();
 }
 
-void LayerLabel::headerReader() {
+void LayerCell::headerReader() {
 	Utils mUtil;
 	std::string line1;
-	std::getline(mifs, line1);
+	std::getline(mLayerIFS, line1);
 	std::vector<std::string> list_line1 = mUtil.Split(line1.c_str(), " : ");
 	DataSizeX = atoi(list_line1.back().c_str());
 
 	std::string line2;
-	std::getline(mifs, line2);
+	std::getline(mLayerIFS, line2);
 	std::vector<std::string> list_line2 = mUtil.Split(line2.c_str(), " : ");
 	DataSizeY = atoi(list_line2.back().c_str());
 
 	std::string line3;
-	std::getline(mifs, line3);
+	std::getline(mLayerIFS, line3);
 	std::vector<std::string> list_line3 = mUtil.Split(line3.c_str(), " : ");
 	DataSizeZ = atoi(list_line3.back().c_str());
 
 	std::string line4;
-	std::getline(mifs, line4);
+	std::getline(mLayerIFS, line4);
 	std::vector<std::string> list_line4 = mUtil.Split(line4.c_str(), " : ");
 	DataBlockSize = atoi(list_line4.back().c_str());
 
 	std::string line5;
-	std::getline(mifs, line5);
+	std::getline(mLayerIFS, line5);
 	std::vector<std::string> list_line5 = mUtil.Split(line5.c_str(), " : ");
 	DataLevel = atoi(list_line5.back().c_str());
 
 	std::string line6;
-	std::getline(mifs, line6);
+	std::getline(mLayerIFS, line6);
 	std::vector<std::string> list_line6 = mUtil.Split(line6.c_str(), " : ");
 	DataType = list_line6.back().c_str();
 
-	std::vector<std::string> dir_pathlist = mUtil.Split(layerPath.c_str(), "/");
-	std::string datapath;
-	for (int i = 0; i < dir_pathlist.size() - 1; ++i) {
-		datapath += dir_pathlist.at(i) + "/";
-	}
-	DataPathXY += datapath + "XY/";
-	DataPathYZ += datapath + "YZ/";
-	DataPathZX += datapath + "ZX/";
+
+	DataPathXY += CellPath + "XY/";
+	DataPathYZ += CellPath + "YZ/";
+	DataPathZX += CellPath + "ZX/";
 
 	qDebug() << QString::fromStdString(DataPathXY);
 	qDebug() << QString::fromStdString(DataPathYZ);
@@ -67,7 +64,7 @@ void LayerLabel::headerReader() {
 	
 }
 
-int LayerLabel::LoadBlockBySerialIndex(label_layer tempblock) {
+int LayerCell::LoadBlockBySerialIndex(label_layer tempblock) {
 
 	std::ifstream frame;
 	std::string frame_path;
@@ -133,7 +130,7 @@ int LayerLabel::LoadBlockBySerialIndex(label_layer tempblock) {
 	}
 }
 
-int LayerLabel::checkBlockIndex(int idx_x, int idx_y, int idx_z) {
+int LayerCell::checkBlockIndex(int idx_x, int idx_y, int idx_z) {
 	int rt_value = -1;
 	int index = 0;
 	std::list<label_layer>::iterator iter;
@@ -152,8 +149,27 @@ int LayerLabel::checkBlockIndex(int idx_x, int idx_y, int idx_z) {
 	}
 }
 
-void LayerLabel::removeBlock() {
+void LayerCell::removeBlock() {
 	while (BlockList.size() > 100) {
 		BlockList.pop_front();
 	}
+}
+
+
+
+void LayerCell::loadCellInformation() {
+	
+	while (!mCellIFS.eof()) {
+		cell tmp;
+		mCellIFS >> tmp.index >> tmp.minbox.x >> tmp.minbox.y >> tmp.minbox.z >> tmp.maxbox.x >> tmp.maxbox.y >> tmp.maxbox.z;
+		mCellList.push_back(tmp);
+	}
+
+	MaxCellCount = mCellList.size();
+	MaxCellIndex = mCellList[mCellList.size() - 1].index;
+
+	qDebug() << "DataCellAnalytics";
+	qDebug() << MaxCellCount;
+	qDebug() << MaxCellIndex;
+
 }

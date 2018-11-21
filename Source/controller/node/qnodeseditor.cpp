@@ -36,11 +36,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 QNodesEditor::QNodesEditor(QObject *parent) :
     QObject(parent)
 {
+	
 	conn = 0;
 }
 
 void QNodesEditor::install(QGraphicsScene *s)
 {
+	
 	s->installEventFilter(this);
 	scene = s;
 }
@@ -90,9 +92,9 @@ bool QNodesEditor::eventFilter(QObject *o, QEvent *e)
 		}
 		case Qt::RightButton:
 		{
-			QGraphicsItem *item = itemAt(me->scenePos());
-			if (item && (item->type() == QNEConnection::Type || item->type() == QNEBlock::Type))
-				delete item;
+			//QGraphicsItem *item = itemAt(me->scenePos());
+			//if (item && (item->type() == QNEConnection::Type || item->type() == QNEBlock::Type))
+			//	delete item;
 			// if (selBlock == (QNEBlock*) item)
 				// selBlock = 0;
 			break;
@@ -178,4 +180,9 @@ void QNodesEditor::load(QDataStream &ds)
 			conn->load(ds, portMap);
 		}
 	}
+}
+
+void QNodesEditor::removeThis(QGraphicsItem * ptr) {
+
+	delete ptr;
 }

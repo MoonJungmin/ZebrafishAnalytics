@@ -189,32 +189,32 @@ void ViewHistogramBox::update_release_box(float start, float end) {
 void ViewHistogramBox::updateCellColor() {
 	std::vector<std::vector<long long>> *Hist_ptr;
 
-	switch (mIndex) {
-		case 0:
-			Hist_ptr = &mGlobals.CurrentProject->mAnalytics->volumeHist;
-			break;
-		case 1:
-			Hist_ptr = &mGlobals.CurrentProject->mAnalytics->surfaceareaHist;
-			break;
-		case 2:
-			Hist_ptr = &mGlobals.CurrentProject->mAnalytics->sphericityHist;
-			break;
-		case 3:
-			Hist_ptr = &mGlobals.CurrentProject->mAnalytics->eccentricityHist;
-			break;
-		case 4:
-			Hist_ptr = &mGlobals.CurrentProject->mAnalytics->intensityHist;
-			break;
-	}
+	//switch (mIndex) {
+	//	case 0:
+	//		Hist_ptr = &mGlobals.CurrentProject->mLayerCell->volumeHist;
+	//		break;
+	//	case 1:
+	//		Hist_ptr = &mGlobals.CurrentProject->mLayerCell->surfaceareaHist;
+	//		break;
+	//	case 2:
+	//		Hist_ptr = &mGlobals.CurrentProject->mLayerCell->sphericityHist;
+	//		break;
+	//	case 3:
+	//		Hist_ptr = &mGlobals.CurrentProject->mLayerCell->eccentricityHist;
+	//		break;
+	//	case 4:
+	//		Hist_ptr = &mGlobals.CurrentProject->mLayerCell->intensityHist;
+	//		break;
+	//}
 	
 	for (int i = 0; i < 300; i++) {
 		for (int j = 0; j < Hist_ptr->at(i).size(); ++j) {
 			int cell_index = Hist_ptr->at(i)[j];
-			mGlobals.CurrentProject->mAnalytics->mCellList.at(cell_index).color = mBarsets.at(i)->color();
+			mGlobals.CurrentProject->mLayerCell->mCellList.at(cell_index).color = mBarsets.at(i)->color();
 		}
 	}
 
-	mGlobals.CurrentProject->mAnalytics->CellColorGPU_On = false;
+	mGlobals.CurrentProject->mLayerCell->CellColorGPU_On = false;
 }
 
 

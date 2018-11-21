@@ -55,7 +55,7 @@ QNEPort* QNEBlock::addPort(const QString &name, bool isOutput, int flags, int pt
 
 	QFontMetrics fm(scene()->font());
 	int w = fm.width(name);
-	int h = fm.height() + 1;
+	int h = fm.height() + 3;
 	//port->setPos(0, height + h/2);
 	if (w > width - horzMargin)
 		width = w + horzMargin;
@@ -70,13 +70,18 @@ QNEPort* QNEBlock::addPort(const QString &name, bool isOutput, int flags, int pt
 	int inputport_count = 0;
 	foreach(QGraphicsItem *port_, childItems()) {
 		QNEPort *port = (QNEPort*)port_;
-		if (port->portAlign() != QNEPort::Input) {
+		if (port->portAlign() == QNEPort::Input) {
 			++inputport_count;
 		}
 	}
+	int inputport_y_step;
+	int inputport_y;
+	if (port->portAlign() == QNEPort::Input) {
+		inputport_y_step = height / (inputport_count);
+		inputport_y = inputport_y_step;
+	}
 
-	int inputport_y_step = 2 * height / inputport_count;
-	int inputport_y = inputport_y_step;
+	
 
     foreach(QGraphicsItem *port_, childItems()) {
 		
@@ -86,22 +91,30 @@ QNEPort* QNEBlock::addPort(const QString &name, bool isOutput, int flags, int pt
 		QNEPort *port = (QNEPort*) port_;
 
 		if (port->portAlign() == QNEPort::Input) {
-			port->setPos(-width/2 - port->radius(), inputport_y);
-			inputport_y += inputport_y_step;
+			//qDebug() << inputport_count << " " << inputport_y << " " << inputport_y_step << " " << height;
+			port->setPos(-width/2, 0);
+			//inputport_y += inputport_y_step;
 		}
 		else if (port->portAlign() == QNEPort::Left) {
 			port->setPos(-width/2 , y);
 			y += port->portHeight() + 5;
 		}
 		else if (port->portAlign() == QNEPort::Center) {
-			if (port->portFlags() == QNEPort::DataWidgetPort) { y += 10; }
+			if (port->portFlags() == QNEPort::DataWidgetPort || port->portFlags() == QNEPort::SubregionWidgetPort) { y += 10; }
 			port->setPos(0 - port->portWidth()/2, y);
-			if (port->portFlags() == QNEPort::DataWidgetPort) { y += 10; }
+			if (port->portFlags() == QNEPort::DataWidgetPort || port->portFlags() == QNEPort::SubregionWidgetPort) { y += 10; }
 			y += port->portHeight() + 5;
 		}
 		else if (port->portAlign() == QNEPort::Right) {
-			port->setPos(width / 2 , y);
-			y += port->portHeight() + 5;
+			
+			if (port->portFlags() == QNEPort::ToolBoxPort) {
+				port->setPos(width / 2 - port->portWidth(), -height / 2);
+			}
+			else {
+				port->setPos(width / 2, y);
+				y += port->portHeight() + 5;
+			}
+			
 		}
 		else if (port->portAlign() == QNEPort::Output) {
 			port->setPos(width / 2, 0);
@@ -110,17 +123,21 @@ QNEPort* QNEBlock::addPort(const QString &name, bool isOutput, int flags, int pt
 
 	return port;
 }
-void QNEBlock::setBlockFlagAndSize(int aflags, int awidth, int aheight) {
+void QNEBlock::setBlockFlagAndSize(int aflags, int awidth, int aheight, QColor acolor, QWidget *parent) {
 	mBlockFlags = aflags;
 	width = awidth;
 	height = aheight;
+	node_color = acolor;
+
+	mBlock = new BlockWidget(parent);
+	mBlock->initialize(aflags, awidth, aheight, acolor, this);
 }
 
 void QNEBlock::setInputData(std::vector<cell> *data_ptr) {
 	std::vector<cell>::iterator iter = data_ptr->begin();
 	for (iter = data_ptr->begin(); iter != data_ptr->end(); ++iter) {
-		CellIndexListInput.push_back(iter->index);
-		CellIndexListOutput.push_back(iter->index);
+		mBlock->CellIndexListInput.push_back(iter->index);
+		mBlock->CellIndexListOutput.push_back(iter->index);
 	}
 }
 
@@ -254,4 +271,3 @@ QVariant QNEBlock::itemChange(GraphicsItemChange change, const QVariant &value)
 
 	return value;
 }
-

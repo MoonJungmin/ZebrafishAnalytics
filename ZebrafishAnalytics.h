@@ -6,7 +6,7 @@
 #include "Source/controller/TopToolbar.h"
 #include "Source/controller/TopInterface.h"
 #include "Source/controller/Contents.h"
-#include "Source/controller/DialogManager.h"
+#include "Source/controller/Dialog/DialogManager.h"
 
 #include "Source/global.h"
 
@@ -14,6 +14,11 @@ class QAction;
 class QActionGroup;
 class QLabel;
 class QMenu;
+
+class TopToolbar;
+class TopInterface;
+class Contents;
+
 
 class ZebrafishAnalytics : public QMainWindow
 {
@@ -40,7 +45,7 @@ private slots:
 
 
 private:
-
+	void connectAll();
 	void createMenus();
 	void createAction();
 	QMenu * fileMenu;
@@ -54,7 +59,6 @@ private:
 	TopToolbar *mTopToolbar;
 	TopInterface *mTopInterface;
 	Contents *mContents;
-	DialogManager *mDialogManager;
 
 
 };

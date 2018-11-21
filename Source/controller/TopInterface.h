@@ -14,8 +14,9 @@ class TopInterface : public QObject
 	Q_OBJECT
 
 public:
-	void initialize(QLayout *parent_layout);
 	TopInterface(QWidget *parent);
+	TopInterface(QWidget *parent, QLayout *parent_layout);
+
 	~TopInterface();
 
 public slots:

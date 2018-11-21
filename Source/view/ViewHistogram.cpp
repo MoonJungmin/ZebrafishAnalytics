@@ -20,3 +20,5 @@ bool ViewHistogram::sceneEvent(QEvent *event)
 	qDebug() << "Event";
 	return QChart::event(event);
 }
+
+

@@ -14,17 +14,12 @@ void DataProject::ProjectMake(QString aProjName, QString aProjPath, QString aLay
 	ProjectPath = aProjPath;
 
 	LayerBackgroundPath = aLayerBGPath;
-	LayerLabelPath = aLayerLBPath;
-
-	AnalyticsResultPath = aAnalyticsPath;;
-	mAnalytics = new DataCellAnalytics;
-	mAnalytics->Init(AnalyticsResultPath.toStdString());
-
+	LayerCellPath = aLayerLBPath;
 
 	mLayerBack = new LayerBackground;
 	mLayerBack->Init(LayerBackgroundPath.toStdString());
-	mLayerLabel = new LayerLabel;
-	mLayerLabel->Init(LayerLabelPath.toStdString());
+	mLayerCell = new LayerCell;
+	mLayerCell->Init(LayerCellPath.toStdString());
 
 	ProjectStatus = true;
 	ProjectSizeLoad();
@@ -51,38 +46,22 @@ void DataProject::ProjectOpen(QString aProjPath) {
 	std::vector<std::string> list_line3 = mUtil.Split(line3.c_str(), " : ");
 	LayerBackgroundPath = QString::fromStdString(list_line3.back());
 	qDebug() << LayerBackgroundPath;
+	mLayerBack = new LayerBackground;
+	mLayerBack->Init(LayerBackgroundPath.toStdString());
+
 
 	std::string line4;
 	std::getline(mIFS, line4);
 	std::vector<std::string> list_line4 = mUtil.Split(line4.c_str(), " : ");
-	LayerLabelPath = QString::fromStdString(list_line4.back());
-	qDebug() << LayerLabelPath;
-/*
-	std::string line5;
-	std::getline(mIFS, line5);
-	std::vector<std::string> list_line5 = mUtil.Split(line5.c_str(), " : ");
-	AnalyticsResultPath = QString::fromStdString(list_line5.back());
-*/
+	LayerCellPath = QString::fromStdString(list_line4.back());
+	std::vector<std::string> CellDirPath = mUtil.Split(LayerCellPath.toStdString().c_str(), "header.lbl");
+	std::string CellInfoPath = CellDirPath[0] + "cell.dat";
+	qDebug() << LayerCellPath;
+	qDebug() << QString::fromStdString(CellInfoPath);
+	mLayerCell = new LayerCell;
+	mLayerCell->Init(CellDirPath[0]);
+
 	
-
-	AnalyticsStatus = true;
-	std::vector<std::string> dir_path = mUtil.Split(LayerLabelPath.toStdString().c_str(), "header.lbl");
-	std::string infoPath = dir_path[0] + "cell.dat";
-	qDebug() << QString::fromStdString(infoPath);
-	mAnalytics = new DataCellAnalytics;
-	mAnalytics->Init(infoPath);
-
-
-	////emit analytics_on();
-
-	//
-	mLayerBack = new LayerBackground;
-	mLayerBack->Init(LayerBackgroundPath.toStdString());
-	mLayerLabel = new LayerLabel;
-	mLayerLabel->Init(LayerLabelPath.toStdString());
-
-
-
 
 	ProjectStatus = true;
 	ProjectSizeLoad();
@@ -93,13 +72,13 @@ void DataProject::ProjectSave(QString aProjPath) {
 	std::string proj_name = "#project name : " + ProjectName.toStdString();
 	std::string proj_path = "#project path : " + ProjectPath.toStdString();
 	std::string layerbackground = "#layer background path : " + LayerBackgroundPath.toStdString();
-	std::string layerlabel = "#layer labeled path : " + LayerLabelPath.toStdString();
+	std::string LayerCell = "#layer labeled path : " + LayerCellPath.toStdString();
 	//std::string analytics_path = "#analytics result path : " + AnalyticsResultPath.toStdString();
 
 	mOFS << proj_name << std::endl;
 	mOFS << proj_path << std::endl;
 	mOFS << layerbackground << std::endl;
-	mOFS << layerlabel << std::endl;
+	mOFS << LayerCell << std::endl;
 	//mOFS << analytics_path << std::endl;
 	
 	mOFS.close();
@@ -142,6 +121,18 @@ void DataProject::ProjectSizeLoad() {
 	
 	emit project_on();
 }
+
+void DataProject::AddFeature(QString aName, QString aPath) {
+	DataFeature temp;
+	temp.Initialize(aName.toStdString(), aPath.toStdString());
+	mFeature.push_back(temp);
+}
+
+void DataProject::AddSubregion(QString aName, QString aPath) {
+
+}
+
+
 
 int DataProject::getSerialIndex(int x, int y, int z, int lv) {
 	Utils mUtil;

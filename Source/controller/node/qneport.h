@@ -30,6 +30,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #include <QGraphicsProxyWidget>
 #include <QPushButton>
 #include <QLabel>
+#include <QObject>
+#include <QtWidgets>
+#include <QComboBox>
 #include <QHBoxLayout>
 
 #include "qneblock.h"
@@ -42,16 +45,18 @@ class QNEPort : public QGraphicsPathItem
 public:
 	enum { Type = QGraphicsItem::UserType + 1 };
 	enum { Input = 1, Left = 2, Center = 3, Right = 4, Output = 5 };
-	enum { 
+	enum {
 		NamePort = 1,
 		TypePort = 2,
 		DataWidgetPort = 3,
 		DataSizePort = 4,
-		AnnotationPort = 5,
+		ToolBoxPort = 5,
+		SubregionWidgetPort = 6,
+		SubregionDropdownPort = 7,
+		FeatureWidgetPort = 8,
+		FeatureDropdownPort = 9
 	};
-
-
-
+	
 
     QNEPort(QGraphicsItem *parent = 0);
 	~QNEPort();
@@ -79,7 +84,12 @@ public:
 	void setPtr(quint64);
 	bool isConnected(QNEPort*);
 
+
+	int Subregion_Index = 0;
+	int Feature_Index = 0;
 	
+	
+
 
 protected:
 	QVariant itemChange(GraphicsItemChange change, const QVariant &value);
@@ -97,6 +107,12 @@ private:
 	int m_portAlign;
 	int m_width;
 	int m_height;
+
+private slots:
+	void handleDropdownSubregion(int index);
+	void handleDropdownFeature(int index);
+
+
 };
 
 #endif // QNEPORT_H

@@ -8,28 +8,27 @@ ZebrafishAnalytics::ZebrafishAnalytics()
 	QVBoxLayout *main_layout = new QVBoxLayout;
 	main_widget->setLayout(main_layout);
 
+	mGlobals.mDialogManager = new DialogManager(this);
+
 	QHBoxLayout *top_toolbar_layout = new QHBoxLayout;
 	top_toolbar_layout->setAlignment(Qt::AlignLeft);
 	top_toolbar_layout->setMargin(1);
 	QWidget *top_widget = new QWidget;
-	mTopToolbar = new TopToolbar(top_widget);
-	mTopToolbar->initialize(top_toolbar_layout);
+	mTopToolbar = new TopToolbar(top_widget, top_toolbar_layout);
 
 	QHBoxLayout *top_interface_layout = new QHBoxLayout;
 	top_interface_layout->setAlignment(Qt::AlignLeft);
 	top_interface_layout->setMargin(1);
 	QWidget *top_interface_widget = new QWidget;
-	mTopInterface = new TopInterface(top_interface_widget);
-	mTopInterface->initialize(top_interface_layout);
+	mTopInterface = new TopInterface(top_interface_widget, top_interface_layout);
+
 
 	QHBoxLayout *contents_layout = new QHBoxLayout;
 	contents_layout->setAlignment(Qt::AlignLeft);
 	contents_layout->setMargin(1);
 	QWidget *contents_widget = new QWidget;
 	contents_widget->setStyleSheet("background-color:red;");
-
-	mContents = new Contents(contents_widget);
-	mContents->initialize(contents_layout, mTopInterface);
+	mContents = new Contents(contents_widget, contents_layout);
 
 
 	main_layout->setMargin(0);
@@ -41,7 +40,6 @@ ZebrafishAnalytics::ZebrafishAnalytics()
 	createAction();
 	createMenus();
 
-	mDialogManager = new DialogManager(this);
 
 	QString message = tr("A context menu is available by right-clicking");
 	statusBar()->showMessage(message);
@@ -50,6 +48,34 @@ ZebrafishAnalytics::ZebrafishAnalytics()
 	connect(mGlobals.CurrentProject, SIGNAL(project_on()), this, SLOT(handleProjectOn()));
 
 }
+
+void ZebrafishAnalytics::connectAll() {
+
+	connect(mContents->GL_XYAxis_Main, SIGNAL(update_view_state(int, int, int, float)), mTopInterface, SLOT(update_value(int, int, int, float)));
+	connect(mTopInterface, SIGNAL(update_view(bool)), mContents->GL_XYAxis_Main, SLOT(updateByInterface(bool)));
+
+	connect(mContents->GL_YZAxis_Main, SIGNAL(update_view_state(int, int, int, float)), mTopInterface, SLOT(update_value(int, int, int, float)));
+	connect(mTopInterface, SIGNAL(update_view(bool)), mContents->GL_YZAxis_Main, SLOT(updateByInterface(bool)));
+
+	connect(mContents->GL_ZXAxis_Main, SIGNAL(update_view_state(int, int, int, float)), mTopInterface, SLOT(update_value(int, int, int, float)));
+	connect(mTopInterface, SIGNAL(update_view(bool)), mContents->GL_ZXAxis_Main, SLOT(updateByInterface(bool)));
+
+	connect(mContents->GL_XYAxis_Sub, SIGNAL(update_view_state(int, int, int, float)), mTopInterface, SLOT(update_value(int, int, int, float)));
+	connect(mTopInterface, SIGNAL(update_view(bool)), mContents->GL_XYAxis_Sub, SLOT(updateByInterface(bool)));
+
+	connect(mContents->GL_YZAxis_Sub, SIGNAL(update_view_state(int, int, int, float)), mTopInterface, SLOT(update_value(int, int, int, float)));
+	connect(mTopInterface, SIGNAL(update_view(bool)), mContents->GL_YZAxis_Sub, SLOT(updateByInterface(bool)));
+
+	connect(mContents->GL_ZXAxis_Sub, SIGNAL(update_view_state(int, int, int, float)), mTopInterface, SLOT(update_value(int, int, int, float)));
+	connect(mTopInterface, SIGNAL(update_view(bool)), mContents->GL_ZXAxis_Sub, SLOT(updateByInterface(bool)));
+
+	connect(mContents->GL_ZXAxis_Sub, SIGNAL(update_view_state(int, int, int, float)), mTopInterface, SLOT(update_value(int, int, int, float)));
+	connect(mTopInterface, SIGNAL(update_view(bool)), mContents->GL_ZXAxis_Sub, SLOT(updateByInterface(bool)));
+
+	connect(mGlobals.mDialogManager->mDialogAddNode, SIGNAL(makenode(int, QString)), mContents->GraphEditorView, SLOT(addNode(int, QString)));
+	connect(mGlobals.mDialogManager->mDialogAddFeature, SIGNAL(updatedFeature()), mContents, SLOT(feature_updated()));
+}
+
 
 void ZebrafishAnalytics::createMenus() {
 	fileMenu = menuBar()->addMenu("File");
@@ -93,23 +119,23 @@ void ZebrafishAnalytics::createAction() {
 }
 
 void ZebrafishAnalytics::handleGenerateBGLayer() {
-	mDialogManager->mDialogGenBGLayer->exec();
+	mGlobals.mDialogManager->mDialogGenBGLayer->exec();
 }
 
 void ZebrafishAnalytics::handleGenerateLBLayer() {
-	mDialogManager->mDialogGenLBLayer->exec();
+	mGlobals.mDialogManager->mDialogGenLBLayer->exec();
 }
 
 void ZebrafishAnalytics::handleGenerateSRLayer() {
-	mDialogManager->mDialogGenSRLayer->exec();
+	mGlobals.mDialogManager->mDialogGenSRLayer->exec();
 }
 
 void ZebrafishAnalytics::handleNewProject() {
-	mDialogManager->mDialogNewProject->exec();
+	mGlobals.mDialogManager->mDialogNewProject->exec();
 }
 
 void ZebrafishAnalytics::handlePreference() {
-	mDialogManager->mDialogPreference->exec();
+	mGlobals.mDialogManager->mDialogPreference->exec();
 }
 
 void ZebrafishAnalytics::handleOpenProject() {
@@ -131,7 +157,11 @@ void ZebrafishAnalytics::handleOpenProject() {
 
 void ZebrafishAnalytics::handleProjectOn() {
 	qDebug("Project On master");
-
+	mContents->InitGLView();
+	mContents->InitGraph();
+	mContents->InitProjectInfo();
+	mContents->InitSubregionFeatureList();
+	connectAll();
 }
 
 

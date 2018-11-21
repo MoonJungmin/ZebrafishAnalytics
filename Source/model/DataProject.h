@@ -10,8 +10,11 @@
 #include <cmath>
 
 #include "Source/model/LayerBackground.h"
-#include "Source/model/LayerLabel.h"
+#include "Source/model/LayerCell.h"
+#include "Source/model/LayerSubregion.h"
+
 #include "Source/model/DataCellAnalytics.h"
+#include "Source/model/DataFeature.h"
 #include "Source/Utils.h"
 
 
@@ -27,14 +30,12 @@ public:
 	QString LayerBackgroundPath = "";
 	LayerBackground *mLayerBack;
 
-	bool LayerLabelStatus = false;
-	QString LayerLabelPath = "";
-	LayerLabel *mLayerLabel;
+	bool LayerCellStatus = false;
+	QString LayerCellPath = "";
+	LayerCell *mLayerCell;
 
-	bool AnalyticsStatus = false;
-	QString AnalyticsResultPath = "";
-	DataCellAnalytics *mAnalytics;
-
+	std::list<DataFeature> mFeature;
+	std::list<LayerSubregion> mSubregion;
 
 
 	int DataSizeX = 0;
@@ -54,6 +55,10 @@ public:
 	void ProjectMake(QString aProjName, QString aProjPath, QString aLayerBGPath, QString aLayerLBPath, QString aAnalyticsPath);
 	void ProjectOpen(QString aProjPath);
 	void ProjectSave(QString aProjPath);
+
+	void AddFeature(QString aName, QString aPath);
+	void AddSubregion(QString aName, QString aPath);
+
 
 	DataProject();
 	~DataProject();

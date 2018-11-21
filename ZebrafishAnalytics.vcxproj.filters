@@ -42,9 +42,6 @@
     <ClCompile Include="Source\controller\node\qneconnection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\controller\node\qnemainwindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\controller\node\qneport.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -52,21 +49,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\controller\Contents.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\controller\DialogGenBGLayer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\controller\DialogGenLBLayer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\controller\DialogGenSRLayer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\controller\DialogNewProject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\controller\DialogPreference.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\controller\TopInterface.cpp">
@@ -120,9 +102,6 @@
     <ClCompile Include="Source\model\LayerBackground.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\model\LayerLabel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\view\theme\darkstyle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -153,10 +132,46 @@
     <ClCompile Include="Source\view\ViewGraphEditor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\controller\DialogAddNode.cpp">
+    <ClCompile Include="Source\model\LayerSubregion.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\controller\DialogManager.cpp">
+    <ClCompile Include="Source\model\LayerCell.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\controller\node\BlockWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\controller\Dialog\DialogAddFeature.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\controller\Dialog\DialogAddNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\controller\Dialog\DialogAddSubregion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\controller\Dialog\DialogGenBGLayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\controller\Dialog\DialogGenLBLayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\controller\Dialog\DialogGenSRLayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\controller\Dialog\DialogManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\controller\Dialog\DialogNewProject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\controller\Dialog\DialogPreference.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\controller\Dialog\DialogDetailFeature.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\controller\Dialog\DialogAnnotation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -164,28 +179,10 @@
     <QtMoc Include="ZebrafishAnalytics.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="Source\controller\node\qnemainwindow.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="Source\controller\node\qnodeseditor.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="Source\controller\Contents.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="Source\controller\DialogGenBGLayer.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="Source\controller\DialogGenLBLayer.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="Source\controller\DialogGenSRLayer.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="Source\controller\DialogNewProject.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="Source\controller\DialogPreference.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="Source\controller\TopInterface.h">
@@ -224,7 +221,34 @@
     <QtMoc Include="Source\view\ViewGraphEditor.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="Source\controller\DialogAddNode.h">
+    <QtMoc Include="Source\controller\node\BlockWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Source\controller\Dialog\DialogAddFeature.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Source\controller\Dialog\DialogAddNode.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Source\controller\Dialog\DialogAddSubregion.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Source\controller\Dialog\DialogGenBGLayer.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Source\controller\Dialog\DialogGenLBLayer.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Source\controller\Dialog\DialogGenSRLayer.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Source\controller\Dialog\DialogNewProject.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Source\controller\Dialog\DialogPreference.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Source\controller\Dialog\DialogDetailFeature.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -308,9 +332,6 @@
     <ClInclude Include="Source\model\LayerBackground.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\model\LayerLabel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\view\ViewHistogram.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -320,7 +341,16 @@
     <ClInclude Include="Source\Utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\controller\DialogManager.h">
+    <ClInclude Include="Source\model\LayerSubregion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\model\LayerCell.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\controller\Dialog\DialogManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\controller\Dialog\DialogAnnotation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -463,7 +493,12 @@
     <Image Include="Source\view\theme\resource\darkstyle\icon_radiobutton_unchecked_pressed.png" />
     <Image Include="Source\view\theme\resource\darkstyle\icon_restore.png" />
     <Image Include="Source\view\theme\resource\darkstyle\icon_undock.png" />
-    <Image Include="Resources\icon_data.png" />
     <Image Include="Resources\icon_subregion.png" />
+    <Image Include="Resources\icon_data_fish.png" />
+    <Image Include="Resources\icon_addnode.png" />
+    <Image Include="Resources\icon_blockclose.png" />
+    <Image Include="Resources\icon_annotation.png" />
+    <Image Include="Resources\icon_detail.png" />
+    <Image Include="Resources\icon_trash.png" />
   </ItemGroup>
 </Project>

@@ -11,7 +11,7 @@
 #include <QString>
 #include <QColor>
 #include <QDebug>
-#include <QTime>
+
 
 #include "Source/Utils.h"
 
@@ -22,11 +22,11 @@ public:
 	~DataFeature();
 
 
-	void Initialize(std::string name);
-	void setFeatureValue(long long int index, double value);
+	void Initialize(std::string name, std::string path);
+	void setFeatureValue(unsigned int index, double value);
 
 	std::string FeatureName;
-	std::map<long long int, double> FeatureValue;
+	std::map<unsigned int, double> FeatureMap;
 		
 };
 

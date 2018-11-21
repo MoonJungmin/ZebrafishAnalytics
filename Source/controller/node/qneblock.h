@@ -27,26 +27,30 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #define QNEBLOCK_H
 
 #include <QGraphicsPathItem>
-
+#include <QObject>
 #include <QPen>
 #include <QGraphicsScene>
 #include <QFontMetrics>
 #include <QPainter>
-#include <QDebug>
 #include <iostream>
 #include <list>
 #include <vector>
+#include <QDebug>
 
 #include "qneport.h"
 
 #include "Source/global.h"
 #include "Source/Utils.h"
-
+#include "BlockWidget.h"
 
 class QNEPort;
+class BlockWidget;
 
 class QNEBlock : public QGraphicsPathItem
 {
+
+
+
 public:
 	enum { Type = QGraphicsItem::UserType + 3 };
 	enum { OriginBlock = 1, DataBlock= 2, FeatureBlock = 3, SubregionBlock = 4, SimilarityBlock = 5, SetBlock = 6 };
@@ -68,28 +72,29 @@ public:
 	int type() const { return Type; }
 
 	void setInputData(std::vector<cell> *data_ptr);
-	void setBlockFlagAndSize(int aflags, int awidth, int aheight);
-	std::list<unsigned int> CellIndexListInput;
-	std::list<unsigned int> CellIndexListOutput;
-
-
+	void setBlockFlagAndSize(int aflags, int awidth, int aheight, QColor acolor, QWidget *parent);
+	
+		
 	int horzMargin;
 	int vertMargin;
 	int width;
 	int height;
+	QColor node_color = QColor("#3A79A0");
+	QColor node_selected_color = QColor("#007acc");
+	QColor node_text_color = QColor("#e7e7e7");
+	int mBlockFlags;
+	BlockWidget *mBlock;
 
 
 protected:
 	QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
 private:
-	int mBlockFlags;
+	
 
 
 
-	QColor node_color = QColor("#555555");
-	QColor node_selected_color = QColor("#007acc");
-	QColor node_text_color = QColor("#e7e7e7");
+	
 
 };
 

@@ -16,14 +16,13 @@
 
 #include "Source/model/DataProject.h"
 #include "Source/model/system/systeminfo.h"
-
+#include "Source/controller/Dialog/DialogManager.h"
 
 #include <string>
 #include <stdio.h>
 #include <stdlib.h>
 
-
-
+class DialogManager;
 class Globals
 {
 
@@ -43,7 +42,8 @@ public:
 	void saveSysinfo();
 	void loadSysinfo();
 
-	
+	DialogManager *mDialogManager;
+
 
 
 	Globals();

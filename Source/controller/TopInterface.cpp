@@ -5,12 +5,14 @@ TopInterface::TopInterface(QWidget *parent)
 {
 	mWidget = parent;
 }
-
-void TopInterface::initialize(QLayout *parent_layout) {
+TopInterface::TopInterface(QWidget *parent, QLayout *parent_layout)
+	: QObject(parent)
+{
+	mWidget = parent;
 	QLabel *label1 = new QLabel(mWidget);
 	label1->setFrameStyle(QFrame::StyledPanel | QFrame::Plain);
 	label1->setAlignment(Qt::AlignCenter);
-	label1->setFixedSize(40,30);
+	label1->setFixedSize(40, 30);
 	label1->setText("X");
 	//label1->setAlignment(Qt::AlignBottom | Qt::AlignRight);
 	x_value_edit = new QLineEdit(mWidget);
@@ -50,7 +52,7 @@ void TopInterface::initialize(QLayout *parent_layout) {
 	interface_set_btn = new QPushButton("Set", mWidget);
 	interface_set_btn->setFixedSize(QSize(40, 30));
 	connect(interface_set_btn, SIGNAL(released()), this, SLOT(handleButton()));
-	
+
 	QFrame *buffer = new QFrame(mWidget);
 	buffer->setFrameStyle(QFrame::VLine | QFrame::Plain);
 	buffer->setStyleSheet("color:rgb(72,72,72)");
@@ -63,7 +65,7 @@ void TopInterface::initialize(QLayout *parent_layout) {
 	label5->setFixedSize(150, 30);
 	label5->setText("Cell Visualize Method");
 	rendering_menu = new QComboBox(mWidget);
-	QStringList commands = { "Random color", "Morpological feature histogram threshold", "Selected cell"};
+	QStringList commands = { "Random color", "Morpological feature histogram threshold", "Selected cell" };
 	rendering_menu->addItems(commands);
 	rendering_menu->setFixedWidth(250);
 	connect(rendering_menu, SIGNAL(currentIndexChanged(int)), this, SLOT(handleComboMenu(int)));
@@ -83,9 +85,9 @@ void TopInterface::initialize(QLayout *parent_layout) {
 	parent_layout->addWidget(buffer);
 	parent_layout->addWidget(label5);
 	parent_layout->addWidget(rendering_menu);
-
-
 }
+
+
 void TopInterface::handleButton() {
 	if (abs(mGlobals.CurrentProject->ViewZoomLevel - 1.0/level_value_edit->text().toFloat()) < 0.001) {
 		mGlobals.CurrentProject->ViewPos_X = x_value_edit->text().toFloat();
