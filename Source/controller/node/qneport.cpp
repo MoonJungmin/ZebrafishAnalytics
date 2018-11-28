@@ -88,6 +88,11 @@ void QNEPort::setIsOutput(bool o)
 		label->setPos(radius_ + margin, -label->boundingRect().height()/2);
 }
 
+void QNEPort::setIsInput(bool o)
+{
+	isInput_ = o;
+}
+
 int QNEPort::radius()
 {
 	return radius_;
@@ -98,10 +103,22 @@ bool QNEPort::isOutput()
 	return isOutput_;
 }
 
+bool QNEPort::isInput()
+{
+	return isInput_;
+}
+
 QVector<QNEConnection*>& QNEPort::connections()
 {
 	return m_connections;
 }
+void QNEPort::clearConnection() {
+	foreach(QNEConnection *conn, m_connections)
+		if (conn->connected) {
+			delete conn;
+		}
+}
+
 
 void QNEPort::setPortFlags(int f)
 {
@@ -114,9 +131,6 @@ void QNEPort::setPortFlags(int f)
 		font.setBold(true);
 		//font.setBold(false);
 		label->setFont(font);
-
-
-	
 		setPath(QPainterPath());
 		QFontMetrics fm(font);
 		m_width = fm.width(name);
@@ -137,17 +151,11 @@ void QNEPort::setPortFlags(int f)
 	}
 	else if (m_portFlags == DataWidgetPort) {
 		QGraphicsProxyWidget* pMyProxy = new QGraphicsProxyWidget(this);
-		QLabel *icon_label = new QLabel;
-		QIcon icon("Resources/icon_data_fish.png");
-		QPixmap pixmap = icon.pixmap(QSize(180, 94));
-		icon_label->setPixmap(pixmap);
-		pMyProxy->setWidget(icon_label);
-		qDebug() << "DataWidgetPort : " << pixmap.width() << " " << pixmap.height();
-		
+		pMyProxy->setWidget(m_block->mBlock->DataHeatmap);
 		setPath(QPainterPath());
+		m_width = m_block->mBlock->DataHeatmap->width();
+		m_height = m_block->mBlock->DataHeatmap->height();
 
-		m_width = 180;
-		m_height = 94;
 	}
 	else if (m_portFlags == SubregionWidgetPort) {
 		QGraphicsProxyWidget* pMyProxy = new QGraphicsProxyWidget(this);
@@ -165,65 +173,17 @@ void QNEPort::setPortFlags(int f)
 	}
 	else if (m_portFlags == DataSizePort) {
 		QGraphicsProxyWidget* pMyProxy = new QGraphicsProxyWidget(this);
-		QWidget *widget = new QWidget;
-		widget->setStyleSheet(backgroundcolor_style);
-
-		QHBoxLayout *layout = new QHBoxLayout;
-		layout->setContentsMargins(10, 0, 0, 0);
-		QLabel *title = new QLabel;
-		QFont font(scene()->font());
-		font.setPointSize(8);
-		font.setBold(true);
-		title->setFont(font);
-		title->setText("Data size :");
-
-		QLabel *count = new QLabel;
-		font.setBold(false);
-		count->setFont(font);
-		int size = m_block->mBlock->CellIndexListInput.size();
-		count->setText(QString::fromStdString(std::to_string(size)));
-		layout->addWidget(title);
-		layout->addWidget(count);
-
-		widget->setLayout(layout);
-		pMyProxy->setWidget(widget);
+		pMyProxy->setWidget(m_block->mBlock->DataInputOutput);
 		setPath(QPainterPath());
-
-		m_width = widget->width();
-		m_height = widget->height();
+		m_width = m_block->mBlock->DataInputOutput->width();
+		m_height = m_block->mBlock->DataInputOutput->height();
 	}
 	else if (m_portFlags == SubregionDropdownPort) {
 		QGraphicsProxyWidget* pMyProxy = new QGraphicsProxyWidget(this);
-		QWidget *widget = new QWidget;
-		widget->setStyleSheet(backgroundcolor_style);
-
-		QHBoxLayout *layout = new QHBoxLayout;
-		layout->setContentsMargins(0, 0, 0, 0);
-		
-		QFont font(scene()->font());
-		font.setPointSize(8);
-		font.setBold(false);
-
-		QComboBox *subregion_dropdown = new QComboBox(widget);
-		subregion_dropdown->setFont(font);
-		QStringList combolist;
-
-		for each (LayerSubregion subregion in mGlobals.CurrentProject->mSubregion)
-		{
-			qDebug() << QString::fromStdString(subregion.SubregionName);
-			combolist.append(QString::fromStdString(subregion.SubregionName));
-		}
-		subregion_dropdown->addItems(combolist);
-		//connect(subregion_dropdown, SIGNAL(currentIndexChanged(int)), this, SLOT(handleDropdownSubregion(int)));
-
-		layout->addWidget(subregion_dropdown);
-
-		widget->setLayout(layout);
-		pMyProxy->setWidget(widget);
+		pMyProxy->setWidget(m_block->mBlock->SubregionDropdown);
 		setPath(QPainterPath());
-
-		m_width = widget->width();
-		m_height = widget->height();
+		m_width = m_block->mBlock->SubregionDropdown->width();
+		m_height = m_block->mBlock->SubregionDropdown->height();
 	}
 	else if (m_portFlags == ToolBoxPort) {
 		QGraphicsProxyWidget* pMyProxy = new QGraphicsProxyWidget(this);
@@ -235,7 +195,20 @@ void QNEPort::setPortFlags(int f)
 		m_width = m_block->mBlock->ToolBox->width();
 		m_height = m_block->mBlock->ToolBox->height();
 	}
-
+	else if (m_portFlags == FeatureWidgetPort) {
+		QGraphicsProxyWidget* pMyProxy = new QGraphicsProxyWidget(this);
+		pMyProxy->setWidget(m_block->mBlock->FeatureHistogramMaster);
+		setPath(QPainterPath());
+		m_width = m_block->mBlock->FeatureHistogramMaster->width();
+		m_height = m_block->mBlock->FeatureHistogramMaster->height();
+	}
+	else if (m_portFlags == FeatureDropdownPort) {
+		QGraphicsProxyWidget* pMyProxy = new QGraphicsProxyWidget(this);
+		pMyProxy->setWidget(m_block->mBlock->FeatureDropdown);
+		setPath(QPainterPath());
+		m_width = m_block->mBlock->FeatureDropdown->width();
+		m_height = m_block->mBlock->FeatureDropdown->height();
+	}
 
 }
 

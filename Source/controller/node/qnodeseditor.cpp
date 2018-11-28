@@ -67,38 +67,41 @@ bool QNodesEditor::eventFilter(QObject *o, QEvent *e)
 	case QEvent::GraphicsSceneMousePress:
 	{
 
-		switch ((int) me->button())
+		switch ((int)me->button())
 		{
-		case Qt::LeftButton:
-		{
-			QGraphicsItem *item = itemAt(me->scenePos());
-			if (item && item->type() == QNEPort::Type)
+			case Qt::LeftButton:
 			{
-                conn = new QNEConnection(0);
-                scene->addItem(conn);
-				conn->setPort1((QNEPort*) item);
-				conn->setPos1(item->scenePos());
-				conn->setPos2(me->scenePos());
-				conn->updatePath();
+				QGraphicsItem *item = itemAt(me->scenePos());
+				if (item && item->type() == QNEPort::Type)
+				{
+					conn = new QNEConnection(0);
+					scene->addItem(conn);
+					conn->setPort1((QNEPort*)item);
+					conn->setPos1(item->scenePos());
+					conn->setPos2(me->scenePos());
+					conn->updatePath();
 
-				return true;
-			} else if (item && item->type() == QNEBlock::Type)
-			{
-				/* if (selBlock)
-					selBlock->setSelected(); */
-				// selBlock = (QNEBlock*) item;
+					return true;
+				}
+				else if (item && item->type() == QNEBlock::Type)
+				{
+					/* if (selBlock)
+						selBlock->setSelected(); */
+						// selBlock = (QNEBlock*) item;
+				}
+				break;
 			}
-			break;
-		}
-		case Qt::RightButton:
-		{
-			//QGraphicsItem *item = itemAt(me->scenePos());
-			//if (item && (item->type() == QNEConnection::Type || item->type() == QNEBlock::Type))
-			//	delete item;
-			// if (selBlock == (QNEBlock*) item)
-				// selBlock = 0;
-			break;
-		}
+			case Qt::RightButton:
+			{
+//				QGraphicsItem *item = itemAt(me->scenePos());
+	//			if (item && (item->type() == QNEConnection::Type || item->type() == QNEBlock::Type))
+		//			delete item;
+
+			
+
+
+				break;
+			}
 		}
 	}
 	case QEvent::GraphicsSceneMouseMove:
@@ -123,10 +126,34 @@ bool QNodesEditor::eventFilter(QObject *o, QEvent *e)
 
 				if (port1->block() != port2->block() && port1->isOutput() != port2->isOutput() && !port1->isConnected(port2))
 				{
+
+		
+
+					if (port1->isOutput()) {
+						/*foreach(QNEConnection *prevconn, port2->connections()) {
+							scene->removeItem((QGraphicsItem*)prevconn);
+						}*/
+						port2->clearConnection();
+						port2->m_block->updateInput_newconnect(&port1->m_block->mBlock->CellIndexListOutput);
+					}
+					else {
+						/*foreach(QNEConnection *prevconn, port1->connections()) {
+							scene->removeItem((QGraphicsItem*)prevconn);
+						}*/
+						port1->clearConnection();
+						port1->m_block->updateInput_newconnect(&port2->m_block->mBlock->CellIndexListOutput);
+					}
+
+					
 					conn->setPos2(port2->scenePos());
 					conn->setPort2(port2);
 					conn->updatePath();
+					conn->connected = true;
 					conn = 0;
+
+					
+
+					
 					return true;
 				}
 			}

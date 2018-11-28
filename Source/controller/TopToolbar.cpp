@@ -71,7 +71,7 @@ void TopToolbar::handleSaveProject() {
 		mGlobals.CurrentProject->ProjectSave(mGlobals.CurrentProject->ProjectPath);
 	}
 	else {
-		QMessageBox::critical(0, QString::fromStdString("Project save error"), QString::fromStdString("Project save error"));
+		QMessageBox::critical(0, "Error", "Project save error");
 	}
 	/*DialogNewProject *md = new DialogNewProject(mWidget);
 	md->exec();*/

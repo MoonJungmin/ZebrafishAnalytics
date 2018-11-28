@@ -9,13 +9,30 @@
 #include <cmath>
 #include <QWidget>
 #include <QColorDialog>
-
+#include <QDateTime>
 
 typedef struct {
 	int x;
 	int y;
 	int z;
 }vertex;
+
+
+
+typedef struct {
+	int start_x;
+	int end_x;
+	int start_y;
+	int end_y;
+	int x;
+	int y;
+	int z;
+	int size;
+	int level;
+	int axis;
+}block_info;
+
+
 
 typedef struct {
 	unsigned char *data;
@@ -35,6 +52,7 @@ typedef struct {
 
 typedef struct {
 	unsigned int *data;
+	unsigned char *color_data;
 	int index_x;
 	int index_y;
 	int index_z;
@@ -51,6 +69,24 @@ typedef struct {
 
 
 typedef struct {
+	unsigned char *data;
+	int index_x;
+	int index_y;
+	int index_z;
+	int pos_x;
+	int pos_y;
+	int pos_z;
+	int size_x;
+	int size_y;
+	int size_z;
+	int level;
+	bool status;
+	int load_axis_code = 0;
+}subregion_layer;
+
+
+
+typedef struct {
 	long long x;
 	long long y;
 	long long z;
@@ -60,9 +96,13 @@ typedef struct {
 	unsigned int index;
 	coord minbox;
 	coord maxbox;
-	QColor color;
+	bool status = false;
 }cell;
 
+typedef struct {
+	QString comment;
+	QDateTime time;
+}annotation;
 
 class Utils
 {

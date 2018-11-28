@@ -145,25 +145,20 @@ void DialogAddSubregion::done(int val)
 void DialogAddSubregion::accept()
 {
 	qDebug("Accept.");
-	// here!!!!!
+	mGlobals.CurrentProject->AddSubregion(SubregionName->text(), SubregionPath->text());
+	emit updatedSubregion();
 	this->hide();
 }
 void DialogAddSubregion::reject()
 {
 	emit thread_kill();
-
 	qDebug("Reject.");
 	this->hide();
 }
 
 void DialogAddSubregion::handleFindbtn()
 {
-	emit thread_kill();
-	
 	QString filters("Subregion Layer File (*.srl);;");
 	QString dir = QFileDialog::getOpenFileName(this, "Open Directory", QDir::currentPath(), filters);
 	SubregionPath->setText(dir);
-
-	qDebug("Reject.");
-	this->hide();
 }

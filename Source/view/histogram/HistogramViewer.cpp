@@ -1,13 +1,13 @@
-#include "ViewHistogramViewer.h"
+#include "HistogramViewer.h"
 
-ViewHistogramViewer::ViewHistogramViewer(QChart *chart, QWidget *parent) :
+HistogramViewer::HistogramViewer(QChart *chart, QWidget *parent) :
 	QChartView(chart, parent),
 	isPressed(false)
 {
- //	setRubberBand(QChartView::RectangleRubberBand);
+ 	//setRubberBand(QChartView::HorizontalRubberBand);
 }
 
-void ViewHistogramViewer::mousePressEvent(QMouseEvent *event)
+void HistogramViewer::mousePressEvent(QMouseEvent *event)
 {	
 	if (isPressed)
 		return;
@@ -19,7 +19,7 @@ void ViewHistogramViewer::mousePressEvent(QMouseEvent *event)
 	QChartView::mousePressEvent(event);
 }
 
-void ViewHistogramViewer::mouseMoveEvent(QMouseEvent *event)
+void HistogramViewer::mouseMoveEvent(QMouseEvent *event)
 {
 	if (isPressed == false)
 		return;
@@ -37,7 +37,7 @@ void ViewHistogramViewer::mouseMoveEvent(QMouseEvent *event)
 	QChartView::mouseMoveEvent(event);
 }
 
-void ViewHistogramViewer::mouseReleaseEvent(QMouseEvent *event)
+void HistogramViewer::mouseReleaseEvent(QMouseEvent *event)
 {
 	if (isPressed)
 		isPressed = false;
@@ -54,7 +54,7 @@ void ViewHistogramViewer::mouseReleaseEvent(QMouseEvent *event)
 	QChartView::mouseReleaseEvent(event);
 }
 
-void ViewHistogramViewer::keyPressEvent(QKeyEvent *event)
+void HistogramViewer::keyPressEvent(QKeyEvent *event)
 {
 	switch (event->key()) {
 		case Qt::Key_Space:

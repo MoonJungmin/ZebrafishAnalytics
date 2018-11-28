@@ -61,7 +61,7 @@ void DialogDetailFeature::setIndexAndDraw(int index) {
 	
 	int row_count = 0;
 	int step = 0;
-	std::list<DataFeature>::iterator iter;
+	std::vector<DataFeature>::iterator iter;
 	for (iter = mGlobals.CurrentProject->mFeature.begin(); iter != mGlobals.CurrentProject->mFeature.end(); ++iter) {
 		if (step == mIndex) {
 			row_count = iter->FeatureMap.size();

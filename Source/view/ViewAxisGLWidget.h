@@ -60,13 +60,20 @@ private:
 	int WidgetHeight = 0;
 	int CellTableWidth;
 	
-	std::vector<int> calcBlockIndexXY();
-	unsigned int *emptyTexLabel;
-	int getSerialIndexXY(int x, int y, int z, int lv);
+	float subregion_opacity[10];
+	QColor subregion_color[10];
 
+	block_info calcBlockIndex();
+	unsigned int *emptyTexLabel;
+	unsigned char *emptyTexSubregion;
 	void drawCenterLine();
-	void drawTile();
+	void drawTile(block_info info);
 	void uploadCellColor();
+
+	bool bindEMLayer(block_info info);
+	bool bindCellLayer(block_info info);
+	std::vector<bool> bindSubregionLayer(block_info info);
+
 	QColor clearColor;
 	QPoint lastPos;
 	QMatrix4x4 projMatrix;
@@ -88,9 +95,14 @@ private:
 	GLuint EMTex;
 	int con_EMTex;
 
+	GLuint SBTex[10];
+	int con_SBTex[10];
+
+
+	GLuint CellColorBuffer;
 	GLuint CellColorTex;
 	int con_CellColorTex;
-	unsigned char *cell_color_data;
+	unsigned int *cell_color_data;
 
 
 

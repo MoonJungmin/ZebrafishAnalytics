@@ -19,10 +19,9 @@ class DataFeature
 {
 public:
 	DataFeature();
+	DataFeature(std::string name, std::string path);
 	~DataFeature();
 
-
-	void Initialize(std::string name, std::string path);
 	void setFeatureValue(unsigned int index, double value);
 
 	std::string FeatureName;

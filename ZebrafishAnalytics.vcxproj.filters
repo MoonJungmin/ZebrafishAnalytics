@@ -114,15 +114,6 @@
     <ClCompile Include="Source\view\ViewAxisGLWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\view\ViewHistogram.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\view\ViewHistogramBox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\view\ViewHistogramViewer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\global.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -174,6 +165,18 @@
     <ClCompile Include="Source\controller\Dialog\DialogAnnotation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\view\histogram\Histogram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\view\histogram\HistogramViewer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\view\ViewHistogramWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\view\ViewHeatmapGLWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="ZebrafishAnalytics.h">
@@ -212,12 +215,6 @@
     <QtMoc Include="Source\view\ViewAxisGLWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="Source\view\ViewHistogramBox.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="Source\view\ViewHistogramViewer.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="Source\view\ViewGraphEditor.h">
       <Filter>Header Files</Filter>
     </QtMoc>
@@ -251,6 +248,18 @@
     <QtMoc Include="Source\controller\Dialog\DialogDetailFeature.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="Source\controller\Dialog\DialogAnnotation.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Source\view\histogram\HistogramViewer.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Source\view\ViewHistogramWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Source\view\ViewHeatmapGLWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="ZebrafishAnalytics.ui">
@@ -282,6 +291,10 @@
     <None Include="Resources\glsl\vshader.glsl" />
     <None Include="Resources\theme\darkstyle\darkstyle.qss" />
     <None Include="Source\view\theme\resource\darkstyle\darkstyle.qss" />
+    <None Include="Resources\glsl\vshader_heatmap.glsl" />
+    <None Include="Resources\glsl\fshader_axisview.glsl" />
+    <None Include="Resources\glsl\fshader_heatmap.glsl" />
+    <None Include="Resources\glsl\vshader_axisview.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\controller\node\qneblock.h">
@@ -332,9 +345,6 @@
     <ClInclude Include="Source\model\LayerBackground.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\view\ViewHistogram.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\global.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -350,7 +360,7 @@
     <ClInclude Include="Source\controller\Dialog\DialogManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\controller\Dialog\DialogAnnotation.h">
+    <ClInclude Include="Source\view\histogram\Histogram.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

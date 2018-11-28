@@ -19,22 +19,24 @@ class LayerBackground
 {
 public:
 	LayerBackground();
+	LayerBackground(std::string path);
 	~LayerBackground();
 	
-	std::string layerPath;
-
-	std::ifstream mifs;
 	std::list<back_layer> BlockList;
 
 	
-	void Init(std::string path);
-	void headerReader();
-	
 	int checkBlockIndex(int idx_x, int idx_y, int idx_z, int level, int axis);
+	back_layer initializeBlock(block_info info);
 	int LoadBlockBySerialIndex(back_layer tempblock);
 	void removeBlock();
 
+	std::string BackgroundPath;
+	std::string BackgroundHeaderPath;
+	std::string BackgroundThumbnailPath;
+
+
 private:
+	void headerReader();
 
 	int DataSizeX = 0;
 	int DataSizeY = 0;

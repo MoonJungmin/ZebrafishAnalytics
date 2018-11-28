@@ -2,21 +2,28 @@
 
 
 
-LayerBackground::LayerBackground()
-{
+LayerBackground::LayerBackground() {
 }
 
+LayerBackground::LayerBackground(std::string path) {
+	
+	BackgroundHeaderPath = path;
+	
+	Utils mUtil;
+	std::vector<std::string> BackDirPath = mUtil.Split(path.c_str(), "header.bgl");
+	BackgroundPath = BackDirPath[0];
+	BackgroundThumbnailPath = BackDirPath[0] + "thumbnail.png";
+	qDebug() << QString::fromStdString(BackgroundPath);
 
-LayerBackground::~LayerBackground()
-{
-}
-
-void LayerBackground::Init(std::string path) {
-	layerPath = path;
-	mifs.open(layerPath, std::ifstream::binary);
 	this->headerReader();
 }
+
+LayerBackground::~LayerBackground() {
+}
+
 void LayerBackground::headerReader() {
+	std::ifstream mifs(BackgroundHeaderPath, std::ifstream::binary);
+
 	Utils mUtil;
 	std::string line1;
 	std::getline(mifs, line1);
@@ -48,14 +55,9 @@ void LayerBackground::headerReader() {
 	std::vector<std::string> list_line6 = mUtil.Split(line6.c_str(), " : ");
 	DataType = list_line6.back().c_str();
 
-	std::vector<std::string> dir_pathlist = mUtil.Split(layerPath.c_str(), "/");
-	std::string datapath;
-	for (int i = 0; i < dir_pathlist.size()-1; ++i) {
-		datapath += dir_pathlist.at(i) + "/";
-	}
-	DataPathXY += datapath + "XY/";
-	DataPathYZ += datapath + "YZ/";
-	DataPathZX += datapath + "ZX/";
+	DataPathXY += BackgroundPath + "XY/";
+	DataPathYZ += BackgroundPath + "YZ/";
+	DataPathZX += BackgroundPath + "ZX/";
 
 	qDebug() << QString::fromStdString(DataPathXY);
 	qDebug() << QString::fromStdString(DataPathYZ);
@@ -112,9 +114,60 @@ int LayerBackground::LoadBlockBySerialIndex(back_layer tempblock){
 	}
 }
 
-int LayerBackground::checkBlockIndex(int idx_x, int idx_y, int idx_z, int level, int axis) {
+back_layer LayerBackground::initializeBlock(block_info info) {
+	back_layer temp;
+		
+	if (info.axis == 1) {
+		temp.index_x = info.x;
+		temp.index_y = info.y;
+		temp.index_z = info.z;
+	}
+	else if (info.axis == 2) {
+		temp.index_x = info.z;
+		temp.index_y = info.y;
+		temp.index_z = info.x;
+	}
+	else if (info.axis == 3) {
+		temp.index_x = info.x;
+		temp.index_y = info.z;
+		temp.index_z = info.y;
+	}
+	
+	temp.pos_x = info.size * info.x;
+	temp.pos_y = info.size * info.y;
+	temp.pos_z = info.z;
+	temp.size_x = info.size;
+	temp.size_y = info.size;
+	temp.size_z = info.size;
+	temp.level = info.level;
+	temp.load_axis_code = info.axis;
+	return temp;
+}
+
+int LayerBackground::checkBlockIndex(int x, int y, int z, int level, int axis) {
 	int rt_value = -1;
 	int index = 0;
+
+	int idx_x;
+	int idx_y;
+	int idx_z;
+
+	if (axis == 1) {
+		idx_x = x;
+		idx_y = y;
+		idx_z = z;
+	}
+	else if (axis == 2) {
+		idx_x = z;
+		idx_y = y;
+		idx_z = x;
+	}
+	else if (axis == 3) {
+		idx_x = x;
+		idx_y = z;
+		idx_z = y;
+	}
+
 	std::list<back_layer>::iterator iter;
 	for (iter = BlockList.begin(); iter != BlockList.end(); ++iter) {
 		if (iter->index_x == idx_x && iter->index_y == idx_y && iter->index_z == idx_z && iter->level == level && iter->load_axis_code == axis) {

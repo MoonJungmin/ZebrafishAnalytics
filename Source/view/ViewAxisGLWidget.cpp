@@ -62,14 +62,15 @@ void ViewAxisGLWidget::initializeGL()
 	initializeOpenGLFunctions();
 	//glEnable(GL_CULL_FACE);
 	glEnable(GL_TEXTURE_2D);
-
+	//glEnable(GL_BLEND);
+	//lBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	QOpenGLShader *vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
 
-	vshader->compileSourceFile("Resources/glsl/vshader.glsl");
+	vshader->compileSourceFile("Resources/glsl/vshader_axisview.glsl");
 
 	QOpenGLShader *fshader = new QOpenGLShader(QOpenGLShader::Fragment, this);
 	
-	fshader->compileSourceFile("Resources/glsl/fshader.glsl");
+	fshader->compileSourceFile("Resources/glsl/fshader_axisview.glsl");
 
 	program = new QOpenGLShaderProgram;
 	
@@ -81,7 +82,14 @@ void ViewAxisGLWidget::initializeGL()
 	int blocksize = mGlobals.CurrentProject->DataBlockSize;
 
 	con_EMTex = program->uniformLocation("em_texture");
-	con_LBTex = program->uniformLocation("lb_texture");
+	con_LBTex = program->uniformLocation("cell_texture");
+	for (int i = 0; i<10; i++) {
+		char t[10];
+		sprintf(t, "sb_texture[%d]", i);
+		con_SBTex[i] = program->uniformLocation(t);
+	}
+
+
 	con_CellColorTex = program->uniformLocation("cell_color_texture");
 
 	glGenTextures(1, &EMTex);
@@ -93,6 +101,18 @@ void ViewAxisGLWidget::initializeGL()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, blocksize, blocksize, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
 
+	for (int i = 0; i < 10; ++i) {
+		glGenTextures(1, &SBTex[i]);
+		glBindTexture(GL_TEXTURE_2D, SBTex[i]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, blocksize, blocksize, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
+		subregion_opacity[i] = 0;
+	}
+	
 	glGenTextures(1, &LBTex);
 	glBindTexture(GL_TEXTURE_2D, LBTex);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -101,8 +121,8 @@ void ViewAxisGLWidget::initializeGL()
 
 	CellTableWidth = sqrt(mGlobals.CurrentProject->mLayerCell->MaxCellCount)+1;
 	long long lvalue = 1;
-	long long tablesize = lvalue * CellTableWidth * CellTableWidth * 3;
-	cell_color_data = new unsigned char[tablesize];
+	long long tablesize = lvalue * CellTableWidth * CellTableWidth;
+	cell_color_data = new unsigned int[tablesize];
 
 
 	qDebug() << " Table Width : " << CellTableWidth;
@@ -110,17 +130,20 @@ void ViewAxisGLWidget::initializeGL()
 
 	glGenTextures(1, &CellColorTex);
 	glBindTexture(GL_TEXTURE_2D, CellColorTex);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, CellTableWidth, CellTableWidth, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, blocksize, blocksize, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
 	
-	emptyTexLabel = new unsigned int[mGlobals.CurrentProject->DataBlockSize * mGlobals.CurrentProject->DataBlockSize];
-	memset(emptyTexLabel, 0, mGlobals.CurrentProject->DataBlockSize * mGlobals.CurrentProject->DataBlockSize*sizeof(unsigned int));
+	//emptyTexLabel = new unsigned int[mGlobals.CurrentProject->DataBlockSize * mGlobals.CurrentProject->DataBlockSize];
+	//memset(emptyTexLabel, 0, mGlobals.CurrentProject->DataBlockSize * mGlobals.CurrentProject->DataBlockSize*sizeof(unsigned int));
 }
 
 
-std::vector<int> ViewAxisGLWidget::calcBlockIndexXY() {
-	std::vector<int> LoadIndexList;
+block_info ViewAxisGLWidget::calcBlockIndex() {
+	block_info info;
 	
 	float leftTopPosX;
 	float leftTopPosY;
@@ -171,113 +194,131 @@ std::vector<int> ViewAxisGLWidget::calcBlockIndexXY() {
 	tIdx_EndX = (int)(rightBottomPosX / tilevalue) + 1;
 	tIdx_EndY = (int)(rightBottomPosY / tilevalue) + 1;
 
-
-	/*
-	
-	qDebug() << tIdx_StartX;
-	qDebug() << tIdx_StartY;
-	qDebug() << tIdx_EndX;
-	qDebug() << tIdx_EndY;*/
-
-	for (int x = tIdx_StartX; x < tIdx_EndX; x++) {
-		for (int y = tIdx_StartY; y < tIdx_EndY; y++) {
-			int stat;
-			if (AxisCode == 1) {
-				stat = mGlobals.CurrentProject->mLayerBack->checkBlockIndex(x, y, tIdx_Z, (int)mGlobals.CurrentProject->ViewZoomLevel, AxisCode);
-			}
-			else if (AxisCode == 2) {
-				stat = mGlobals.CurrentProject->mLayerBack->checkBlockIndex(tIdx_Z, y, x, (int)mGlobals.CurrentProject->ViewZoomLevel, AxisCode);
-			}
-			else if (AxisCode == 3) {
-				stat = mGlobals.CurrentProject->mLayerBack->checkBlockIndex(x, tIdx_Z, y, (int)mGlobals.CurrentProject->ViewZoomLevel, AxisCode);
-			}
-			
-			if (stat == -1) {
-				back_layer tempBlock1;
-				if (AxisCode == 1) {
-					tempBlock1.index_x = x;
-					tempBlock1.index_y = y;
-					tempBlock1.index_z = tIdx_Z;
-				}
-				else if (AxisCode == 2) {
-					tempBlock1.index_x = tIdx_Z;
-					tempBlock1.index_y = y;
-					tempBlock1.index_z = x;
-				}
-				else if (AxisCode == 3) {
-					tempBlock1.index_x = x;
-					tempBlock1.index_y = tIdx_Z ;
-					tempBlock1.index_z = y;
-				}
-
-				tempBlock1.pos_x = (tilevalue * x);
-				
-				tempBlock1.pos_y = (tilevalue * (y));
-				
-				qDebug() << tempBlock1.index_x << " " << tempBlock1.index_y << " " << tempBlock1.index_z;
-				
-				tempBlock1.pos_z = tIdx_Z;
-
-				tempBlock1.size_x = tilevalue;
-				tempBlock1.size_y = tilevalue;
-				tempBlock1.size_z = tilevalue;
-
-				tempBlock1.level = (int)mGlobals.CurrentProject->ViewZoomLevel;
-				tempBlock1.load_axis_code = AxisCode;
-
-				label_layer tempBlock2;
-				tempBlock2.index_x = tempBlock1.index_x;
-				tempBlock2.index_y = tempBlock1.index_y;
-				tempBlock2.index_z = tempBlock1.index_z;
-
-				tempBlock2.pos_x = tempBlock1.pos_x;
-				tempBlock2.pos_y = tempBlock1.pos_y;
-				tempBlock2.pos_z = tempBlock1.pos_z;
-
-				tempBlock2.size_x = tempBlock1.size_x;
-				tempBlock2.size_y = tempBlock1.size_y;
-				tempBlock2.size_z = tempBlock1.size_z;
-
-				tempBlock2.level = tempBlock1.level;
-
-				tempBlock2.load_axis_code = tempBlock1.load_axis_code;
-
-				int status = mGlobals.CurrentProject->mLayerBack->LoadBlockBySerialIndex(tempBlock1);
-				if (status != -1) {
-					mGlobals.CurrentProject->mLayerCell->LoadBlockBySerialIndex(tempBlock2);
-					qDebug() << "status : " << status;
-					LoadIndexList.push_back(status);
-				}
-			}
-			else {
-				LoadIndexList.push_back(stat);
-			}
-			
-			
-			
-		}
-	}
-	return LoadIndexList;
-
-	qDebug() << "Tile Done";
+	info.start_x = tIdx_StartX;
+	info.end_x = tIdx_EndX;
+	info.start_y = tIdx_StartY;
+	info.end_y = tIdx_EndY;
+	info.z = tIdx_Z;
+	info.size = tilevalue;
+	info.level = (int)mGlobals.CurrentProject->ViewZoomLevel;
+	info.axis = AxisCode;
+	return info;
 }
 
 void ViewAxisGLWidget::uploadCellColor(){
 	if (mGlobals.CurrentProject->mLayerCell->CellColorGPU_On == false) {
 		for (int i = 0; i < mGlobals.CurrentProject->mLayerCell->mCellList.size(); ++i) {
-			//qDebug() << mGlobals.CurrentProject->mLayerCell->mCellList.at(i).color.red() << " " << mGlobals.CurrentProject->mLayerCell->mCellList.at(i).color.green() << " " << mGlobals.CurrentProject->mLayerCell->mCellList.at(i).color.blue();
-			cell_color_data[3*i] = mGlobals.CurrentProject->mLayerCell->mCellList.at(i).color.red();
-			cell_color_data[3*i+1] = mGlobals.CurrentProject->mLayerCell->mCellList.at(i).color.green();
-			cell_color_data[3*i+2] = mGlobals.CurrentProject->mLayerCell->mCellList.at(i).color.blue();
+			unsigned int index = mGlobals.CurrentProject->mLayerCell->mCellList.at(i).index;
+			if (mGlobals.CurrentProject->mLayerCell->mCellList.at(i).status) {
+				cell_color_data[index] = 1;
+			}
+			else {
+				cell_color_data[index] = 0;
+			}
+			//cell_color_data[index] = mGlobals.CurrentProject->mLayerCell->mCellList.at(i).color.red();
 		}
 		mGlobals.CurrentProject->mLayerCell->CellColorGPU_On = true;
 	
 		glBindTexture(GL_TEXTURE_2D, CellColorTex);
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, CellTableWidth, CellTableWidth, GL_RGB, GL_UNSIGNED_BYTE, cell_color_data);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, CellTableWidth, CellTableWidth, GL_RED_INTEGER, GL_UNSIGNED_INT, cell_color_data);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 	}
 	
+}
+
+bool ViewAxisGLWidget::bindEMLayer(block_info info) {
+	int stat = mGlobals.CurrentProject->mLayerBack->checkBlockIndex(info.x, info.y, info.z, info.level, info.axis);
+	if (stat == -1) {
+		back_layer mblock = mGlobals.CurrentProject->mLayerBack->initializeBlock(info);
+		stat = mGlobals.CurrentProject->mLayerBack->LoadBlockBySerialIndex(mblock);
+	}
+
+	if (stat != -1) {
+		std::list<back_layer>::iterator iter_em = mGlobals.CurrentProject->mLayerBack->BlockList.begin();
+		std::advance(iter_em, stat);
+		glBindTexture(GL_TEXTURE_2D, EMTex);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mGlobals.CurrentProject->DataBlockSize, mGlobals.CurrentProject->DataBlockSize, GL_RED, GL_UNSIGNED_BYTE, iter_em->data);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}
+bool ViewAxisGLWidget::bindCellLayer(block_info info) {
+	int stat = mGlobals.CurrentProject->mLayerCell->checkBlockIndex(info.x, info.y, info.z, info.level, info.axis);
+	if (stat == -1) {
+		label_layer mblock = mGlobals.CurrentProject->mLayerCell->initializeBlock(info);
+		stat = mGlobals.CurrentProject->mLayerCell->LoadBlockBySerialIndex(mblock);
+	}
+
+	if (stat != -1) {
+		std::list<label_layer>::iterator iter_lb = mGlobals.CurrentProject->mLayerCell->BlockList.begin();
+		std::advance(iter_lb, stat);
+
+		int size = mGlobals.CurrentProject->DataBlockSize * mGlobals.CurrentProject->DataBlockSize;
+		for (int i = 0; i < size; ++i) {
+			unsigned int lb = iter_lb->data[i];
+			if (lb != 0) {
+				if (mGlobals.CurrentProject->mLayerCell->mCellList[lb - 1].status) {
+					iter_lb->color_data[i] = 255;
+				}
+				else {
+					iter_lb->color_data[i] = 50;
+				}
+			}
+			else {
+				iter_lb->color_data[i] = 0;
+			}
+		}
+
+		glBindTexture(GL_TEXTURE_2D, LBTex);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mGlobals.CurrentProject->DataBlockSize, mGlobals.CurrentProject->DataBlockSize, GL_RED_INTEGER, GL_UNSIGNED_INT, iter_lb->data);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glBindTexture(GL_TEXTURE_2D, CellColorTex);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mGlobals.CurrentProject->DataBlockSize, mGlobals.CurrentProject->DataBlockSize, GL_RED, GL_UNSIGNED_BYTE, iter_lb->color_data);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		return true;
+	}
+	else {
+		return false;
+	}
+
+}
+
+std::vector<bool> ViewAxisGLWidget::bindSubregionLayer(block_info info) {
+	std::vector<bool> result(10, false);
+	int subregion_index = 0;
+	std::vector<LayerSubregion>::iterator iter;
+	for (iter = mGlobals.CurrentProject->mSubregion.begin(); iter != mGlobals.CurrentProject->mSubregion.end(); ++iter) {
+		if (iter->SubregionActivated == true) {
+			int stat = iter->checkBlockIndex(info.x, info.y, info.z, info.level, info.axis);
+
+			if (stat == -1) {
+				subregion_layer mblock = iter->initializeBlock(info);
+				stat = iter->LoadBlockBySerialIndex(mblock);
+			}
+
+			if (stat != -1) {
+				std::list<subregion_layer>::iterator iter_sb = iter->BlockList.begin();
+				std::advance(iter_sb, stat);
+				glBindTexture(GL_TEXTURE_2D, SBTex[subregion_index]);
+				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mGlobals.CurrentProject->DataBlockSize, mGlobals.CurrentProject->DataBlockSize, GL_RED, GL_UNSIGNED_BYTE, iter_sb->data);
+				glBindTexture(GL_TEXTURE_2D, 0);
+				result[subregion_index] = true;
+				subregion_opacity[subregion_index] = 1.0f;
+			}
+			else {
+				subregion_opacity[subregion_index] = 0;
+				result[subregion_index] = false;
+			}
+			subregion_color[subregion_index] = iter->SubregionColor;
+			subregion_index++;
+		}
+	}
+	return result;
 }
 
 void ViewAxisGLWidget::paintGL()
@@ -315,99 +356,123 @@ void ViewAxisGLWidget::paintGL()
 	paintState = true;
 	glClearColor(0.2, 0.2, 0.2, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	std::vector<int> IndexList = calcBlockIndexXY();
+	block_info BlockInfo = calcBlockIndex();
 
 	
-	program->bind();
-	program->setUniformValue("matrix", projMatrix*modelViewMatrix);
-	program->setUniformValue("visualize_method", mGlobals.CurrentProject->VisualizeMethod_Index);
-	program->setUniformValue("cell_color_table_width", CellTableWidth);
-	uploadCellColor();
-  
-	/*qDebug() << "size";
-	qDebug() << mGlobals.CurrentProject->mLayerBack->BlockList.size();
-*/
-	for (int i = 0; i < IndexList.size(); ++i) {
-		
-		std::list<back_layer>::iterator iter_em = mGlobals.CurrentProject->mLayerBack->BlockList.begin();
-		std::list<label_layer>::iterator iter_lb = mGlobals.CurrentProject->mLayerCell->BlockList.begin();;
+	
+	for (int x = BlockInfo.start_x; x < BlockInfo.end_x; ++x) {
+		for (int y = BlockInfo.start_y; y < BlockInfo.end_y; ++y) {
+			program->bind();
 
-		std::advance(iter_em, IndexList.at(i));
-		std::advance(iter_lb, IndexList.at(i));
-		
-		int blocksize = mGlobals.CurrentProject->DataBlockSize;
+
+			BlockInfo.x = x;
+			BlockInfo.y = y;
+			bool EMStat = bindEMLayer(BlockInfo);
+			bool CellStat = bindCellLayer(BlockInfo);
+
 			
-		glBindTexture(GL_TEXTURE_2D, EMTex);
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, blocksize, blocksize, GL_RED, GL_UNSIGNED_BYTE, iter_em->data);
-		glBindTexture(GL_TEXTURE_2D, 0);
 
-		if (iter_lb->status) {
-			glBindTexture(GL_TEXTURE_2D, LBTex);
-			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, blocksize, blocksize, GL_RED_INTEGER, GL_UNSIGNED_INT, iter_lb->data);
-			glBindTexture(GL_TEXTURE_2D, 0);
+			std::vector<bool> subregionStat = bindSubregionLayer(BlockInfo);
+			//uploadCellColor();
+
+			program->setUniformValue("matrix", projMatrix*modelViewMatrix);
+			program->setUniformValue("visualize_method", mGlobals.CurrentProject->VisualizeMethod_Index);
+			program->setUniformValue("em_opacity", 1.0f);
+			program->setUniformValue("cell_opacity", mGlobals.CurrentProject->mLayerCell->Opacity);
+			program->setUniformValue("selected_color", mGlobals.CurrentProject->SelectedColor);
+			program->setUniformValue("unselected_color", mGlobals.CurrentProject->UnSelectedColor);
+
+
+
+			if (EMStat) {
+				glActiveTexture(GL_TEXTURE0);
+				glUniform1i(con_EMTex, 0);
+				glBindTexture(GL_TEXTURE_2D, EMTex);
+			}
+			else {
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, 0);
+			}
+
+			if (CellStat) {
+
+				glActiveTexture(GL_TEXTURE1);
+				glUniform1i(con_LBTex, 1);
+				glBindTexture(GL_TEXTURE_2D, LBTex);
+
+				glActiveTexture(GL_TEXTURE2);
+				glUniform1i(con_CellColorTex, 2);
+				glBindTexture(GL_TEXTURE_2D, CellColorTex);
+
+			}
+			else {
+
+				glActiveTexture(GL_TEXTURE1);
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				glActiveTexture(GL_TEXTURE2);
+				glBindTexture(GL_TEXTURE_2D, 0);
+			}
+						
+
+			int subregion_index = 0;
+			std::vector<LayerSubregion>::iterator iter;
+			for (iter = mGlobals.CurrentProject->mSubregion.begin(); iter != mGlobals.CurrentProject->mSubregion.end(); ++iter) {
+				if (iter->SubregionActivated == true) {
+					if (subregionStat[subregion_index]) {
+						glActiveTexture(GL_TEXTURE3 + subregion_index);
+						glUniform1i(con_SBTex[subregion_index], subregion_index + 3);
+						glBindTexture(GL_TEXTURE_2D, SBTex[subregion_index]);
+					}
+					else {
+						glActiveTexture(GL_TEXTURE3 + subregion_index);
+						glBindTexture(GL_TEXTURE_2D, 0);
+					}
+					subregion_index++;
+				}
+			}
+			for (subregion_index; subregion_index < 10; ++subregion_index) {
+				glActiveTexture(GL_TEXTURE3 + subregion_index);
+				glBindTexture(GL_TEXTURE_2D, 0);
+			}
+			program->setUniformValueArray("subregion_opacity", (GLfloat *)subregion_opacity, 10, 4);
+			program->setUniformValueArray("subregion_color", (QVector4D*)subregion_color, 10);
+
+
+
+			drawTile(BlockInfo);	
+			program->release();
 		}
-		else {
-			glBindTexture(GL_TEXTURE_2D, LBTex);
-			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, blocksize, blocksize, GL_RED_INTEGER, GL_UNSIGNED_INT, emptyTexLabel);
-			glBindTexture(GL_TEXTURE_2D, 0);
-		}
-		//qDebug() << "size";
-		glActiveTexture(GL_TEXTURE0);
-		glUniform1i(con_EMTex, 0);
-		glBindTexture(GL_TEXTURE_2D, EMTex);
+	}		
+	
+	
 
-		glActiveTexture(GL_TEXTURE1);
-		glUniform1i(con_LBTex, 1);
-		glBindTexture(GL_TEXTURE_2D, LBTex);
-
-		glActiveTexture(GL_TEXTURE2);
-		glUniform1i(con_CellColorTex, 2);
-		glBindTexture(GL_TEXTURE_2D, CellColorTex);
-
-				
-		float posXmin = (float)(iter_em->pos_x) / (float)WidgetHeight;
-		float posXmax = (float)(iter_em->pos_x + iter_em->size_x) / (float)WidgetHeight;
-		float posYmin = (float)(iter_em->pos_y) / (float)WidgetHeight;
-		float posYmax = (float)(iter_em->pos_y + iter_em->size_y) / (float)WidgetHeight;
-
-		
-		/*qDebug() << iter_em->pos_x;
-		qDebug() << iter_em->pos_y;
-		qDebug() << iter_em->size_x;
-		qDebug() << iter_em->size_y;
-*/
-		//qDebug() << posXmin;
-		//qDebug() << posXmax;
-		//qDebug() << posYmin;
-		//qDebug() << posYmax;
-
-
-
-		int texcoord_index = program->attributeLocation("TexCoord");
-
-		glBegin(GL_QUADS);
-		glVertexAttrib2f(texcoord_index, 0.0f, 0.0f);
-		glVertex3f(posXmin, posYmin, 0);
-		glVertexAttrib2f(texcoord_index, 1.0f, 0.0f);
-		glVertex3f(posXmax, posYmin, 0);
-		glVertexAttrib2f(texcoord_index, 1.0f, 1.0f);
-		glVertex3f(posXmax, posYmax, 0);
-		glVertexAttrib2f(texcoord_index, 0.0f, 1.0f);
-		glVertex3f(posXmin, posYmax, 0);
-		glEnd();
-
-
-	}
-
-
-	program->release();
+	
 	mGlobals.CurrentProject->mLayerBack->removeBlock();
 	mGlobals.CurrentProject->mLayerCell->removeBlock();
 
 	drawCenterLine();
 	paintState = false;
 }
-void ViewAxisGLWidget::drawTile() {
+void ViewAxisGLWidget::drawTile(block_info info) {
+
+	float posXmin = (float)(info.size * info.x) / (float)WidgetHeight;
+	float posXmax = (float)(info.size * info.x + info.size) / (float)WidgetHeight;
+	float posYmin = (float)(info.size * info.y) / (float)WidgetHeight;
+	float posYmax = (float)(info.size * info.y + info.size) / (float)WidgetHeight;
+
+	int texcoord_index = program->attributeLocation("TexCoord");
+
+	glBegin(GL_QUADS);
+	glVertexAttrib2f(texcoord_index, 0.0f, 0.0f);
+	glVertex3f(posXmin, posYmin, 0);
+	glVertexAttrib2f(texcoord_index, 1.0f, 0.0f);
+	glVertex3f(posXmax, posYmin, 0);
+	glVertexAttrib2f(texcoord_index, 1.0f, 1.0f);
+	glVertex3f(posXmax, posYmax, 0);
+	glVertexAttrib2f(texcoord_index, 0.0f, 1.0f);
+	glVertex3f(posXmin, posYmax, 0);
+	glEnd();
 
 }
 

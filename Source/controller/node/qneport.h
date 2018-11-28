@@ -64,8 +64,10 @@ public:
 	void setNEBlock(QNEBlock*);
 	void setName(const QString &n);
 	void setIsOutput(bool o);
+	void setIsInput(bool o);
 	void setAlign(int a);
 	int radius();
+	bool isInput();
 	bool isOutput();
 	QVector<QNEConnection*>& connections();
 	void setPortFlags(int);
@@ -83,21 +85,22 @@ public:
 	quint64 ptr();
 	void setPtr(quint64);
 	bool isConnected(QNEPort*);
-
+	void clearConnection();
 
 	int Subregion_Index = 0;
 	int Feature_Index = 0;
 	
-	
+	QNEBlock *m_block;
+
 
 
 protected:
 	QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
 private:
-	QNEBlock *m_block;
 	QString name;
 	bool isOutput_;
+	bool isInput_;
 	QGraphicsTextItem *label;
 	int radius_;
 	int margin;

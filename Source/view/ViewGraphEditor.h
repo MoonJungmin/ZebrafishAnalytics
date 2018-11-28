@@ -8,9 +8,11 @@
 #include <QFileDialog>
 #include <QColor>
 #include <QDebug>
+#include <QMessageBox>
 
 
 #include "Source/controller/node/qneblock.h"
+#include "Source/controller/node/qneconnection.h"
 #include "Source/controller/node/qnodeseditor.h"
 #include "Source/controller/node/qneport.h"
 
@@ -27,6 +29,8 @@ class ViewGraphEditor : public QWidget
 public slots:
 	void addNode(int type, QString name);
 	void deleteNode(QNEBlock *ptr);
+	void updateSubregionList();
+	void updateFeatureList();
 
 public:
 	ViewGraphEditor(QWidget *parent);

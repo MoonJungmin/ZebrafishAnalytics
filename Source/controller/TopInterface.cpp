@@ -65,11 +65,28 @@ TopInterface::TopInterface(QWidget *parent, QLayout *parent_layout)
 	label5->setFixedSize(150, 30);
 	label5->setText("Cell Visualize Method");
 	rendering_menu = new QComboBox(mWidget);
-	QStringList commands = { "Random color", "Morpological feature histogram threshold", "Selected cell" };
+	QStringList commands = { "Random color", "Selected cell" };
 	rendering_menu->addItems(commands);
 	rendering_menu->setFixedWidth(250);
 	connect(rendering_menu, SIGNAL(currentIndexChanged(int)), this, SLOT(handleComboMenu(int)));
 	//connect(interface_set_btn, SIGNAL(released()), this, SLOT(handleButton()));
+
+	QLabel *label6 = new QLabel(mWidget);
+	label6->setFrameStyle(QFrame::StyledPanel | QFrame::Plain);
+	label6->setAlignment(Qt::AlignCenter);
+	label6->setFixedSize(100, 30);
+	label6->setText("Cell opacity");
+	cell_opacity = new QSlider(Qt::Horizontal);
+	cell_opacity->setFixedWidth(100);
+	cell_opacity->setFocusPolicy(Qt::StrongFocus);
+	cell_opacity->setTickPosition(QSlider::TicksBothSides);
+	cell_opacity->setTickInterval(10);
+	cell_opacity->setSingleStep(1);
+	cell_opacity->setValue(50);
+	connect(cell_opacity, SIGNAL(valueChanged(int)), this, SLOT(handleOpacity(int)));
+	//connect(cell_opacity, SIGNAL(currentIndexChanged(int)), this, SLOT(handleComboMenu(int)));
+	//connect(interface_set_btn, SIGNAL(released()), this, SLOT(handleButton()));
+
 
 
 
@@ -85,6 +102,9 @@ TopInterface::TopInterface(QWidget *parent, QLayout *parent_layout)
 	parent_layout->addWidget(buffer);
 	parent_layout->addWidget(label5);
 	parent_layout->addWidget(rendering_menu);
+	parent_layout->addWidget(buffer);
+	parent_layout->addWidget(label6);
+	parent_layout->addWidget(cell_opacity);
 }
 
 
@@ -102,6 +122,12 @@ void TopInterface::handleButton() {
 }
 void TopInterface::handleComboMenu(int index) {
 	mGlobals.CurrentProject->VisualizeMethod_Index = index;
+	emit update_view(true);
+}
+
+void TopInterface::handleOpacity(int value) {
+	mGlobals.CurrentProject->mLayerCell->Opacity = (float)value / 100.0f;
+	emit update_view(true);
 }
 
 void TopInterface::update_value(int x, int y, int z, float level) {

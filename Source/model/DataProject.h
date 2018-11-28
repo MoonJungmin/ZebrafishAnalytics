@@ -13,7 +13,6 @@
 #include "Source/model/LayerCell.h"
 #include "Source/model/LayerSubregion.h"
 
-#include "Source/model/DataCellAnalytics.h"
 #include "Source/model/DataFeature.h"
 #include "Source/Utils.h"
 
@@ -27,16 +26,17 @@ public:
 	QString ProjectPath = "";
 	
 	bool LayerBackgroundStatus = false;
-	QString LayerBackgroundPath = "";
 	LayerBackground *mLayerBack;
 
 	bool LayerCellStatus = false;
-	QString LayerCellPath = "";
 	LayerCell *mLayerCell;
+	QColor SelectedColor;
+	QColor UnSelectedColor;
 
-	std::list<DataFeature> mFeature;
-	std::list<LayerSubregion> mSubregion;
-
+	std::vector<DataFeature> mFeature;
+	
+	std::vector<LayerSubregion> mSubregion;
+	//std::list<int> mActivatedSubregionIndex;
 
 	int DataSizeX = 0;
 	int DataSizeY = 0;
@@ -57,7 +57,9 @@ public:
 	void ProjectSave(QString aProjPath);
 
 	void AddFeature(QString aName, QString aPath);
+	void removeFeature(int index);
 	void AddSubregion(QString aName, QString aPath);
+	void removeSubregion(int index);
 
 
 	DataProject();

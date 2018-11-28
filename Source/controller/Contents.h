@@ -6,13 +6,12 @@
 #include <QLabel>
 #include <QSizePolicy>
 #include <math.h>
-
+#include <QAbstractButton>
 #include <QGraphicsScene>
 #include <QFileDialog>
 
 
 #include "Source/global.h"
-#include "Source/view/ViewHistogramBox.h"
 #include "Source/view/ViewAxisGLWidget.h"
 #include "Source/view/ViewGraphEditor.h"
 
@@ -57,14 +56,15 @@ private slots:
 	void updateAllWidget(int index, bool scaleflag);
 	void handleSubregionAddBtn();
 	void handleFeatureAddBtn();
-	void handleDetailBtn();
-	void handleDeleteBtn();
-
-
+	void handleDetailBtn_feature();
+	void handleDeleteBtn_feature();
+	void handleDeleteBtn_subregion();
+	void handleCheckBox_subregion(int state);
+	void handleColorBtn_subregion();
 
 private:
 	
-	void updateColorBox(QWidget *target, QColor color);
+	void updateColorBox(QPushButton *target, QColor color);
 	void LeftTabInit(QTabWidget *target, int width, int height);
 	void CenterTabInit(QTabWidget *target, int width, int height);
 	//void RightTabInit(QTabWidget *target, int width, int height);

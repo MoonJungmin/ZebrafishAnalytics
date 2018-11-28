@@ -10,11 +10,22 @@
 #include "DialogAddFeature.h"
 #include "DialogAddSubregion.h"
 #include "DialogDetailFeature.h"
-
+#include "DialogAnnotation.h"
 #include <QWidget>
 
 
+
+class DialogGenBGLayer;
+class DialogAddNode;
+class DialogGenLBLayer;
+class DialogGenSRLayer;
+class DialogNewProject;
+class DialogPreference;
+class DialogAddFeature;
+class DialogAddSubregion;
 class DialogDetailFeature;
+class DialogAnnotation;
+
 class DialogManager
 {
 public:
@@ -22,15 +33,17 @@ public:
 	DialogManager(QWidget *parent);
 	~DialogManager();
 
-	QDialog * mDialogGenBGLayer;
-	QDialog * mDialogAddNode;
-	QDialog * mDialogGenLBLayer;
-	QDialog * mDialogGenSRLayer;
-	QDialog * mDialogNewProject;
-	QDialog * mDialogPreference;
-	QDialog * mDialogAddFeature;
-	QDialog * mDialogAddSubregion;
+	DialogGenBGLayer * mDialogGenBGLayer;
+	DialogAddNode * mDialogAddNode;
+	DialogGenLBLayer * mDialogGenLBLayer;
+	DialogGenSRLayer * mDialogGenSRLayer;
+	DialogNewProject * mDialogNewProject;
+	DialogPreference * mDialogPreference;
+	DialogAddFeature * mDialogAddFeature;
+	DialogAddSubregion * mDialogAddSubregion;
 	DialogDetailFeature * mDialogDetailFeature;
+	DialogAnnotation * mDialogAnnotation;
+
 
 private:
 	QWidget *mWidget;

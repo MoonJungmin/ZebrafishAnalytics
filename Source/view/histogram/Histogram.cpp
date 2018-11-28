@@ -1,7 +1,7 @@
-#include "ViewHistogram.h"
+#include "Histogram.h"
 
 
-ViewHistogram::ViewHistogram(QGraphicsItem *parent, Qt::WindowFlags wFlags)
+Histogram::Histogram(QGraphicsItem *parent, Qt::WindowFlags wFlags)
 	: QChart(QChart::ChartTypeCartesian, parent, wFlags)
 {
 	// Seems that QGraphicsView (QChartView) does not grab gestures.
@@ -10,12 +10,12 @@ ViewHistogram::ViewHistogram(QGraphicsItem *parent, Qt::WindowFlags wFlags)
 	//grabGesture(Qt::PinchGesture);
 }
 
-ViewHistogram::~ViewHistogram()
+Histogram::~Histogram()
 {
 
 }
 
-bool ViewHistogram::sceneEvent(QEvent *event)
+bool Histogram::sceneEvent(QEvent *event)
 {
 	qDebug() << "Event";
 	return QChart::event(event);

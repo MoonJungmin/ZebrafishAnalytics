@@ -2,16 +2,10 @@
 
 
 
-DataFeature::DataFeature()
-{
+DataFeature::DataFeature() {
 }
 
-
-DataFeature::~DataFeature()
-{
-}
-
-void DataFeature::Initialize(std::string name, std::string path) {
+DataFeature::DataFeature(std::string name, std::string path) {
 	qDebug() << "DataFeature : " << QString::fromStdString(name) << " " << QString::fromStdString(path);
 	FeatureName = name;
 	std::ifstream mIfs;
@@ -24,6 +18,10 @@ void DataFeature::Initialize(std::string name, std::string path) {
 	}
 	mIfs.close();
 }
+
+DataFeature::~DataFeature() {
+}
+
 
 void DataFeature::setFeatureValue(unsigned int index, double value) {
 	FeatureMap.insert(std::pair<unsigned int, double>(index, value));

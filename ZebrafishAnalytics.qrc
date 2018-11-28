@@ -3,8 +3,6 @@
         <file>Resources/icon_save.png</file>
         <file>Resources/icon_open.png</file>
         <file>Resources/icon_new.png</file>
-        <file>Resources/glsl/fshader.glsl</file>
-        <file>Resources/glsl/vshader.glsl</file>
         <file>Resources/icon_addnode.png</file>
         <file>Resources/icon_subregion.png</file>
         <file>Resources/icon_data_fish.png</file>
@@ -12,5 +10,9 @@
         <file>Resources/icon_blockclose.png</file>
         <file>Resources/icon_detail.png</file>
         <file>Resources/icon_trash.png</file>
+        <file>Resources/glsl/fshader_axisview.glsl</file>
+        <file>Resources/glsl/fshader_heatmap.glsl</file>
+        <file>Resources/glsl/vshader_axisview.glsl</file>
+        <file>Resources/glsl/vshader_heatmap.glsl</file>
     </qresource>
 </RCC>

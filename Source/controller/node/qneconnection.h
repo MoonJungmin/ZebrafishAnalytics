@@ -52,6 +52,8 @@ public:
 
 	int type() const { return Type; }
 
+	bool connected = false;
+
 private:
 	QPointF pos1;
 	QPointF pos2;

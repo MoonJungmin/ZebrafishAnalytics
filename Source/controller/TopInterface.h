@@ -32,7 +32,7 @@ private:
 	QLineEdit * z_value_edit;
 	QLineEdit * level_value_edit;
 	QComboBox * rendering_menu;
-
+	QSlider * cell_opacity;
 	QPushButton * interface_set_btn;
 
 	QWidget * mWidget;
@@ -40,5 +40,6 @@ private:
 private slots:
 	void handleComboMenu(int index);
 	void handleButton();
+	void handleOpacity(int value);
 
 };

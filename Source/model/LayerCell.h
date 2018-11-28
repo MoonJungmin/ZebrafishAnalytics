@@ -17,27 +17,25 @@ class LayerCell
 {
 public:
 	LayerCell();
+	LayerCell(std::string cell_path);
+
 	~LayerCell();
-	std::string CellPath;
-	std::ifstream mLayerIFS;
-	std::ifstream mCellIFS;
-
 	
+	std::string CellPath;
+	std::string CellHeaderPath;
+	std::string CellInfoPath;
+
 	std::list<label_layer> BlockList;
-
-
 	std::vector<cell> mCellList;
+
 	long long MaxCellIndex;
 	long long MaxCellCount;
 	bool CellColorGPU_On = false;
+	float Opacity = 0.5f;
 
 
-	void Init(std::string cell_path);
-	void headerReader();
-	void loadCellInformation();
-
-
-	int checkBlockIndex(int idx_x, int idx_y, int idx_z);
+	label_layer initializeBlock(block_info info);
+	int checkBlockIndex(int x, int y, int z, int level, int axis);
 	int LoadBlockBySerialIndex(label_layer tempblock);
 	void removeBlock();
 
@@ -55,7 +53,7 @@ private:
 	std::string DataPathZX;
 	
 
-
-
+	void headerReader();
+	void loadCellInformation();
 };
 

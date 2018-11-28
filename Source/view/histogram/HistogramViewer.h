@@ -9,11 +9,11 @@
 #include <QDebug>
 QT_CHARTS_USE_NAMESPACE
 
-class ViewHistogramViewer : public QChartView
+class HistogramViewer : public QChartView
 {
 	Q_OBJECT
 public:
-	ViewHistogramViewer(QChart *chart, QWidget *parent = 0);
+	HistogramViewer(QChart *chart, QWidget *parent = 0);
 
 protected:
 	void mousePressEvent(QMouseEvent *event);

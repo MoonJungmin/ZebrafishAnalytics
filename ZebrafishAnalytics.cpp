@@ -74,6 +74,10 @@ void ZebrafishAnalytics::connectAll() {
 
 	connect(mGlobals.mDialogManager->mDialogAddNode, SIGNAL(makenode(int, QString)), mContents->GraphEditorView, SLOT(addNode(int, QString)));
 	connect(mGlobals.mDialogManager->mDialogAddFeature, SIGNAL(updatedFeature()), mContents, SLOT(feature_updated()));
+	connect(mGlobals.mDialogManager->mDialogAddSubregion, SIGNAL(updatedSubregion()), mContents, SLOT(subregion_updated()));
+
+	connect(mGlobals.mDialogManager->mDialogAddSubregion, SIGNAL(updatedSubregion()), mContents->GraphEditorView, SLOT(updateSubregionList()));
+	connect(mGlobals.mDialogManager->mDialogAddFeature, SIGNAL(updatedFeature()), mContents->GraphEditorView, SLOT(updateFeatureList()));
 }
 
 

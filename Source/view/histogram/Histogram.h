@@ -9,11 +9,11 @@
 class QGestureEvent;
 QT_CHARTS_USE_NAMESPACE
 
-class ViewHistogram : public QChart
+class Histogram : public QChart
 {
 public:
-	explicit ViewHistogram(QGraphicsItem *parent = 0, Qt::WindowFlags wFlags = 0);
-	~ViewHistogram();
+	explicit Histogram(QGraphicsItem *parent = 0, Qt::WindowFlags wFlags = 0);
+	~Histogram();
 
 protected:
 	bool sceneEvent(QEvent *event);

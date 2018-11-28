@@ -15,6 +15,7 @@ class DialogAddSubregion: public QDialog
 
 signals:
 	void thread_kill();
+	void updatedSubregion();
 
 public slots:
 	int exec();

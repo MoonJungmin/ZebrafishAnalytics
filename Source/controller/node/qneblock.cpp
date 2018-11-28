@@ -35,18 +35,19 @@ QNEBlock::QNEBlock(QGraphicsItem *parent) : QGraphicsPathItem(parent)
 	setBrush(node_color);
 	setFlag(QGraphicsItem::ItemIsMovable);
 	setFlag(QGraphicsItem::ItemIsSelectable);
-	horzMargin = 10;
-	vertMargin = 10;
+	horzMargin = 0;
+	vertMargin = 0;
 	width = horzMargin;
 	height = vertMargin;
 
 	
 }
 
-QNEPort* QNEBlock::addPort(const QString &name, bool isOutput, int flags, int ptr, int align)
+QNEPort* QNEBlock::addPort(const QString &name, bool isInput, bool isOutput, int flags, int ptr, int align)
 {
 	QNEPort *port = new QNEPort(this);
 	port->setName(name);
+	port->setIsInput(isInput);
 	port->setIsOutput(isOutput);
 	port->setNEBlock(this);
 	port->setPortFlags(flags);
@@ -55,11 +56,11 @@ QNEPort* QNEBlock::addPort(const QString &name, bool isOutput, int flags, int pt
 
 	QFontMetrics fm(scene()->font());
 	int w = fm.width(name);
-	int h = fm.height() + 3;
+	int h = fm.height();
 	//port->setPos(0, height + h/2);
 	if (w > width - horzMargin)
 		width = w + horzMargin;
-	height += h;
+	//height = h + 5;
 
 	QPainterPath p;
 	p.addRoundedRect(-width/2, -height/2, width, height, 5, 5);
@@ -81,7 +82,7 @@ QNEPort* QNEBlock::addPort(const QString &name, bool isOutput, int flags, int pt
 		inputport_y = inputport_y_step;
 	}
 
-	
+	qDebug() << width << "/////" << height;
 
     foreach(QGraphicsItem *port_, childItems()) {
 		
@@ -100,10 +101,8 @@ QNEPort* QNEBlock::addPort(const QString &name, bool isOutput, int flags, int pt
 			y += port->portHeight() + 5;
 		}
 		else if (port->portAlign() == QNEPort::Center) {
-			if (port->portFlags() == QNEPort::DataWidgetPort || port->portFlags() == QNEPort::SubregionWidgetPort) { y += 10; }
 			port->setPos(0 - port->portWidth()/2, y);
-			if (port->portFlags() == QNEPort::DataWidgetPort || port->portFlags() == QNEPort::SubregionWidgetPort) { y += 10; }
-			y += port->portHeight() + 5;
+			y += port->portHeight();
 		}
 		else if (port->portAlign() == QNEPort::Right) {
 			
@@ -114,7 +113,6 @@ QNEPort* QNEBlock::addPort(const QString &name, bool isOutput, int flags, int pt
 				port->setPos(width / 2, y);
 				y += port->portHeight() + 5;
 			}
-			
 		}
 		else if (port->portAlign() == QNEPort::Output) {
 			port->setPos(width / 2, 0);
@@ -124,33 +122,44 @@ QNEPort* QNEBlock::addPort(const QString &name, bool isOutput, int flags, int pt
 	return port;
 }
 void QNEBlock::setBlockFlagAndSize(int aflags, int awidth, int aheight, QColor acolor, QWidget *parent) {
+	pWidget = parent;
 	mBlockFlags = aflags;
 	width = awidth;
 	height = aheight;
 	node_color = acolor;
-
-	mBlock = new BlockWidget(parent);
-	mBlock->initialize(aflags, awidth, aheight, acolor, this);
+	mBlock = new BlockWidget(pWidget);
+	mBlock->initialize(mBlockFlags, width, height, node_color, this);
 }
 
-void QNEBlock::setInputData(std::vector<cell> *data_ptr) {
+void QNEBlock::setInputDataOrigin(std::vector<cell> *data_ptr) {
 	std::vector<cell>::iterator iter = data_ptr->begin();
 	for (iter = data_ptr->begin(); iter != data_ptr->end(); ++iter) {
 		mBlock->CellIndexListInput.push_back(iter->index);
-		mBlock->CellIndexListOutput.push_back(iter->index);
 	}
+//	mBlock->updated();
+	mBlock->updatedInputList();
 }
+void QNEBlock::updateInput_newconnect(std::list<unsigned int> *data_ptr) {
+	qDebug() << "updateinput size : " <<  data_ptr->size();
+	mBlock->CellIndexListInput.clear();
+	std::list<unsigned int>::iterator iter = data_ptr->begin();
+	for (iter = data_ptr->begin(); iter != data_ptr->end(); ++iter) {
+		mBlock->CellIndexListInput.push_back(*iter);
+	}
 
+	mBlock->updatedInputList();
+	//mBlock->DataHeatmap->updateHeatmap();
+}
 
 
 void QNEBlock::addInputPort(const QString &name)
 {
-	addPort(name, false, 0,0, Input);
+	addPort(name, true, false, 0,0, Input);
 }
 
 void QNEBlock::addOutputPort(const QString &name)
 {
-	addPort(name, true, 0, 0, Output);
+	addPort(name, false, true, 0, 0, Output);
 }
 
 void QNEBlock::addInputPorts(const QStringList &names)
@@ -228,6 +237,7 @@ void QNEBlock::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 	if (isSelected()) {
 		painter->setPen(QPen(node_selected_color));
 		painter->setBrush(node_color);
+		mBlock->updatedCellColor();
 	} else {
 		painter->setPen(QPen(node_color));
 		painter->setBrush(node_color);

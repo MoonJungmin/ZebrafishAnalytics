@@ -219,7 +219,7 @@ void Contents::InitProjectInfo() {
 	proj_back_label->setText("EM Path");
 	BackPath = new QLineEdit(mWidget);
 	BackPath->setReadOnly(true);
-	BackPath->setText(mGlobals.CurrentProject->LayerBackgroundPath);
+	BackPath->setText(QString::fromStdString(mGlobals.CurrentProject->mLayerBack->BackgroundPath));
 	proj_back_layout->addWidget(proj_back_label);
 	proj_back_layout->addWidget(BackPath);
 
@@ -230,7 +230,7 @@ void Contents::InitProjectInfo() {
 	proj_cell_label->setText("Cell Path");
 	CellPath = new QLineEdit(mWidget);
 	CellPath->setReadOnly(true);
-	CellPath->setText(mGlobals.CurrentProject->LayerCellPath);
+	CellPath->setText(QString::fromStdString(mGlobals.CurrentProject->mLayerCell->CellPath));
 	proj_cell_layout->addWidget(proj_cell_label);
 	proj_cell_layout->addWidget(CellPath);
 
@@ -309,12 +309,15 @@ void Contents::InitSubregionFeatureList() {
 	replaceTab(contents_left_tabwidget, 1, SubregionFeatureList_Container, "Subregion & Feature");
 }
 
-void Contents::updateColorBox(QWidget *target, QColor color) {
-	QPalette mPalette;
-	mPalette.setColor(QPalette::Background, color);
+void Contents::updateColorBox(QPushButton *target, QColor color) {
+	target->setStyleSheet("");
+	QPalette mPalette = target->palette();
+	mPalette.setColor(target->backgroundRole(), color);
 	target->setPalette(mPalette);
+	target->setStyleSheet(QString("background-color: %1;foreground-color: %1; border-style: none;").arg(color.name()));
+	target->setAutoFillBackground(true);
+	target->setFlat(true);
 	target->repaint();
-
 }
 
 
@@ -329,18 +332,11 @@ void Contents::feature_updated() {
 	featureList->clear();
 	featureList->setContentsMargins(1, 1, 1, 1);
 	int index = 0;
-	std::list<DataFeature>::iterator iter;
+	std::vector<DataFeature>::iterator iter;
 	for (iter = mGlobals.CurrentProject->mFeature.begin(); iter != mGlobals.CurrentProject->mFeature.end(); ++iter) {
 		
 		
 		QWidget *widget = new QWidget(mWidget);
-		if (index % 2 == 0) {
-		//	widget->setStyleSheet("background-color:gray;");
-		}
-		else {
-		//	widget->setStyleSheet("background-color:#BFBFBF;");
-		}
-		
 		QHBoxLayout *list_item_layout= new QHBoxLayout;
 		QFont font;
 		font.setPointSize(10);
@@ -355,14 +351,14 @@ void Contents::feature_updated() {
 		detailBtn->setObjectName(QString::fromStdString(std::to_string(index)));
 		detailBtn->setIconSize(QSize(15, 15));
 		detailBtn->setFixedSize(QSize(20, 20));
-		connect(detailBtn, SIGNAL(clicked()), this, SLOT(handleDetailBtn()));
+		connect(detailBtn, SIGNAL(clicked()), this, SLOT(handleDetailBtn_feature()));
 
 		QPushButton *deleteBtn = new QPushButton(mWidget);
 		deleteBtn->setIcon(QIcon("Resources/icon_trash.png"));
 		deleteBtn->setObjectName(QString::fromStdString(std::to_string(index)));
 		deleteBtn->setIconSize(QSize(15, 15));
 		deleteBtn->setFixedSize(QSize(20, 20));
-		connect(deleteBtn, SIGNAL(clicked()), this, SLOT(handleDeleteBtn()));
+		connect(deleteBtn, SIGNAL(clicked()), this, SLOT(handleDeleteBtn_feature()));
 		
 
 		QWidget *filler2 = new QWidget;
@@ -385,10 +381,69 @@ void Contents::feature_updated() {
 
 }
 void Contents::subregion_updated() {
+	subregionList->clear();
+	subregionList->setContentsMargins(1, 1, 1, 1);
+	int index = 0;
+	std::vector<LayerSubregion>::iterator iter;
+	for (iter = mGlobals.CurrentProject->mSubregion.begin(); iter != mGlobals.CurrentProject->mSubregion.end(); ++iter) {
+		
+		QWidget *widget = new QWidget(mWidget);
+		QHBoxLayout *list_item_layout = new QHBoxLayout;
+		QFont font;
+		font.setPointSize(10);
+		font.setBold(true);
 
+		QLabel *name = new QLabel(mWidget);
+		name->setFont(font);
+		name->setText(QString::fromStdString(iter->SubregionName));
+		QCheckBox *CheckBox = new QCheckBox;
+		CheckBox->setObjectName(QString::fromStdString(std::to_string(index)));
+		CheckBox->setStyleSheet("QCheckBox {background-color: #555555}");
+		iter->SubregionIndex = index;
+		CheckBox->setChecked(iter->SubregionActivated);
+
+		connect(CheckBox, SIGNAL(stateChanged(int)), this, SLOT(handleCheckBox_subregion(int)));
+		
+		iter->SubregionColorBtn = new QPushButton;
+		iter->SubregionColorBtn->setObjectName(QString::fromStdString(std::to_string(index)));
+		iter->SubregionColorBtn->setFixedSize(QSize(15, 15));
+		iter->SubregionColorBtn->setFlat(true);
+		iter->SubregionColorBtn->setAutoFillBackground(true);
+		updateColorBox(iter->SubregionColorBtn, iter->SubregionColor);
+		connect(iter->SubregionColorBtn, SIGNAL(released()), this, SLOT(handleColorBtn_subregion()));
+		
+
+		QPushButton *deleteBtn = new QPushButton(mWidget);
+		deleteBtn->setIcon(QIcon("Resources/icon_trash.png"));
+		deleteBtn->setObjectName(QString::fromStdString(std::to_string(index)));
+		deleteBtn->setIconSize(QSize(15, 15));
+		deleteBtn->setFixedSize(QSize(20, 20));
+		connect(deleteBtn, SIGNAL(clicked()), this, SLOT(handleDeleteBtn_subregion()));
+		
+		QSlider *slider = new QSlider(Qt::Horizontal);
+
+
+
+		QWidget *filler2 = new QWidget;
+		filler2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+		list_item_layout->addWidget(name);
+		list_item_layout->addWidget(filler2);
+		list_item_layout->addWidget(iter->SubregionColorBtn);
+		list_item_layout->addWidget(CheckBox);
+		list_item_layout->addWidget(deleteBtn);
+		widget->setLayout(list_item_layout);
+		QListWidgetItem *item = new QListWidgetItem();
+
+		item->setSizeHint(widget->sizeHint());
+
+		subregionList->addItem(item);
+		subregionList->setItemWidget(item, widget);
+
+		index++;
+	}
 }
 
-void Contents::handleDetailBtn() {
+void Contents::handleDetailBtn_feature() {
 	QObject *senderObj = sender(); // This will give Sender object
 	QString senderObjName = senderObj->objectName();
 	qDebug() << "detail Button: " << senderObjName;
@@ -397,22 +452,65 @@ void Contents::handleDetailBtn() {
 	mGlobals.mDialogManager->mDialogDetailFeature->exec();
 }
 
-void Contents::handleDeleteBtn() {
+
+void Contents::handleDeleteBtn_feature() {
 	QObject *senderObj = sender(); // This will give Sender object
 	QString senderObjName = senderObj->objectName();
 	int index = std::stoi(senderObjName.toStdString());
-	qDebug() << "delete Button: " << senderObjName;
+	qDebug() << "delete Button feature: " << senderObjName;
 
-
-	int step = 0;
-	std::list<DataFeature>::iterator iter;
-	for (iter = mGlobals.CurrentProject->mFeature.begin(); iter != mGlobals.CurrentProject->mFeature.end(); ++iter) {
-		if (step == index) {
-			mGlobals.CurrentProject->mFeature.erase(iter);
-			break;
-		}
-	}
-
+	mGlobals.CurrentProject->removeFeature(index);
 	featureList->removeItemWidget(featureList->takeItem(index));
+}
 
+void Contents::handleDeleteBtn_subregion() {
+	QObject *senderObj = sender(); // This will give Sender object
+	QString senderObjName = senderObj->objectName();
+	int index = std::stoi(senderObjName.toStdString());
+	qDebug() << "delete Button: subregion" << senderObjName;
+
+	mGlobals.CurrentProject->removeSubregion(index);
+	subregion_updated();
+}
+
+void Contents::handleCheckBox_subregion(int state) {
+	QObject *senderObj = sender(); // This will give Sender object
+	QString senderObjName = senderObj->objectName();
+	int index = std::stoi(senderObjName.toStdString());
+	qDebug() << state;
+	
+	if (state == 2) {
+		int count = 0;
+		std::vector<LayerSubregion>::iterator iter;
+		for (iter = mGlobals.CurrentProject->mSubregion.begin(); iter != mGlobals.CurrentProject->mSubregion.end(); ++iter) {
+			if (iter->SubregionActivated) {
+				++count;
+			}
+		}
+		if (count >= 10) {
+			QMessageBox::warning(0, "Error", "Up to 10 can be selected.");
+		}
+		else {
+			mGlobals.CurrentProject->mSubregion[index].SubregionActivated = true;
+		}		
+	}	
+	else {
+		mGlobals.CurrentProject->mSubregion[index].SubregionActivated = false;
+	}
+	subregion_updated();
+}
+
+
+void Contents::handleColorBtn_subregion() {
+	QObject *senderObj = sender(); // This will give Sender object
+	QString senderObjName = senderObj->objectName();
+	int index = std::stoi(senderObjName.toStdString());
+	QColorDialogTester color_test;
+	QString color_str = color_test.onColor();
+	qDebug() << color_str;
+
+	if (color_str.length() > 2) {
+		mGlobals.CurrentProject->mSubregion[index].SubregionColor = QColor(color_str);
+		updateColorBox(mGlobals.CurrentProject->mSubregion[index].SubregionColorBtn, QColor(color_str));
+	}
 }

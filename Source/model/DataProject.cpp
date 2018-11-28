@@ -4,6 +4,8 @@
 
 DataProject::DataProject()
 {
+	SelectedColor = QColor(55, 55, 55);
+	UnSelectedColor = QColor(125, 11, 11);
 }
 DataProject::~DataProject()
 {
@@ -13,13 +15,8 @@ void DataProject::ProjectMake(QString aProjName, QString aProjPath, QString aLay
 	ProjectName = aProjName;
 	ProjectPath = aProjPath;
 
-	LayerBackgroundPath = aLayerBGPath;
-	LayerCellPath = aLayerLBPath;
-
-	mLayerBack = new LayerBackground;
-	mLayerBack->Init(LayerBackgroundPath.toStdString());
-	mLayerCell = new LayerCell;
-	mLayerCell->Init(LayerCellPath.toStdString());
+	mLayerBack = new LayerBackground(aLayerBGPath.toStdString());
+	mLayerCell = new LayerCell(aLayerLBPath.toStdString());
 
 	ProjectStatus = true;
 	ProjectSizeLoad();
@@ -44,25 +41,18 @@ void DataProject::ProjectOpen(QString aProjPath) {
 	std::string line3;
 	std::getline(mIFS, line3);
 	std::vector<std::string> list_line3 = mUtil.Split(line3.c_str(), " : ");
-	LayerBackgroundPath = QString::fromStdString(list_line3.back());
-	qDebug() << LayerBackgroundPath;
-	mLayerBack = new LayerBackground;
-	mLayerBack->Init(LayerBackgroundPath.toStdString());
-
+	QString aLayerBGPath = QString::fromStdString(list_line3.back());
+	qDebug() << aLayerBGPath;
+	mLayerBack = new LayerBackground(aLayerBGPath.toStdString());
+	
 
 	std::string line4;
 	std::getline(mIFS, line4);
 	std::vector<std::string> list_line4 = mUtil.Split(line4.c_str(), " : ");
-	LayerCellPath = QString::fromStdString(list_line4.back());
-	std::vector<std::string> CellDirPath = mUtil.Split(LayerCellPath.toStdString().c_str(), "header.lbl");
-	std::string CellInfoPath = CellDirPath[0] + "cell.dat";
-	qDebug() << LayerCellPath;
-	qDebug() << QString::fromStdString(CellInfoPath);
-	mLayerCell = new LayerCell;
-	mLayerCell->Init(CellDirPath[0]);
-
+	QString aLayerLBPath = QString::fromStdString(list_line4.back());
+	qDebug() << aLayerLBPath;
+	mLayerCell = new LayerCell(aLayerLBPath.toStdString());
 	
-
 	ProjectStatus = true;
 	ProjectSizeLoad();
 }
@@ -71,8 +61,8 @@ void DataProject::ProjectSave(QString aProjPath) {
 
 	std::string proj_name = "#project name : " + ProjectName.toStdString();
 	std::string proj_path = "#project path : " + ProjectPath.toStdString();
-	std::string layerbackground = "#layer background path : " + LayerBackgroundPath.toStdString();
-	std::string LayerCell = "#layer labeled path : " + LayerCellPath.toStdString();
+	std::string layerbackground = "#layer background path : " + mLayerBack->BackgroundHeaderPath;
+	std::string LayerCell = "#layer labeled path : " + mLayerCell->CellHeaderPath;
 	//std::string analytics_path = "#analytics result path : " + AnalyticsResultPath.toStdString();
 
 	mOFS << proj_name << std::endl;
@@ -86,7 +76,7 @@ void DataProject::ProjectSave(QString aProjPath) {
 
 void DataProject::ProjectSizeLoad() {
 	Utils mUtil;
-	std::ifstream tempIfs(LayerBackgroundPath.toStdString(), std::ifstream::binary);
+	std::ifstream tempIfs(mLayerBack->BackgroundHeaderPath, std::ifstream::binary);
 	std::string line1;
 	std::getline(tempIfs, line1);
 	std::vector<std::string> list_line1 = mUtil.Split(line1.c_str(), ":");
@@ -123,16 +113,36 @@ void DataProject::ProjectSizeLoad() {
 }
 
 void DataProject::AddFeature(QString aName, QString aPath) {
-	DataFeature temp;
-	temp.Initialize(aName.toStdString(), aPath.toStdString());
+	DataFeature temp(aName.toStdString(), aPath.toStdString());
 	mFeature.push_back(temp);
 }
 
-void DataProject::AddSubregion(QString aName, QString aPath) {
-
+void DataProject::removeFeature(int index) {
+	int step = 0;
+	std::vector<DataFeature>::iterator iter;
+	for (iter = this->mFeature.begin(); iter != this->mFeature.end(); ++iter) {
+		if (step == index) {
+			this->mFeature.erase(iter);
+			break;
+		}
+	}
+	step++;
 }
 
+void DataProject::AddSubregion(QString aName, QString aPath) {
+	LayerSubregion temp(aName.toStdString(), aPath.toStdString());
+	mSubregion.push_back(temp);
+}
 
+void DataProject::removeSubregion(int index) {
+	std::vector<LayerSubregion>::iterator iter;
+	for (iter = this->mSubregion.begin(); iter != this->mSubregion.end(); ++iter) {
+		if (iter->SubregionIndex == index) {
+			this->mSubregion.erase(iter);
+			break;
+		}
+	}
+}
 
 int DataProject::getSerialIndex(int x, int y, int z, int lv) {
 	Utils mUtil;

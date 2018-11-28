@@ -58,7 +58,7 @@ public:
 
     QNEBlock(QGraphicsItem *parent = 0);
 
-	QNEPort* addPort(const QString &name, bool isOutput, int flags = 0, int ptr = 0, int align = 3);
+	QNEPort* addPort(const QString &name, bool isInput, bool isOutput, int flags = 0, int ptr = 0, int align = 3);
 	void addInputPort(const QString &name);
 	void addOutputPort(const QString &name);
 	void addInputPorts(const QStringList &names);
@@ -70,8 +70,10 @@ public:
 	QVector<QNEPort*> ports();
 
 	int type() const { return Type; }
+	int flag() const { return mBlockFlags; }
 
-	void setInputData(std::vector<cell> *data_ptr);
+	void setInputDataOrigin(std::vector<cell> *data_ptr);
+	void updateInput_newconnect(std::list<unsigned int> *data_ptr);
 	void setBlockFlagAndSize(int aflags, int awidth, int aheight, QColor acolor, QWidget *parent);
 	
 		
@@ -84,7 +86,7 @@ public:
 	QColor node_text_color = QColor("#e7e7e7");
 	int mBlockFlags;
 	BlockWidget *mBlock;
-
+	QWidget *pWidget;
 
 protected:
 	QVariant itemChange(GraphicsItemChange change, const QVariant &value);
