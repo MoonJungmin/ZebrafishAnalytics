@@ -31,7 +31,7 @@ public:
 
 	BlockWidget(QObject *parent);
 	~BlockWidget();
-	void initialize(int aflags, int awidth, int aheight, QColor acolor, QNEBlock *parent);
+	void initialize(std::string name, int aflags, int awidth, int aheight, QColor acolor, QNEBlock *parent);
 
 	QColor BackgroundColor;
 	QColor DataColor;
@@ -55,8 +55,11 @@ public:
 	QPushButton *BucketColorBtn;
 	QPushButton *CloseBtn;
 	QPushButton *AnnotationBtn;
+	QPushButton *StatisticsBtn;
 
 	std::list<unsigned int> CellIndexListInput;
+	std::list<unsigned int> CellIndexListInput_Sub;
+
 	std::list<unsigned int> CellIndexListOutput;
 	std::list<annotation> mAnnotation;
 
@@ -75,12 +78,13 @@ private slots:
 	void handleAnnotationBtn();
 	void handleDropdownChange(int index);
 	void handleHistogramUpdate();
-
+	void handleStatisticsBtn();
 
 private:
 	QNEBlock * m_block;
-
-	QLabel *count_input;
+	std::string BlockName;
+	QLabel *count_input1;
+	QLabel *count_input2;
 	QLabel *count_output;
 
 	void generate_ToolBox(int aflag);
@@ -93,5 +97,5 @@ private:
 	void updateColorBox(QPushButton *target, QColor color);
 
 	void checkNextBlock();
-
+	void set_operation(int index);
 };

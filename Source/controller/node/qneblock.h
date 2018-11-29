@@ -60,7 +60,9 @@ public:
 
 	QNEPort* addPort(const QString &name, bool isInput, bool isOutput, int flags = 0, int ptr = 0, int align = 3);
 	void addInputPort(const QString &name);
+	void addSubInputPort(const QString &name);
 	void addOutputPort(const QString &name);
+
 	void addInputPorts(const QStringList &names);
 	void addOutputPorts(const QStringList &names);
 	void save(QDataStream&);
@@ -74,7 +76,8 @@ public:
 
 	void setInputDataOrigin(std::vector<cell> *data_ptr);
 	void updateInput_newconnect(std::list<unsigned int> *data_ptr);
-	void setBlockFlagAndSize(int aflags, int awidth, int aheight, QColor acolor, QWidget *parent);
+	void updateInput_newconnect_sub(std::list<unsigned int> *data_ptr);
+	void setBlockFlagAndSize(std::string name, int aflags, int awidth, int aheight, QColor acolor, QWidget *parent);
 	
 		
 	int horzMargin;

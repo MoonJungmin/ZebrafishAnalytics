@@ -107,6 +107,8 @@ void DialogDetailFeature::setIndexAndDraw(int index) {
 		}
 		step++;
 	}
+
+
 	QLayoutItem *item = main_layout->takeAt(0);
     delete item;
 

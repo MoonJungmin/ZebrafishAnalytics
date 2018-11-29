@@ -106,14 +106,21 @@ void DataProject::ProjectSizeLoad() {
 
 	ViewPos_X = DataSizeX / 2;
 	ViewPos_Y = DataSizeY / 2;
-	ViewPos_Z = 0;
-	ViewZoomLevel = 2;
+	ViewPos_Z = DataSizeZ / 2;
+	ViewZoomLevel = 1;
 	
 	emit project_on();
 }
 
-void DataProject::AddFeature(QString aName, QString aPath) {
-	DataFeature temp(aName.toStdString(), aPath.toStdString());
+void DataProject::AddFeature(QString aPath) {
+	std::string path = aPath.toStdString();
+	Utils mUtil;
+	std::vector<std::string> list_line1 = mUtil.Split(path.c_str(), "/");
+	std::vector<std::string> list_line2 = mUtil.Split(list_line1.back().c_str(), ".dat");
+	std::string name = list_line2.front();
+
+
+	DataFeature temp(name, path);
 	mFeature.push_back(temp);
 }
 
@@ -129,8 +136,13 @@ void DataProject::removeFeature(int index) {
 	step++;
 }
 
-void DataProject::AddSubregion(QString aName, QString aPath) {
-	LayerSubregion temp(aName.toStdString(), aPath.toStdString());
+void DataProject::AddSubregion(QString aPath) {
+	std::string path = aPath.toStdString();
+	Utils mUtil;
+	std::vector<std::string> list_line1 = mUtil.Split(path.c_str(), "/");
+	std::string name = list_line1[list_line1.size()-2];
+	
+	LayerSubregion temp(name, path);
 	mSubregion.push_back(temp);
 }
 
@@ -142,6 +154,7 @@ void DataProject::removeSubregion(int index) {
 			break;
 		}
 	}
+	qDebug() << "removeSubregion";
 }
 
 int DataProject::getSerialIndex(int x, int y, int z, int lv) {

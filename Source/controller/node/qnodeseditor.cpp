@@ -127,21 +127,25 @@ bool QNodesEditor::eventFilter(QObject *o, QEvent *e)
 				if (port1->block() != port2->block() && port1->isOutput() != port2->isOutput() && !port1->isConnected(port2))
 				{
 
-		
-
 					if (port1->isOutput()) {
-						/*foreach(QNEConnection *prevconn, port2->connections()) {
-							scene->removeItem((QGraphicsItem*)prevconn);
-						}*/
 						port2->clearConnection();
-						port2->m_block->updateInput_newconnect(&port1->m_block->mBlock->CellIndexListOutput);
+						if (port2->portFlags() == QNEPort::SetSubInputPort) {
+							port2->m_block->updateInput_newconnect_sub(&port1->m_block->mBlock->CellIndexListOutput);
+						}
+						else {
+							port2->m_block->updateInput_newconnect(&port1->m_block->mBlock->CellIndexListOutput);
+						}
+						
 					}
 					else {
-						/*foreach(QNEConnection *prevconn, port1->connections()) {
-							scene->removeItem((QGraphicsItem*)prevconn);
-						}*/
 						port1->clearConnection();
-						port1->m_block->updateInput_newconnect(&port2->m_block->mBlock->CellIndexListOutput);
+						if (port2->portFlags() == QNEPort::SetSubInputPort) {
+							port1->m_block->updateInput_newconnect_sub(&port2->m_block->mBlock->CellIndexListOutput);
+						}
+						else {
+							port1->m_block->updateInput_newconnect(&port2->m_block->mBlock->CellIndexListOutput);
+						}
+
 					}
 
 					

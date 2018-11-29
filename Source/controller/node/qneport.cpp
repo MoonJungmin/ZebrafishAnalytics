@@ -209,6 +209,13 @@ void QNEPort::setPortFlags(int f)
 		m_width = m_block->mBlock->FeatureDropdown->width();
 		m_height = m_block->mBlock->FeatureDropdown->height();
 	}
+	else if (m_portFlags == SetDropdownPort) {
+		QGraphicsProxyWidget* pMyProxy = new QGraphicsProxyWidget(this);
+		pMyProxy->setWidget(m_block->mBlock->SetDropdown);
+		setPath(QPainterPath());
+		m_width = m_block->mBlock->SetDropdown->width();
+		m_height = m_block->mBlock->SetDropdown->height();
+	}
 
 }
 

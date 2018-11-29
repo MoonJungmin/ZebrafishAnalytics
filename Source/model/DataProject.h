@@ -48,7 +48,7 @@ public:
 	float ViewPos_X = 0;
 	float ViewPos_Y = 0;
 	float ViewPos_Z = 123;
-	float ViewZoomLevel = 3.0;
+	float ViewZoomLevel = 2.0;
 
 	int VisualizeMethod_Index = 0;
 
@@ -56,9 +56,9 @@ public:
 	void ProjectOpen(QString aProjPath);
 	void ProjectSave(QString aProjPath);
 
-	void AddFeature(QString aName, QString aPath);
+	void AddFeature(QString aPath);
 	void removeFeature(int index);
-	void AddSubregion(QString aName, QString aPath);
+	void AddSubregion(QString aPath);
 	void removeSubregion(int index);
 
 

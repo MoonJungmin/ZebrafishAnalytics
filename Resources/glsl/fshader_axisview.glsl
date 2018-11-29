@@ -3,8 +3,8 @@
 uniform sampler2D em_texture;
 uniform float em_opacity;
 
-uniform sampler2D sb_texture[10];
-uniform float subregion_opacity[10];
+uniform sampler2D subregion_texture[10];
+uniform int subregion_opacity[10];
 uniform vec4 subregion_color[10];
 
 uniform usampler2D cell_texture;
@@ -55,25 +55,27 @@ void main(void)
 		}
 	}
 
-	vec4 subregionlayer = vec4(0,0,0,1);
-	vec4 subregion_sub[10];
-
+	vec4 subregionlayer = vec4(0.0, 0.0, 0.0, 0.0);
+	int subregion_count = 1;
 	for(i=0;i<10;++i){
-		subregion_sub[i] = vec4(0,0,0,0);
-		if(texture(sb_texture[i], vTexCoord).r / 255.0 > 0){
-			subregion_sub[i] = vec4(subregion_color[i].rgb, subregion_opacity[i]);
-		}	
+		int value = int(texture(subregion_texture[i], vTexCoord).r * 255);
+		if(value > 0){
+			if(subregion_opacity[i] > 0){
+				float opacity = float(subregion_opacity[i]) / 100.0;
+				subregionlayer = subregionlayer + vec4(subregion_color[i].rgb, opacity);
+				subregion_count ++;
+			}			
+		}
 	}
 
-	for(i=0;i<10;++i){
-		subregionlayer = subregionlayer + subregion_sub[i];
-	}
-	subregionlayer = subregionlayer / 10;
+	subregionlayer = subregionlayer / subregion_count;
 
 	
+	//vec4 result = subregionlayer;
 	vec4 result = emlayer*(1-subregionlayer.a) + subregionlayer* (subregionlayer.a);
 	
 	result = result*(1-celllayer.a) + celllayer * (celllayer.a);
 
 	fragColor = vec4(result.rgb, 1.0f);
+	//fragColor = vec4(subregion_opacity[0], subregion_opacity[0], subregion_opacity[0], 1.0f);
 };

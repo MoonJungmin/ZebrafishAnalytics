@@ -84,6 +84,8 @@ QNEPort* QNEBlock::addPort(const QString &name, bool isInput, bool isOutput, int
 
 	qDebug() << width << "/////" << height;
 
+
+	bool firstflag = false;
     foreach(QGraphicsItem *port_, childItems()) {
 		
 		if (port_->type() != QNEPort::Type)
@@ -93,8 +95,18 @@ QNEPort* QNEBlock::addPort(const QString &name, bool isInput, bool isOutput, int
 
 		if (port->portAlign() == QNEPort::Input) {
 			//qDebug() << inputport_count << " " << inputport_y << " " << inputport_y_step << " " << height;
-			port->setPos(-width/2, 0);
-			//inputport_y += inputport_y_step;
+			if (port->m_block->mBlockFlags == QNEBlock::SetBlock) {
+				if (firstflag == false) {
+					port->setPos(-width / 2, -height/6);
+					firstflag = true;
+				}
+				else {
+					port->setPos(-width / 2, height/6);
+				}
+			}
+			else {
+				port->setPos(-width / 2, 0);
+			}
 		}
 		else if (port->portAlign() == QNEPort::Left) {
 			port->setPos(-width/2 , y);
@@ -121,14 +133,14 @@ QNEPort* QNEBlock::addPort(const QString &name, bool isInput, bool isOutput, int
 
 	return port;
 }
-void QNEBlock::setBlockFlagAndSize(int aflags, int awidth, int aheight, QColor acolor, QWidget *parent) {
+void QNEBlock::setBlockFlagAndSize(std::string name, int aflags, int awidth, int aheight, QColor acolor, QWidget *parent) {
 	pWidget = parent;
 	mBlockFlags = aflags;
 	width = awidth;
 	height = aheight;
 	node_color = acolor;
 	mBlock = new BlockWidget(pWidget);
-	mBlock->initialize(mBlockFlags, width, height, node_color, this);
+	mBlock->initialize(name, mBlockFlags, width, height, node_color, this);
 }
 
 void QNEBlock::setInputDataOrigin(std::vector<cell> *data_ptr) {
@@ -150,11 +162,22 @@ void QNEBlock::updateInput_newconnect(std::list<unsigned int> *data_ptr) {
 	mBlock->updatedInputList();
 	//mBlock->DataHeatmap->updateHeatmap();
 }
-
+void QNEBlock::updateInput_newconnect_sub(std::list<unsigned int> *data_ptr) {
+	mBlock->CellIndexListInput_Sub.clear();
+	std::list<unsigned int>::iterator iter = data_ptr->begin();
+	for (iter = data_ptr->begin(); iter != data_ptr->end(); ++iter) {
+		mBlock->CellIndexListInput_Sub.push_back(*iter);
+	}
+	mBlock->updatedInputList();
+}
 
 void QNEBlock::addInputPort(const QString &name)
 {
 	addPort(name, true, false, 0,0, Input);
+}
+void QNEBlock::addSubInputPort(const QString &name)
+{
+	addPort(name, true, false, QNEPort::SetSubInputPort, 0, Input);
 }
 
 void QNEBlock::addOutputPort(const QString &name)

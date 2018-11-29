@@ -24,15 +24,15 @@ public:
 	~LayerSubregion();
 
 	int SubregionIndex;
-	bool SubregionActivated = false;
+	bool SubregionActivated = true;
 
 	std::string SubregionName;
 	std::string SubregionPath;
 	std::string SubregionHeaderPath;
 	std::string IndexTablePath;
 	QColor SubregionColor = QColor(23,55,88);
-	float SubregionOpacity = 0.5f;
-
+	float SubregionOpacity = 0.0f;
+	double SubregionVolume = 0.0f;
 
 	QPushButton *SubregionColorBtn;
 

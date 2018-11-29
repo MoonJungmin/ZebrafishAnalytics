@@ -9,37 +9,48 @@ Contents::Contents(QWidget *parent, QLayout *parent_layout)
 	: QObject(parent)
 {
 	mWidget = parent;
+	QSplitter * splitter = new QSplitter(mWidget);
 
-	QVBoxLayout *contents_left_layout = new QVBoxLayout;
-	contents_left_layout->setAlignment(Qt::AlignCenter);
-	contents_left_layout->setMargin(1);
-	QWidget *contents_left_widget = new QWidget;
-	contents_left_tabwidget = new QTabWidget(contents_left_widget);
-	contents_left_widget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	contents_left_widget->setFixedSize(300, 870);
+	//QWidget *contents_left_widget = new QWidget;
+	contents_left_tabwidget = new QTabWidget(mWidget);
+	//contents_left_tabwidget->setMaximumWidth(300);
+	//coents_left_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	//contents_left_widget->setFixedSize(300, 870);
+	/*contents_left_widget->setMinimumHeight(870);
 	contents_left_widget->setStyleSheet("background-color:(35,35,35);");
 	contents_left_layout->addWidget(contents_left_widget);
+	left_widget->setLayout(contents_left_layout);
+*/
 
-	contents_center_layout = new QVBoxLayout;
+	/*contents_center_layout = new QVBoxLayout;
 	contents_center_layout->setAlignment(Qt::AlignCenter);
 	contents_center_layout->setMargin(1);
-	QWidget *contents_center_widget = new QWidget;
-	contents_center_tabwidget = new QTabWidget(contents_center_widget);
-	contents_center_widget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	contents_center_widget->setFixedSize(1600, 870 * 0.60);
+	QWidget *contents_center_widget = new QWidget;*/
+	contents_center_tabwidget = new QTabWidget(mWidget);
+	
+	//contents_center_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	////contents_center_widget->setFixedSize(1600, 870);
+	//contents_center_widget->setMinimumHeight(870);
+	//contents_center_widget->setStyleSheet("background-color:(35,35,35);");
+	//contents_center_layout->addWidget(contents_center_widget);
 
-	contents_center_widget->setStyleSheet("background-color:(35,35,35);");
-	contents_center_layout->addWidget(contents_center_widget);
-
-	GraphEditorView = new ViewGraphEditor(mWidget);
-	GraphEditorView->initialize(contents_center_layout);
+	contents_left_tabwidget->addTab(new QWidget(), "Project Information");
+	contents_left_tabwidget->addTab(new QWidget(), "Subregion & Feature");
+	
 
 
-	LeftTabInit(contents_left_tabwidget, contents_left_widget->width(), contents_left_widget->height());
-	CenterTabInit(contents_center_tabwidget, contents_center_widget->width(), contents_center_widget->height());
+	contents_center_tabwidget->addTab(new QWidget(), "4-View");
+	contents_center_tabwidget->addTab(new QWidget(), "XY");
+	contents_center_tabwidget->addTab(new QWidget(), "YZ");
+	contents_center_tabwidget->addTab(new QWidget(), "ZX");
+	contents_center_tabwidget->addTab(new QWidget(), "3D");
+	contents_center_tabwidget->addTab(new QWidget(), "Graph");
+	//LeftTabInit(contents_left_tabwidget);
+	//CenterTabInit(contents_center_tabwidget);
 
-	parent_layout->addItem(contents_left_layout);
-	parent_layout->addItem(contents_center_layout);
+	splitter->addWidget(contents_left_tabwidget);
+	splitter->addWidget(contents_center_tabwidget);
+	parent_layout->addWidget(splitter);
 }
 
 
@@ -48,33 +59,21 @@ Contents::~Contents()
 }
 
 void Contents::LeftTabInit(QTabWidget *target, int width, int height) {
-	//target->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	target->setFixedSize(width, height);
-	//target->setStyleSheet("background-color:red;");
+	//target->setFixedSize(width, height);
 
 	target->addTab(new QWidget(), "Project Information");
 	target->addTab(new QWidget(), "Subregion & Feature");
 }
 void Contents::CenterTabInit(QTabWidget *target, int width, int height) {
-	//target->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	//target->setFixedWidth(300);
-	target->setFixedSize(width, height);
+	//target->setFixedSize(width, height);
 	
 	target->addTab(new QWidget(), "4-View");
-	//QOpenGLWidget *glWidgets = new ViewAxisGLWidget;
 	target->addTab(new QWidget(), "XY");
 	target->addTab(new QWidget(), "YZ");
 	target->addTab(new QWidget(), "ZX");
+	target->addTab(new QWidget(), "3D");
+	target->addTab(new QWidget(), "Graph");
 }
-//
-//void Contents::RightTabInit(QTabWidget *target, int width, int height) {
-//	//target->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-//	target->setFixedSize(width, height);
-//	qDebug() << " Right size " << width << height;
-//	target->addTab(new QWidget(), "Morphology Feature");
-//	target->addTab(new QWidget(), "2D Scatter plot");
-//}
-
 
 void Contents::replaceTab(QTabWidget * tabs, int index, QWidget * replacement, QString label)
 {
@@ -92,50 +91,6 @@ void Contents::updateAllWidget(int index, bool scaleflag) {
 }
 
 
-//
-//void Contents::RightContentsOn() {
-//	QVBoxLayout *HistListLayout = new QVBoxLayout;
-//	QString nameList[5] = { "Volume", "Surfacearea", "Sphericity", "Eccentricity", "Intensity" };
-//
-//	for (int k = 0; k < 5; ++k) {
-//		
-//		MorphoHistBox[k] = new ViewHistogramBox(mWidget);
-//
-//		switch (k) {
-//			case 0:
-//				MorphoHistBox[k]->Init(nameList[k], k, &mGlobals.CurrentProject->mAnalytics->volumeHist);
-//				break;
-//			case 1:
-//				MorphoHistBox[k]->Init(nameList[k], k, &mGlobals.CurrentProject->mAnalytics->surfaceareaHist);
-//				break;
-//			case 2:
-//				MorphoHistBox[k]->Init(nameList[k], k, &mGlobals.CurrentProject->mAnalytics->sphericityHist);
-//				break;
-//			case 3:
-//				MorphoHistBox[k]->Init(nameList[k], k, &mGlobals.CurrentProject->mAnalytics->eccentricityHist);
-//				break;
-//			case 4:
-//				MorphoHistBox[k]->Init(nameList[k], k, &mGlobals.CurrentProject->mAnalytics->intensityHist);
-//				break;
-//		}
-//		
-//		HistListLayout->addWidget(MorphoHistBox[k]->HistBoxFrame);
-//		connect(MorphoHistBox[k], SIGNAL(focusedHist(int)), this, SLOT(focusmanage_histogram(int)));
-//
-//	}
-//
-///*
-//	QWidget *HistListWidget = new QWidget();
-//	HistListWidget->setLayout(HistListLayout);*/
-//	QScrollArea* scroller = new QScrollArea;
-//	scroller->horizontalScrollBar()->setEnabled(false);
-//	scroller->setLayout(HistListLayout);
-//
-//	replaceTab(contents_right_tabwidget, 0, scroller, "Morphology Feature");
-//
-//}
-
-
 void Contents::InitGLView() {
 	GL_XYAxis_Main = new ViewAxisGLWidget;
 	GL_XYAxis_Main->setAxisIndex(1, 0);
@@ -149,10 +104,12 @@ void Contents::InitGLView() {
 	GL_ZXAxis_Main->setAxisIndex(3, 2);
 	connect(GL_ZXAxis_Main, SIGNAL(updateAll(int, bool)), this, SLOT(updateAllWidget(int, bool)));
 
+	GL_Volume_Main = new ViewVolumeGLWidget;
+
 	replaceTab(contents_center_tabwidget, 1, GL_XYAxis_Main, "XY");
 	replaceTab(contents_center_tabwidget, 2, GL_YZAxis_Main, "YZ");
 	replaceTab(contents_center_tabwidget, 3, GL_ZXAxis_Main, "ZX");
-
+	replaceTab(contents_center_tabwidget, 4, GL_Volume_Main, "3D");
 
 	GL_XYAxis_Sub = new ViewAxisGLWidget;
 	GL_XYAxis_Sub->setAxisIndex(1, 3);
@@ -166,23 +123,38 @@ void Contents::InitGLView() {
 	GL_ZXAxis_Sub->setAxisIndex(3, 5);
 	connect(GL_ZXAxis_Sub, SIGNAL(updateAll(int, bool)), this, SLOT(updateAllWidget(int, bool)));
 
-	QVBoxLayout *view4_layout = new QVBoxLayout;
-	QHBoxLayout *first_lay = new QHBoxLayout;
-	QHBoxLayout *second_lay = new QHBoxLayout;
+	GL_Volume_Sub = new ViewVolumeGLWidget;
+
+
+	QSplitter *view4_layout = new QSplitter;
+	view4_layout->setOrientation(Qt::Vertical);
+	QSplitter *first_lay = new QSplitter;
+	first_lay->setOrientation(Qt::Horizontal);
+	QSplitter *second_lay = new QSplitter;
+	second_lay->setOrientation(Qt::Horizontal);
 	first_lay->addWidget(GL_XYAxis_Sub);
 	first_lay->addWidget(GL_YZAxis_Sub);
-	view4_layout->addLayout(first_lay);
 	second_lay->addWidget(GL_ZXAxis_Sub);
-	second_lay->addWidget(new QWidget());
-	view4_layout->addLayout(second_lay);
-	QWidget *view4_Container = new QWidget;
-	view4_Container->setLayout(view4_layout);
-	replaceTab(contents_center_tabwidget, 0, view4_Container, "4-View");
+	second_lay->addWidget(GL_Volume_Sub);
+
+
+
+	view4_layout->addWidget(first_lay);
+	view4_layout->addWidget(second_lay);
+	
+	
+	replaceTab(contents_center_tabwidget, 0, view4_layout, "4-View");
 
 }
 
 void Contents::InitGraph() {
+	QWidget *widget = new QWidget;
+	QVBoxLayout *layout = new QVBoxLayout;
+	GraphEditorView = new ViewGraphEditor(mWidget);
+	GraphEditorView->initialize(layout);
 	GraphEditorView->addOrigin();
+	widget->setLayout(layout);
+	replaceTab(contents_center_tabwidget, 5, widget, "Graph");
 }
 
 void Contents::InitProjectInfo() {
@@ -392,27 +364,29 @@ void Contents::subregion_updated() {
 		QFont font;
 		font.setPointSize(10);
 		font.setBold(true);
+		
+		iter->SubregionIndex = index;
 
 		QLabel *name = new QLabel(mWidget);
 		name->setFont(font);
 		name->setText(QString::fromStdString(iter->SubregionName));
-		QCheckBox *CheckBox = new QCheckBox;
-		CheckBox->setObjectName(QString::fromStdString(std::to_string(index)));
-		CheckBox->setStyleSheet("QCheckBox {background-color: #555555}");
-		iter->SubregionIndex = index;
-		CheckBox->setChecked(iter->SubregionActivated);
 
-		connect(CheckBox, SIGNAL(stateChanged(int)), this, SLOT(handleCheckBox_subregion(int)));
-		
-		iter->SubregionColorBtn = new QPushButton;
-		iter->SubregionColorBtn->setObjectName(QString::fromStdString(std::to_string(index)));
-		iter->SubregionColorBtn->setFixedSize(QSize(15, 15));
-		iter->SubregionColorBtn->setFlat(true);
-		iter->SubregionColorBtn->setAutoFillBackground(true);
-		updateColorBox(iter->SubregionColorBtn, iter->SubregionColor);
-		connect(iter->SubregionColorBtn, SIGNAL(released()), this, SLOT(handleColorBtn_subregion()));
-		
+		QPushButton *infoBtn = new QPushButton(mWidget);
+		infoBtn->setIcon(QIcon("Resources/icon_info.png"));
+		infoBtn->setObjectName(QString::fromStdString(std::to_string(index)));
+		infoBtn->setIconSize(QSize(15, 15));
+		infoBtn->setFixedSize(QSize(20, 20));
+		connect(infoBtn, SIGNAL(clicked()), this, SLOT(handleInfoBtn_subregion()));
 
+
+		QPushButton *colorbtn = new QPushButton;
+		colorbtn->setObjectName(QString::fromStdString(std::to_string(index)));
+		colorbtn->setFixedSize(QSize(15, 15));
+		colorbtn->setFlat(true);
+		colorbtn->setAutoFillBackground(true);
+		updateColorBox(colorbtn, iter->SubregionColor);
+		connect(colorbtn, SIGNAL(released()), this, SLOT(handleColorBtn_subregion()));
+		
 		QPushButton *deleteBtn = new QPushButton(mWidget);
 		deleteBtn->setIcon(QIcon("Resources/icon_trash.png"));
 		deleteBtn->setObjectName(QString::fromStdString(std::to_string(index)));
@@ -421,15 +395,24 @@ void Contents::subregion_updated() {
 		connect(deleteBtn, SIGNAL(clicked()), this, SLOT(handleDeleteBtn_subregion()));
 		
 		QSlider *slider = new QSlider(Qt::Horizontal);
-
+		slider->setObjectName(QString::fromStdString(std::to_string(index)));
+		slider->setFixedWidth(100);
+		slider->setFocusPolicy(Qt::StrongFocus);
+		slider->setTickPosition(QSlider::TicksBothSides);
+		slider->setTickInterval(10);
+		slider->setSingleStep(1);
+		slider->setValue(iter->SubregionOpacity*100);
+		connect(slider, SIGNAL(valueChanged(int)), this, SLOT(handleOpacity(int)));
 
 
 		QWidget *filler2 = new QWidget;
 		filler2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 		list_item_layout->addWidget(name);
 		list_item_layout->addWidget(filler2);
-		list_item_layout->addWidget(iter->SubregionColorBtn);
-		list_item_layout->addWidget(CheckBox);
+		list_item_layout->addWidget(infoBtn);
+		list_item_layout->addWidget(slider);
+		list_item_layout->addWidget(colorbtn);
+		//list_item_layout->addWidget(CheckBox);
 		list_item_layout->addWidget(deleteBtn);
 		widget->setLayout(list_item_layout);
 		QListWidgetItem *item = new QListWidgetItem();
@@ -441,6 +424,7 @@ void Contents::subregion_updated() {
 
 		index++;
 	}
+	updateAllWidget(0, false);
 }
 
 void Contents::handleDetailBtn_feature() {
@@ -450,6 +434,15 @@ void Contents::handleDetailBtn_feature() {
 	int index = std::stoi(senderObjName.toStdString());
 	mGlobals.mDialogManager->mDialogDetailFeature->setIndexAndDraw(index);
 	mGlobals.mDialogManager->mDialogDetailFeature->exec();
+}
+
+void Contents::handleOpacity(int value) {
+	QObject *senderObj = sender(); // This will give Sender object
+	QString senderObjName = senderObj->objectName();
+	int index = std::stoi(senderObjName.toStdString());
+	mGlobals.CurrentProject->mSubregion[index].SubregionOpacity = (float)value / 100.0f;
+	qDebug() << index << " " << mGlobals.CurrentProject->mSubregion[index].SubregionOpacity;
+	updateAllWidget(0, false);
 }
 
 
@@ -472,6 +465,15 @@ void Contents::handleDeleteBtn_subregion() {
 	mGlobals.CurrentProject->removeSubregion(index);
 	subregion_updated();
 }
+void Contents::handleInfoBtn_subregion() {
+	QObject *senderObj = sender(); // This will give Sender object
+	QString senderObjName = senderObj->objectName();
+	int index = std::stoi(senderObjName.toStdString());
+	qDebug() << "info Button: subregion" << senderObjName;
+	mGlobals.mDialogManager->mDialogInfoSubregion->setIndexAndDraw(index);
+	mGlobals.mDialogManager->mDialogInfoSubregion->exec();
+}
+
 
 void Contents::handleCheckBox_subregion(int state) {
 	QObject *senderObj = sender(); // This will give Sender object
@@ -497,7 +499,7 @@ void Contents::handleCheckBox_subregion(int state) {
 	else {
 		mGlobals.CurrentProject->mSubregion[index].SubregionActivated = false;
 	}
-	subregion_updated();
+	//subregion_updated();
 }
 
 
@@ -511,6 +513,7 @@ void Contents::handleColorBtn_subregion() {
 
 	if (color_str.length() > 2) {
 		mGlobals.CurrentProject->mSubregion[index].SubregionColor = QColor(color_str);
-		updateColorBox(mGlobals.CurrentProject->mSubregion[index].SubregionColorBtn, QColor(color_str));
+		subregion_updated();
 	}
+
 }

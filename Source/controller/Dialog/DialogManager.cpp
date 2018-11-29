@@ -29,5 +29,7 @@ void DialogManager::initializeDialog() {
 	mDialogAddSubregion = new DialogAddSubregion(mWidget);
 	mDialogDetailFeature = new DialogDetailFeature(mWidget);
 	mDialogAnnotation = new DialogAnnotation(mWidget);
+	mDialogStatistics = new DialogStatistics(mWidget);
+	mDialogInfoSubregion = new DialogInfoSubregion(mWidget);
 }
 

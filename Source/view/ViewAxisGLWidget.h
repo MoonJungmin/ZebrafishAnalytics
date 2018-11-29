@@ -60,8 +60,8 @@ private:
 	int WidgetHeight = 0;
 	int CellTableWidth;
 	
-	float subregion_opacity[10];
-	QColor subregion_color[10];
+	int subregion_opacity[10];
+	QVector4D subregion_color[10];
 
 	block_info calcBlockIndex();
 	unsigned int *emptyTexLabel;
@@ -72,7 +72,7 @@ private:
 
 	bool bindEMLayer(block_info info);
 	bool bindCellLayer(block_info info);
-	std::vector<bool> bindSubregionLayer(block_info info);
+	int bindSubregionLayer(block_info info);
 
 	QColor clearColor;
 	QPoint lastPos;

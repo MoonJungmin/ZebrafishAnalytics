@@ -14,5 +14,9 @@
         <file>Resources/glsl/fshader_heatmap.glsl</file>
         <file>Resources/glsl/vshader_axisview.glsl</file>
         <file>Resources/glsl/vshader_heatmap.glsl</file>
+        <file>Resources/glsl/fshader_3dview.glsl</file>
+        <file>Resources/glsl/vshader_3dview.glsl</file>
+        <file>Resources/icon_info.png</file>
+        <file>Resources/icon_statistics.png</file>
     </qresource>
 </RCC>

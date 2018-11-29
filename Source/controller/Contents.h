@@ -14,10 +14,10 @@
 #include "Source/global.h"
 #include "Source/view/ViewAxisGLWidget.h"
 #include "Source/view/ViewGraphEditor.h"
-
+#include "Source/view/ViewVolumeGLWidget.h"
 class ViewAxisGLWidget;
 class ViewGraphEditor;
-
+class ViewVolumeGLWidget;
 
 class Contents : public QObject
 {
@@ -40,6 +40,9 @@ public:
 	ViewAxisGLWidget *GL_YZAxis_Sub;
 	ViewAxisGLWidget *GL_ZXAxis_Sub;
 
+	ViewVolumeGLWidget *GL_Volume_Main;
+	ViewVolumeGLWidget *GL_Volume_Sub;
+
 	ViewGraphEditor *GraphEditorView;
 
 	QLineEdit *ProjectName;
@@ -59,8 +62,10 @@ private slots:
 	void handleDetailBtn_feature();
 	void handleDeleteBtn_feature();
 	void handleDeleteBtn_subregion();
+	void handleInfoBtn_subregion();
 	void handleCheckBox_subregion(int state);
 	void handleColorBtn_subregion();
+	void handleOpacity(int value);
 
 private:
 	

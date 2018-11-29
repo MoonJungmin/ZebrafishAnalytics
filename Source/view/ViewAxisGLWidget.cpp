@@ -29,13 +29,11 @@ ViewAxisGLWidget::~ViewAxisGLWidget()
 
 QSize ViewAxisGLWidget::minimumSizeHint() const
 {
-	qDebug() << "minimumSizeHint";
 	return QSize(50, 50);
 }
 
 QSize ViewAxisGLWidget::sizeHint() const
 {
-	qDebug() << "sizeHint";
 	return QSize(200, 200);
 }
 
@@ -84,8 +82,8 @@ void ViewAxisGLWidget::initializeGL()
 	con_EMTex = program->uniformLocation("em_texture");
 	con_LBTex = program->uniformLocation("cell_texture");
 	for (int i = 0; i<10; i++) {
-		char t[10];
-		sprintf(t, "sb_texture[%d]", i);
+		char t[20];
+		sprintf(t, "subregion_texture[%d]", i);
 		con_SBTex[i] = program->uniformLocation(t);
 	}
 
@@ -110,7 +108,6 @@ void ViewAxisGLWidget::initializeGL()
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, blocksize, blocksize, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
-		subregion_opacity[i] = 0;
 	}
 	
 	glGenTextures(1, &LBTex);
@@ -125,8 +122,8 @@ void ViewAxisGLWidget::initializeGL()
 	cell_color_data = new unsigned int[tablesize];
 
 
-	qDebug() << " Table Width : " << CellTableWidth;
-	qDebug() << " Cell Count : " << mGlobals.CurrentProject->mLayerCell->MaxCellCount;
+	//qDebug() << " Table Width : " << CellTableWidth;
+	//qDebug() << " Cell Count : " << mGlobals.CurrentProject->mLayerCell->MaxCellCount;
 
 	glGenTextures(1, &CellColorTex);
 	glBindTexture(GL_TEXTURE_2D, CellColorTex);
@@ -288,12 +285,19 @@ bool ViewAxisGLWidget::bindCellLayer(block_info info) {
 
 }
 
-std::vector<bool> ViewAxisGLWidget::bindSubregionLayer(block_info info) {
-	std::vector<bool> result(10, false);
+int ViewAxisGLWidget::bindSubregionLayer(block_info info) {
+	qDebug() << "bindSubregionLayer";
+	for (int i = 0; i < 10; ++i) {
+		subregion_opacity[i] = 0;
+		subregion_color[i][0] = 0;
+		subregion_color[i][1] = 0;
+		subregion_color[i][2] = 0;
+		subregion_color[i][3] = 0;
+	}
 	int subregion_index = 0;
 	std::vector<LayerSubregion>::iterator iter;
 	for (iter = mGlobals.CurrentProject->mSubregion.begin(); iter != mGlobals.CurrentProject->mSubregion.end(); ++iter) {
-		if (iter->SubregionActivated == true) {
+		if (iter->SubregionOpacity > 0 ) {
 			int stat = iter->checkBlockIndex(info.x, info.y, info.z, info.level, info.axis);
 
 			if (stat == -1) {
@@ -307,18 +311,21 @@ std::vector<bool> ViewAxisGLWidget::bindSubregionLayer(block_info info) {
 				glBindTexture(GL_TEXTURE_2D, SBTex[subregion_index]);
 				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mGlobals.CurrentProject->DataBlockSize, mGlobals.CurrentProject->DataBlockSize, GL_RED, GL_UNSIGNED_BYTE, iter_sb->data);
 				glBindTexture(GL_TEXTURE_2D, 0);
-				result[subregion_index] = true;
-				subregion_opacity[subregion_index] = 1.0f;
+				subregion_color[subregion_index][0] = iter->SubregionColor.redF();
+				subregion_color[subregion_index][1] = iter->SubregionColor.greenF();
+				subregion_color[subregion_index][2] = iter->SubregionColor.blueF();
+				subregion_color[subregion_index][3] = iter->SubregionColor.alphaF();
+
+				subregion_opacity[subregion_index] = iter->SubregionOpacity * 100;
+				subregion_index++;
 			}
-			else {
-				subregion_opacity[subregion_index] = 0;
-				result[subregion_index] = false;
-			}
-			subregion_color[subregion_index] = iter->SubregionColor;
-			subregion_index++;
+
+			//subregion_color[subregion_index] = iter->SubregionColor;
+
+
 		}
 	}
-	return result;
+	return subregion_index;
 }
 
 void ViewAxisGLWidget::paintGL()
@@ -358,7 +365,7 @@ void ViewAxisGLWidget::paintGL()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	block_info BlockInfo = calcBlockIndex();
 
-	
+	qDebug() << "paint";
 	
 	for (int x = BlockInfo.start_x; x < BlockInfo.end_x; ++x) {
 		for (int y = BlockInfo.start_y; y < BlockInfo.end_y; ++y) {
@@ -372,7 +379,7 @@ void ViewAxisGLWidget::paintGL()
 
 			
 
-			std::vector<bool> subregionStat = bindSubregionLayer(BlockInfo);
+			int subregion_count = bindSubregionLayer(BlockInfo);
 			//uploadCellColor();
 
 			program->setUniformValue("matrix", projMatrix*modelViewMatrix);
@@ -381,7 +388,11 @@ void ViewAxisGLWidget::paintGL()
 			program->setUniformValue("cell_opacity", mGlobals.CurrentProject->mLayerCell->Opacity);
 			program->setUniformValue("selected_color", mGlobals.CurrentProject->SelectedColor);
 			program->setUniformValue("unselected_color", mGlobals.CurrentProject->UnSelectedColor);
+			//glUniform1fv(glGetUniformLocation(program, "v"), 10, v);
+			
 
+			program->setUniformValueArray("subregion_opacity", subregion_opacity, 10);
+			program->setUniformValueArray("subregion_color", (QVector4D*)subregion_color, 10);
 
 
 			if (EMStat) {
@@ -415,29 +426,18 @@ void ViewAxisGLWidget::paintGL()
 			}
 						
 
-			int subregion_index = 0;
-			std::vector<LayerSubregion>::iterator iter;
-			for (iter = mGlobals.CurrentProject->mSubregion.begin(); iter != mGlobals.CurrentProject->mSubregion.end(); ++iter) {
-				if (iter->SubregionActivated == true) {
-					if (subregionStat[subregion_index]) {
-						glActiveTexture(GL_TEXTURE3 + subregion_index);
-						glUniform1i(con_SBTex[subregion_index], subregion_index + 3);
-						glBindTexture(GL_TEXTURE_2D, SBTex[subregion_index]);
-					}
-					else {
-						glActiveTexture(GL_TEXTURE3 + subregion_index);
-						glBindTexture(GL_TEXTURE_2D, 0);
-					}
-					subregion_index++;
-				}
-			}
-			for (subregion_index; subregion_index < 10; ++subregion_index) {
+
+			
+			for (int subregion_index = 0; subregion_index < subregion_count; ++subregion_index) {
 				glActiveTexture(GL_TEXTURE3 + subregion_index);
+				glUniform1i(con_SBTex[subregion_index], subregion_index + 3);
+				glBindTexture(GL_TEXTURE_2D, SBTex[subregion_index]);
+			}
+			for (subregion_count; subregion_count < 10; ++subregion_count) {
+				glActiveTexture(GL_TEXTURE3 + subregion_count);
 				glBindTexture(GL_TEXTURE_2D, 0);
 			}
-			program->setUniformValueArray("subregion_opacity", (GLfloat *)subregion_opacity, 10, 4);
-			program->setUniformValueArray("subregion_color", (QVector4D*)subregion_color, 10);
-
+			
 
 
 			drawTile(BlockInfo);	
@@ -554,13 +554,13 @@ void ViewAxisGLWidget::wheelEvent(QWheelEvent *event){
 	float delta = (float)event->angleDelta().y();
 
 	if (delta > 0) {
-		mGlobals.CurrentProject->ViewZoomLevel -= 0.01;
+		mGlobals.CurrentProject->ViewZoomLevel -= 0.05;
 		emit update_view_state(mGlobals.CurrentProject->ViewPos_X, mGlobals.CurrentProject->ViewPos_Y, mGlobals.CurrentProject->ViewPos_Z, mGlobals.CurrentProject->ViewZoomLevel);
 		emit updateAll(GLView_Index, true);
 		update();
 	}
 	else {
-		mGlobals.CurrentProject->ViewZoomLevel += 0.01;
+		mGlobals.CurrentProject->ViewZoomLevel += 0.05;
 		emit update_view_state(mGlobals.CurrentProject->ViewPos_X, mGlobals.CurrentProject->ViewPos_Y, mGlobals.CurrentProject->ViewPos_Z, mGlobals.CurrentProject->ViewZoomLevel);
 		emit updateAll(GLView_Index, true);
 		update();

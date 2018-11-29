@@ -57,15 +57,15 @@ DialogAddFeature::DialogAddFeature(QWidget *parent) : QDialog(parent)
 	QFont right_small_contents_font("Arial", 9, QFont::Normal);
 
 
-	QHBoxLayout *featurename_layout = new QHBoxLayout;
-	QLabel *label_featurename = new QLabel(this);
-	label_featurename->setText("Feature Name   ");
-	label_featurename->setFont(right_font);
-	FeatureName = new QLineEdit(this);
-	FeatureName->setPlaceholderText("Enter the subregion name.");
-	FeatureName->setFocus();
-	featurename_layout->addWidget(label_featurename);
-	featurename_layout->addWidget(FeatureName);
+	//QHBoxLayout *featurename_layout = new QHBoxLayout;
+	//QLabel *label_featurename = new QLabel(this);
+	//label_featurename->setText("Feature Name   ");
+	//label_featurename->setFont(right_font);
+	//FeatureName = new QLineEdit(this);
+	//FeatureName->setPlaceholderText("Enter the subregion name.");
+	//FeatureName->setFocus();
+	//featurename_layout->addWidget(label_featurename);
+	//featurename_layout->addWidget(FeatureName);
 
 
 	QHBoxLayout *featurepath_layout = new QHBoxLayout;
@@ -107,8 +107,8 @@ DialogAddFeature::DialogAddFeature(QWidget *parent) : QDialog(parent)
 	btn_layout->addWidget(reject_btn);
 
 
-	featurename_layout->setMargin(10);
-	right_layout->addLayout(featurename_layout);
+	/*featurename_layout->setMargin(10);
+	right_layout->addLayout(featurename_layout);*/
 	featurepath_layout->setMargin(10);
 	right_layout->addLayout(featurepath_layout);
 
@@ -143,7 +143,7 @@ void DialogAddFeature::done(int val)
 void DialogAddFeature::accept()
 {
 	qDebug("Accept.");
-	mGlobals.CurrentProject->AddFeature(FeatureName->text(), FeaturePath->text());
+	mGlobals.CurrentProject->AddFeature(FeaturePath->text());
 	emit updatedFeature();
 	this->hide();
 }

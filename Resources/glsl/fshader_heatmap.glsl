@@ -8,9 +8,14 @@ out vec4 fragColor;
 
 void main(void)
 {
-	float heatmap_value = texture(heatmap, vTexCoord).r / heatmap_max;
-	vec4 value = texture(thumbnail, vTexCoord);
-	vec4 color = heatmap_color * heatmap_value;
+	
+	vec4 background = texture(thumbnail, vTexCoord);
+	background.a = 1.0f;
 
-	fragColor = vec4(value.r+color.r, value.g+color.g , value.b+color.b ,1.0);
+	float heatmap_value = texture(heatmap, vTexCoord).r / heatmap_max;
+	vec4 heatmap_layer = vec4(heatmap_color.rgb, heatmap_value);
+
+	vec4 result = background * (1- heatmap_layer.a) + heatmap_layer * (heatmap_layer.a);
+	result.a = 1.0f;
+	fragColor = result;
 };

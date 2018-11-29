@@ -177,6 +177,18 @@
     <ClCompile Include="Source\view\ViewHeatmapGLWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\view\ViewVolumeGLWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\view\GeometryEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\controller\Dialog\DialogStatistics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\controller\Dialog\DialogInfoSubregion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="ZebrafishAnalytics.h">
@@ -260,6 +272,15 @@
     <QtMoc Include="Source\view\ViewHeatmapGLWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="Source\view\ViewVolumeGLWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Source\controller\Dialog\DialogStatistics.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Source\controller\Dialog\DialogInfoSubregion.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="ZebrafishAnalytics.ui">
@@ -295,6 +316,8 @@
     <None Include="Resources\glsl\fshader_axisview.glsl" />
     <None Include="Resources\glsl\fshader_heatmap.glsl" />
     <None Include="Resources\glsl\vshader_axisview.glsl" />
+    <None Include="Resources\glsl\vshader_3dview.glsl" />
+    <None Include="Resources\glsl\fshader_3dview.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\controller\node\qneblock.h">
@@ -361,6 +384,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\view\histogram\Histogram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\view\GeometryEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

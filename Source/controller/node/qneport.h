@@ -54,7 +54,9 @@ public:
 		SubregionWidgetPort = 6,
 		SubregionDropdownPort = 7,
 		FeatureWidgetPort = 8,
-		FeatureDropdownPort = 9
+		FeatureDropdownPort = 9,
+		SetSubInputPort = 10,
+		SetDropdownPort = 11
 	};
 	
 

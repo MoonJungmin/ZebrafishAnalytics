@@ -11,6 +11,8 @@
 #include "DialogAddSubregion.h"
 #include "DialogDetailFeature.h"
 #include "DialogAnnotation.h"
+#include "DialogStatistics.h"
+#include "DialogInfoSubregion.h"
 #include <QWidget>
 
 
@@ -25,7 +27,8 @@ class DialogAddFeature;
 class DialogAddSubregion;
 class DialogDetailFeature;
 class DialogAnnotation;
-
+class DialogStatistics;
+class DialogInfoSubregion;
 class DialogManager
 {
 public:
@@ -43,8 +46,8 @@ public:
 	DialogAddSubregion * mDialogAddSubregion;
 	DialogDetailFeature * mDialogDetailFeature;
 	DialogAnnotation * mDialogAnnotation;
-
-
+	DialogStatistics * mDialogStatistics;
+	DialogInfoSubregion *mDialogInfoSubregion;
 private:
 	QWidget *mWidget;
 	void initializeDialog();

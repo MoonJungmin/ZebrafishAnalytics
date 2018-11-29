@@ -57,15 +57,15 @@ DialogAddSubregion::DialogAddSubregion(QWidget *parent) : QDialog(parent)
 	QFont right_small_contents_font("Arial", 9, QFont::Normal);
 
 
-	QHBoxLayout *subregionname_layout = new QHBoxLayout;
-	QLabel *label_subregionname = new QLabel(this);
-	label_subregionname->setText("Subregion Name   ");
-	label_subregionname->setFont(right_font);
-	SubregionName = new QLineEdit(this);
-	SubregionName->setPlaceholderText("Enter the subregion name.");
-	SubregionName->setFocus();
-	subregionname_layout->addWidget(label_subregionname);
-	subregionname_layout->addWidget(SubregionName);
+	//QHBoxLayout *subregionname_layout = new QHBoxLayout;
+	//QLabel *label_subregionname = new QLabel(this);
+	//label_subregionname->setText("Subregion Name   ");
+	//label_subregionname->setFont(right_font);
+	//SubregionName = new QLineEdit(this);
+	//SubregionName->setPlaceholderText("Enter the subregion name.");
+	//SubregionName->setFocus();
+	//subregionname_layout->addWidget(label_subregionname);
+	//subregionname_layout->addWidget(SubregionName);
 
 
 	QHBoxLayout *subregionpath_layout = new QHBoxLayout;
@@ -108,8 +108,8 @@ DialogAddSubregion::DialogAddSubregion(QWidget *parent) : QDialog(parent)
 	btn_layout->addWidget(reject_btn);
 
 
-	subregionname_layout->setMargin(10);
-	right_layout->addLayout(subregionname_layout);
+	//subregionname_layout->setMargin(10);
+	//right_layout->addLayout(subregionname_layout);
 	subregionpath_layout->setMargin(10);
 	right_layout->addLayout(subregionpath_layout);
 
@@ -145,7 +145,7 @@ void DialogAddSubregion::done(int val)
 void DialogAddSubregion::accept()
 {
 	qDebug("Accept.");
-	mGlobals.CurrentProject->AddSubregion(SubregionName->text(), SubregionPath->text());
+	mGlobals.CurrentProject->AddSubregion(SubregionPath->text());
 	emit updatedSubregion();
 	this->hide();
 }
