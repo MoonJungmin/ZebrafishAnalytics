@@ -13,7 +13,10 @@ ViewHistogramWidget::ViewHistogramWidget(QWidget *parent)
 ViewHistogramWidget::~ViewHistogramWidget()
 {
 }
-
+void ViewHistogramWidget::setInterface(QLineEdit *s, QLineEdit *e) {
+	start_edit = s;
+	end_edit = e;
+}
 void ViewHistogramWidget::setRenderingSize(int width, int height) {
 	mWidth = width;
 	mHeight = height;
@@ -133,7 +136,10 @@ void ViewHistogramWidget::update_release_box(float start, float end) {
 	}
 
 	//updateCellColor();
-	
+	start_edit->setText(QString::fromStdString(to_string((int)(start * 100))));
+	end_edit->setText(QString::fromStdString(to_string((int)(end * 100))));
+
+
 	emit OutputUpdated();
 
 }

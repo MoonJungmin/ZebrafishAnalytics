@@ -58,7 +58,7 @@ public:
 
 	void AddFeature(QString aPath);
 	void removeFeature(int index);
-	void AddSubregion(QString aPath);
+	int AddSubregion(QString aPath);
 	void removeSubregion(int index);
 
 

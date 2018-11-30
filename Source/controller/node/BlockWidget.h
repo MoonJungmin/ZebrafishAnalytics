@@ -34,18 +34,27 @@ public:
 	void initialize(std::string name, int aflags, int awidth, int aheight, QColor acolor, QNEBlock *parent);
 
 	QColor BackgroundColor;
+	QString BackgroundColor_style;
 	QColor DataColor;
 
 	QWidget *ToolBox;
 	ViewHeatmapGLWidget *DataHeatmap;
 
 	QWidget *DataInputOutput;
-	QComboBox *SubregionDropdown;
 	
+	QWidget *SubregionDropdownMaster;
+	QComboBox *SubregionDropdown;
+	QComboBox *SubregionSelectMethod;
+	
+
 	QWidget *FeatureHistogramMaster;
 	ViewHistogramWidget *FeatureHistogram;
 
+
+	QWidget  *FeatureDropdownMaster;
 	QComboBox *FeatureDropdown;
+	
+	QWidget  *SetDropdownMaster;
 	QComboBox *SetDropdown;
 	
 	QWidget *SimilarityTarget;
@@ -79,6 +88,7 @@ private slots:
 	void handleDropdownChange(int index);
 	void handleHistogramUpdate();
 	void handleStatisticsBtn();
+	void handleHistogramSetBtn();
 
 private:
 	QNEBlock * m_block;
@@ -86,6 +96,10 @@ private:
 	QLabel *count_input1;
 	QLabel *count_input2;
 	QLabel *count_output;
+
+	QLineEdit *histogram_start;
+	QLineEdit *histogram_end;
+
 
 	void generate_ToolBox(int aflag);
 	void generate_DataHeatmap(int width, int height);
@@ -98,4 +112,8 @@ private:
 
 	void checkNextBlock();
 	void set_operation(int index);
+
+
+	QFont mFont;
+
 };

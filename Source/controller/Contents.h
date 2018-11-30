@@ -15,9 +15,14 @@
 #include "Source/view/ViewAxisGLWidget.h"
 #include "Source/view/ViewGraphEditor.h"
 #include "Source/view/ViewVolumeGLWidget.h"
+
+#include "Source/model/process/ThreadCalcSubregionVolume.h"
+
 class ViewAxisGLWidget;
 class ViewGraphEditor;
 class ViewVolumeGLWidget;
+
+class ThreadCalcSubregionVolume;
 
 class Contents : public QObject
 {
@@ -87,7 +92,6 @@ private:
 
 	QListWidget *subregionList;
 	QListWidget *featureList;
-
 
 
 

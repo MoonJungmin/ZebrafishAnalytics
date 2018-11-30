@@ -56,7 +56,7 @@ void ViewGraphEditor::addDataBucket(std::string name) {
 void ViewGraphEditor::addSubregion(std::string name) {
 	QNEBlock *b = new QNEBlock(0);
 	GraphScene->addItem(b);
-	b->setBlockFlagAndSize(name, QNEBlock::SubregionBlock, 250, 150, operation_node_color, this);
+	b->setBlockFlagAndSize(name, QNEBlock::SubregionBlock, 310, 230, operation_node_color, this);
 	b->addPort(name.c_str(), 0, 0, QNEPort::NamePort, 0, QNEPort::Left);
 	b->addPort("Operation(Subregion)", 0, 0, QNEPort::TypePort, 0, QNEPort::Left);
 	b->addPort("", 0, 0, QNEPort::DataSizePort, 0, QNEPort::Left);
@@ -69,7 +69,7 @@ void ViewGraphEditor::addSubregion(std::string name) {
 void ViewGraphEditor::addSet(std::string name) {
 	QNEBlock *b = new QNEBlock(0);
 	GraphScene->addItem(b);
-	b->setBlockFlagAndSize(name, QNEBlock::SetBlock, 250, 150, operation_node_color, this);
+	b->setBlockFlagAndSize(name, QNEBlock::SetBlock, 250, 180, operation_node_color, this);
 	b->addPort(name.c_str(), 0, 0, QNEPort::NamePort, 0, QNEPort::Left);
 	b->addPort("Operation(Set)", 0, 0, QNEPort::TypePort, 0, QNEPort::Left);
 	b->addPort("", 0, 0, QNEPort::DataSizePort, 0, QNEPort::Left);
@@ -83,7 +83,7 @@ void ViewGraphEditor::addSet(std::string name) {
 void ViewGraphEditor::addFeature(std::string name) {
 	QNEBlock *b = new QNEBlock(0);
 	GraphScene->addItem(b);
-	b->setBlockFlagAndSize(name, QNEBlock::FeatureBlock, 320, 240, operation_node_color, this);
+	b->setBlockFlagAndSize(name, QNEBlock::FeatureBlock, 320, 340, operation_node_color, this);
 	b->addPort(name.c_str(), 0, 0, QNEPort::NamePort, 0, QNEPort::Left);
 	b->addPort("Operation(Feature)", 0, 0, QNEPort::TypePort, 0, QNEPort::Left);
 	b->addPort("", 0, 0, QNEPort::DataSizePort, 0, QNEPort::Left);

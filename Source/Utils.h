@@ -112,6 +112,7 @@ public:
 	std::string BoolToString(bool b);
 	QColor interpolate_color(QColor start, QColor end, double ratio);
 	bool fexists(const char *filename);
+	
 
 	Utils();
 	~Utils();

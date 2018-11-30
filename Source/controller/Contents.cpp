@@ -9,30 +9,15 @@ Contents::Contents(QWidget *parent, QLayout *parent_layout)
 	: QObject(parent)
 {
 	mWidget = parent;
+	
+	
+
 	QSplitter * splitter = new QSplitter(mWidget);
 
-	//QWidget *contents_left_widget = new QWidget;
 	contents_left_tabwidget = new QTabWidget(mWidget);
-	//contents_left_tabwidget->setMaximumWidth(300);
-	//coents_left_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	//contents_left_widget->setFixedSize(300, 870);
-	/*contents_left_widget->setMinimumHeight(870);
-	contents_left_widget->setStyleSheet("background-color:(35,35,35);");
-	contents_left_layout->addWidget(contents_left_widget);
-	left_widget->setLayout(contents_left_layout);
-*/
 
-	/*contents_center_layout = new QVBoxLayout;
-	contents_center_layout->setAlignment(Qt::AlignCenter);
-	contents_center_layout->setMargin(1);
-	QWidget *contents_center_widget = new QWidget;*/
 	contents_center_tabwidget = new QTabWidget(mWidget);
-	
-	//contents_center_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	////contents_center_widget->setFixedSize(1600, 870);
-	//contents_center_widget->setMinimumHeight(870);
-	//contents_center_widget->setStyleSheet("background-color:(35,35,35);");
-	//contents_center_layout->addWidget(contents_center_widget);
+
 
 	contents_left_tabwidget->addTab(new QWidget(), "Project Information");
 	contents_left_tabwidget->addTab(new QWidget(), "Subregion & Feature");
@@ -45,8 +30,6 @@ Contents::Contents(QWidget *parent, QLayout *parent_layout)
 	contents_center_tabwidget->addTab(new QWidget(), "ZX");
 	contents_center_tabwidget->addTab(new QWidget(), "3D");
 	contents_center_tabwidget->addTab(new QWidget(), "Graph");
-	//LeftTabInit(contents_left_tabwidget);
-	//CenterTabInit(contents_center_tabwidget);
 
 	splitter->addWidget(contents_left_tabwidget);
 	splitter->addWidget(contents_center_tabwidget);
@@ -353,6 +336,8 @@ void Contents::feature_updated() {
 
 }
 void Contents::subregion_updated() {
+
+	
 	subregionList->clear();
 	subregionList->setContentsMargins(1, 1, 1, 1);
 	int index = 0;
@@ -367,6 +352,10 @@ void Contents::subregion_updated() {
 		
 		iter->SubregionIndex = index;
 
+		ThreadCalcSubregionVolume *SubregionVolumeThread = new ThreadCalcSubregionVolume;
+		SubregionVolumeThread->addJob(iter->SubregionID);
+		SubregionVolumeThread->start();
+		
 		QLabel *name = new QLabel(mWidget);
 		name->setFont(font);
 		name->setText(QString::fromStdString(iter->SubregionName));

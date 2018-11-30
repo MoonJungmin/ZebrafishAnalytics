@@ -27,10 +27,13 @@ signals:
 public:
 	ViewHistogramWidget(QWidget *parent);
 	void setData(int feature_index, std::list<unsigned int> *in_ptr, std::list<unsigned int> *out_ptr);
+	void setInterface(QLineEdit *s, QLineEdit *e);
 	void setRenderingSize(int width, int height);
 	void redraw();
 	~ViewHistogramWidget();
 	
+	QLineEdit *start_edit;
+	QLineEdit *end_edit;
 	
 
 
@@ -63,4 +66,5 @@ private:
 	//void updateColorBox(QPushButton *target, QColor color);
 	//void updateCellColor();
 };
+
 

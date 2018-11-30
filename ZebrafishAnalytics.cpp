@@ -41,7 +41,7 @@ ZebrafishAnalytics::ZebrafishAnalytics()
 	createMenus();
 
 
-	QString message = tr("A context menu is available by right-clicking");
+	QString message = tr("");
 	statusBar()->showMessage(message);
 
 
@@ -154,7 +154,7 @@ void ZebrafishAnalytics::handleOpenProject() {
 	///*DialogNewProject *md = new DialogNewProject(mWidget);
 	//md->exec();*/
 
-	mGlobals.CurrentProject->ProjectOpen("E:/TestProject.aproj");
+	mGlobals.CurrentProject->ProjectOpen("G:/TestProject.aproj");
 
 }
 

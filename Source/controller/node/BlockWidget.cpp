@@ -12,10 +12,12 @@ BlockWidget::~BlockWidget()
 void BlockWidget::initialize(std::string name, int aflags, int awidth, int aheight, QColor acolor, QNEBlock *parent) {
 	BlockName = name;
 	BackgroundColor = acolor;
+	BackgroundColor_style = "background-color : rgba(0,0,0,0)";
 	BlockFlag = aflags;
 	generate_ToolBox(aflags);
 
-
+	mFont.setPointSize(8);
+	mFont.setBold(true);
 
 	switch (aflags) {
 		case OriginBlock:
@@ -59,8 +61,7 @@ void BlockWidget::initialize(std::string name, int aflags, int awidth, int aheig
 void BlockWidget::generate_ToolBox(int aflag) {
 	
 	ToolBox = new QWidget;
-	QString backgroundcolor_style = "background-color:" + BackgroundColor.name();
-	ToolBox->setStyleSheet(backgroundcolor_style);
+	ToolBox->setAttribute(Qt::WA_TranslucentBackground);
 	QHBoxLayout *layout = new QHBoxLayout;
 	layout->setContentsMargins(0, 5, 2, 5);
 
@@ -106,7 +107,7 @@ void BlockWidget::generate_ToolBox(int aflag) {
 void BlockWidget::generate_DataHeatmap(int width, int height) {
 	
 	DataHeatmap = new ViewHeatmapGLWidget;
-
+	width = width - 2;
 	QImage temp(QString::fromStdString(mGlobals.CurrentProject->mLayerBack->BackgroundThumbnailPath));
 	float ratio = (float)temp.height() / (float)temp.width();
 	qDebug() << "ratio : " << ratio;
@@ -128,17 +129,14 @@ void BlockWidget::generate_DataHeatmap(int width, int height) {
 }
 void BlockWidget::generate_DataInputOutput(int width, int height) {
 	DataInputOutput = new QWidget;
-	QString backgroundcolor_style = "background-color:" + BackgroundColor.name();
-	DataInputOutput->setStyleSheet(backgroundcolor_style);
+	DataInputOutput->setAttribute(Qt::WA_TranslucentBackground);
 	QVBoxLayout *layout = new QVBoxLayout;
 	
 	QHBoxLayout *layout_input = new QHBoxLayout;
 	layout_input->setContentsMargins(10, 0, 0, 0);
 	QLabel *title_input = new QLabel;
-	QFont font;
-	font.setPointSize(8);
-	font.setBold(true);
-	title_input->setFont(font);
+	
+	title_input->setFont(mFont);
 	if (BlockFlag == SetBlock) {
 		title_input->setText("Input 1 :");
 	}
@@ -148,10 +146,10 @@ void BlockWidget::generate_DataInputOutput(int width, int height) {
 
 
 	count_input1= new QLabel;
-	font.setBold(false);
-	count_input1->setFont(font);
+	mFont.setBold(false);
+	count_input1->setFont(mFont);
 	int size_input = CellIndexListInput.size();
-	count_input1->setText(QString::fromStdString(std::to_string(size_input)));
+	count_input1->setText(QString::fromStdString(std::to_string(size_input)) + " cells");
 	layout_input->addWidget(title_input);
 	layout_input->addWidget(count_input1);
 
@@ -159,32 +157,32 @@ void BlockWidget::generate_DataInputOutput(int width, int height) {
 	layout_input2->setContentsMargins(10, 0, 0, 0);
 	QLabel *title_input2 = new QLabel;
 	
-	font.setPointSize(8);
-	font.setBold(true);
-	title_input2->setFont(font);
+	mFont.setPointSize(8);
+	mFont.setBold(true);
+	title_input2->setFont(mFont);
 	title_input2->setText("Input 2 :");
 
 	count_input2 = new QLabel;
-	font.setBold(false);
-	count_input2->setFont(font);
+	mFont.setBold(false);
+	count_input2->setFont(mFont);
 	int size_input2 = CellIndexListInput_Sub.size();
-	count_input2->setText(QString::fromStdString(std::to_string(size_input2)));
+	count_input2->setText(QString::fromStdString(std::to_string(size_input2)) + " cells");
 	layout_input2->addWidget(title_input2);
 	layout_input2->addWidget(count_input2);
 
 	QHBoxLayout *layout_output = new QHBoxLayout;
 	layout_output->setContentsMargins(10, 0, 0, 0);
 	QLabel *title_output = new QLabel;
-	font.setPointSize(8);
-	font.setBold(true);
-	title_output->setFont(font);
+	mFont.setPointSize(8);
+	mFont.setBold(true);
+	title_output->setFont(mFont);
 	title_output->setText("Output :");
 
 	count_output = new QLabel;
-	font.setBold(false);
-	count_output->setFont(font);
+	mFont.setBold(false);
+	count_output->setFont(mFont);
 	int size_output = CellIndexListOutput.size();
-	count_output->setText(QString::fromStdString(std::to_string(size_output)));
+	count_output->setText(QString::fromStdString(std::to_string(size_output)) + " cells");
 	layout_output->addWidget(title_output);
 	layout_output->addWidget(count_output);
 
@@ -198,12 +196,36 @@ void BlockWidget::generate_DataInputOutput(int width, int height) {
 }
 
 void BlockWidget::generate_SubregionDropdown(int width, int height) {
+	SubregionDropdownMaster = new QWidget;
+	SubregionDropdownMaster->setFixedWidth(width-20);
+	SubregionDropdownMaster->setAttribute(Qt::WA_TranslucentBackground);
+	
+	QVBoxLayout *layout = new QVBoxLayout;
+	
+	QLabel *label = new QLabel;
+	label->setText("Current Subregion");
+	label->setFont(mFont);
+	layout->addWidget(label);
+	
 	SubregionDropdown = new QComboBox;
-	SubregionDropdown->setFixedWidth(width - 20);
 	for each (LayerSubregion subregion in mGlobals.CurrentProject->mSubregion) {
 		SubregionDropdown->addItem(QString::fromStdString(subregion.SubregionName));
 	}
 	connect(SubregionDropdown, SIGNAL(currentIndexChanged(int)), this, SLOT(handleDropdownChange(int)));
+	layout->addWidget(SubregionDropdown);
+	
+	QLabel *label2 = new QLabel;
+	label2->setText("Select Option");
+	label2->setFont(mFont);
+	layout->addWidget(label2);
+
+	SubregionSelectMethod = new QComboBox;
+	QStringList optionlist = { "Complete Overlap", "Intersection", "Touch" };
+	SubregionSelectMethod->addItems(optionlist);
+	connect(SubregionSelectMethod, SIGNAL(currentIndexChanged(int)), this, SLOT(handleDropdownChange(int)));
+	layout->addWidget(SubregionSelectMethod);
+
+	SubregionDropdownMaster->setLayout(layout);
 }
 void BlockWidget::updatedSubregionList() {
 	disconnect(SubregionDropdown, SIGNAL(currentIndexChanged(int)), this, SLOT(handleDropdownChange(int)));
@@ -217,22 +239,68 @@ void BlockWidget::updatedSubregionList() {
 
 void BlockWidget::generate_FeatureHistogram(int width, int height) {
 	FeatureHistogramMaster = new QWidget;
-	FeatureHistogramMaster->setFixedSize(QSize(width-10, 100));
-	FeatureHistogramMaster->setContentsMargins(1, 1, 1, 1);
-	FeatureHistogram = new ViewHistogramWidget(FeatureHistogramMaster);
-	FeatureHistogram->setRenderingSize(width-10, 100);
+	FeatureHistogramMaster->setFixedWidth(width - 10);
+	FeatureHistogramMaster->setAttribute(Qt::WA_TranslucentBackground);
+	QVBoxLayout *layout = new QVBoxLayout;
+	QLabel *label = new QLabel;
+	label->setText("Feature Histogram");
+	label->setFont(mFont);
+	layout->addWidget(label);
+	
+	histogram_start = new QLineEdit;
+	histogram_start->setText("0");
+	histogram_end = new QLineEdit;
+	histogram_end->setText("0");
+	QWidget *FeatureHistBox = new QWidget;
+	FeatureHistBox->setContentsMargins(1, 1, 1, 1);
+	FeatureHistogram = new ViewHistogramWidget(FeatureHistBox);
+	FeatureHistogram->setInterface(histogram_start, histogram_end);
+	FeatureHistogram->setRenderingSize(width-11, 100);
 	FeatureHistogram->setData(0, &CellIndexListInput, &CellIndexListOutput);
 	connect(FeatureHistogram, SIGNAL(OutputUpdated()), this, SLOT(handleHistogramUpdate()));
+	layout->addWidget(FeatureHistBox);
+
+	QHBoxLayout *interface_layout = new QHBoxLayout;
+	QLabel *label2 = new QLabel;
+	label2->setText("Start(%)");
+	label2->setFont(mFont);
+	interface_layout->addWidget(label2);
+	interface_layout->addWidget(histogram_start);
+	QLabel *label3 = new QLabel;
+	label3->setText("End(%)");
+	label3->setFont(mFont);
+	interface_layout->addWidget(label3);
+	interface_layout->addWidget(histogram_end);
+	QPushButton *setbtn = new QPushButton;
+	
+	setbtn->setText("Set");
+	connect(setbtn, SIGNAL(released()), this, SLOT(handleHistogramSetBtn()));
+	interface_layout->addWidget(setbtn);
+	
+	layout->addLayout(interface_layout);
+	FeatureHistogramMaster->setLayout(layout);
 }
 
 void BlockWidget::generate_FeatureDropdown(int width, int height) {
+
+	FeatureDropdownMaster = new QWidget;
+	FeatureDropdownMaster->setFixedWidth(width - 20);
+	FeatureDropdownMaster->setAttribute(Qt::WA_TranslucentBackground);
+
+	QVBoxLayout *layout = new QVBoxLayout;
+	QLabel *label = new QLabel;
+	label->setText("Current Feature");
+	label->setFont(mFont);
+	layout->addWidget(label);
+	
 	FeatureDropdown = new QComboBox;
-	FeatureDropdown->setFixedWidth(width - 20);
 	for each (DataFeature feature in mGlobals.CurrentProject->mFeature)
 	{
 		FeatureDropdown->addItem(QString::fromStdString(feature.FeatureName));
 	}
 	connect(FeatureDropdown, SIGNAL(currentIndexChanged(int)), this, SLOT(handleDropdownChange(int)));
+	layout->addWidget(FeatureDropdown);
+	FeatureDropdownMaster->setLayout(layout);
 }
 
 void BlockWidget::updatedFeatureList() {
@@ -246,11 +314,24 @@ void BlockWidget::updatedFeatureList() {
 
 
 void BlockWidget::generate_SetDropdown(int width, int height) {
+	
+	SetDropdownMaster = new QWidget;
+	SetDropdownMaster->setFixedWidth(width - 20);
+	SetDropdownMaster->setAttribute(Qt::WA_TranslucentBackground);
+
+	QVBoxLayout *layout = new QVBoxLayout;
+	QLabel *label = new QLabel;
+	label->setText("Set operation");
+	label->setFont(mFont);
+	layout->addWidget(label);
+
 	SetDropdown = new QComboBox;
-	SetDropdown->setFixedWidth(width - 20);
 	QStringList operation = { "Union", "Subtraction", "Intersection" };
 	SetDropdown->addItems(operation);
 	connect(SetDropdown, SIGNAL(currentIndexChanged(int)), this, SLOT(handleDropdownChange(int)));
+	layout->addWidget(SetDropdown);
+
+	SetDropdownMaster->setLayout(layout);
 }
 
 
@@ -298,11 +379,12 @@ void BlockWidget::handleDropdownChange(int index) {
 }
 void BlockWidget::handleHistogramUpdate() {
 	int size_output = CellIndexListOutput.size();
-	count_output->setText(QString::fromStdString(std::to_string(size_output)));
+	count_output->setText(QString::fromStdString(std::to_string(size_output)) + " cells");
 	checkNextBlock();
 }
-
-
+void BlockWidget::handleHistogramSetBtn() {
+	FeatureHistogram->update_release_box((float)histogram_start->text().toInt() / 100.0, (float)histogram_end->text().toInt() / 100.0);
+}
 void BlockWidget::addAnnotation(QString cmt) {
 	annotation temp;
 	temp.comment = cmt;
@@ -338,41 +420,57 @@ void BlockWidget::updatedCellColor() {
 void BlockWidget::updatedInputList() {
 	
 	int size_input = CellIndexListInput.size();
-	count_input1->setText(QString::fromStdString(std::to_string(size_input)));
+	count_input1->setText(QString::fromStdString(std::to_string(size_input)) + " cells");
 
 	if (BlockFlag == DataBlock || BlockFlag == OriginBlock) {
 		CellIndexListOutput = CellIndexListInput;
 		int size_output = CellIndexListOutput.size();
-		count_output->setText(QString::fromStdString(std::to_string(size_output)));
+		count_output->setText(QString::fromStdString(std::to_string(size_output)) + " cells");
 		DataHeatmap->updateHeatmap();
 	}
 	else if (BlockFlag == SubregionBlock) {
 		CellIndexListOutput.clear();
+		int subregion_index = SubregionDropdown->currentIndex();
 		std::list<unsigned int>::iterator iter = CellIndexListInput.begin();
 		for (iter = CellIndexListInput.begin(); iter != CellIndexListInput.end(); ++iter) {
-			if (mGlobals.CurrentProject->mSubregion[SubregionDropdown->currentIndex()].IncludeIndex.find(*iter) != mGlobals.CurrentProject->mSubregion[SubregionDropdown->currentIndex()].IncludeIndex.end()) {
-				CellIndexListOutput.push_back(*iter);
+			if (SubregionSelectMethod->currentIndex() == 0) {
+				std::map<unsigned int, bool>::iterator target_iter = mGlobals.CurrentProject->mSubregion[subregion_index].CompleteIndex.end();
+				if (mGlobals.CurrentProject->mSubregion[subregion_index].CompleteIndex.find(*iter) != target_iter) {
+					CellIndexListOutput.push_back(*iter);
+				}
+			}
+			else if (SubregionSelectMethod->currentIndex() == 1) {
+				std::map<unsigned int, bool>::iterator target_iter = mGlobals.CurrentProject->mSubregion[subregion_index].IntersectIndex.end();
+				if (mGlobals.CurrentProject->mSubregion[subregion_index].IntersectIndex.find(*iter) != target_iter) {
+					CellIndexListOutput.push_back(*iter);
+				}
+			}
+			else if (SubregionSelectMethod->currentIndex() == 2) {
+				std::map<unsigned int, bool>::iterator target_iter = mGlobals.CurrentProject->mSubregion[subregion_index].TouchIndex.end();
+				if (mGlobals.CurrentProject->mSubregion[subregion_index].TouchIndex.find(*iter) != target_iter) {
+					CellIndexListOutput.push_back(*iter);
+				}
 			}
 		}
 		int size_output = CellIndexListOutput.size();
-		count_output->setText(QString::fromStdString(std::to_string(size_output)));
+		count_output->setText(QString::fromStdString(std::to_string(size_output)) + " cells");
 	}
 	else if (BlockFlag == FeatureBlock) {
 		CellIndexListOutput.clear();
 		FeatureHistogram->setData(FeatureDropdown->currentIndex(), &CellIndexListInput, &CellIndexListOutput);
 		int size_output = CellIndexListOutput.size();
-		count_output->setText(QString::fromStdString(std::to_string(size_output)));
+		count_output->setText(QString::fromStdString(std::to_string(size_output)) + " cells");
 	}
 	else if (BlockFlag == SimilarityBlock) {
 
 	}
 	else if (BlockFlag == SetBlock) {
 		int size_input2 = CellIndexListInput_Sub.size();
-		count_input2->setText(QString::fromStdString(std::to_string(size_input2)));
+		count_input2->setText(QString::fromStdString(std::to_string(size_input2)) + " cells");
 		CellIndexListOutput.clear();
 		set_operation(SetDropdown->currentIndex());
 		int size_output = CellIndexListOutput.size();
-		count_output->setText(QString::fromStdString(std::to_string(size_output)));
+		count_output->setText(QString::fromStdString(std::to_string(size_output)) + " cells");
 	}
 
 	checkNextBlock();

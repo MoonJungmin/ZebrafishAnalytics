@@ -189,6 +189,9 @@
     <ClCompile Include="Source\controller\Dialog\DialogInfoSubregion.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\model\process\ThreadCalcSubregionVolume.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="ZebrafishAnalytics.h">
@@ -279,6 +282,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="Source\controller\Dialog\DialogInfoSubregion.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Source\model\process\ThreadCalcSubregionVolume.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -536,5 +542,7 @@
     <Image Include="Resources\icon_annotation.png" />
     <Image Include="Resources\icon_detail.png" />
     <Image Include="Resources\icon_trash.png" />
+    <Image Include="Resources\icon_statistics.png" />
+    <Image Include="Resources\icon_info.png" />
   </ItemGroup>
 </Project>

@@ -10,15 +10,22 @@ LayerSubregion::LayerSubregion(std::string name, std::string path) {
 	SubregionHeaderPath = path;
 	SubregionName = name;
 
+	QString forHash = QString::fromStdString(SubregionHeaderPath + "/" + SubregionName + "/") + QDateTime::currentDateTime().toString();
+	
+	SubregionID = QString("%1").arg(QString(QCryptographicHash::hash(forHash.toUtf8(), QCryptographicHash::Md5).toHex())).toStdString();
+
 	Utils mUtil;
 	std::vector<std::string> temp_array = mUtil.Split(SubregionHeaderPath.c_str(), "header.srl");
 	SubregionPath = temp_array.front();
 
-	IndexTablePath = SubregionPath + "include_index.dat";
+	TouchTablePath = SubregionPath + SubregionName +"_composited.dat_include";
+	IntersectTablePath = SubregionPath + SubregionName + "_composited.dat_intersect";
+
 	DataPathXY = SubregionPath + "XY/";
 	DataPathYZ = SubregionPath + "YZ/";
 	DataPathZX = SubregionPath + "ZX/";
 
+	qDebug() << QString::fromStdString(SubregionID);
 	qDebug() << QString::fromStdString(SubregionName);
 	qDebug() << QString::fromStdString(SubregionPath);
 	qDebug() << QString::fromStdString(SubregionHeaderPath);
@@ -36,13 +43,25 @@ LayerSubregion::~LayerSubregion() {
 void LayerSubregion::readIndex() {
 	
 	std::ifstream mIfs;
-	mIfs.open(IndexTablePath);
+	mIfs.open(TouchTablePath);
 	while (!mIfs.eof()) {
 		unsigned int index;
 		mIfs >> index;
-		IncludeIndex[index] = true;
+		TouchIndex[index] = true;
+		CompleteIndex[index] = true;
 	}
 	mIfs.close();
+
+	std::ifstream mIfs2;
+	mIfs2.open(IntersectTablePath);
+	while (!mIfs2.eof()) {
+		unsigned int index;
+		mIfs2 >> index;
+		IntersectIndex[index] = true;
+		CompleteIndex.erase(index);
+	}
+	mIfs2.close();
+
 }
 
 

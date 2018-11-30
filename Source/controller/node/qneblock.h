@@ -85,7 +85,7 @@ public:
 	int width;
 	int height;
 	QColor node_color = QColor("#3A79A0");
-	QColor node_selected_color = QColor("#007acc");
+	QColor node_selected_color = QColor("#e41a1c");
 	QColor node_text_color = QColor("#e7e7e7");
 	int mBlockFlags;
 	BlockWidget *mBlock;

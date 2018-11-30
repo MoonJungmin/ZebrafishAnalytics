@@ -180,18 +180,15 @@ void QNEPort::setPortFlags(int f)
 	}
 	else if (m_portFlags == SubregionDropdownPort) {
 		QGraphicsProxyWidget* pMyProxy = new QGraphicsProxyWidget(this);
-		pMyProxy->setWidget(m_block->mBlock->SubregionDropdown);
+		pMyProxy->setWidget(m_block->mBlock->SubregionDropdownMaster);
 		setPath(QPainterPath());
-		m_width = m_block->mBlock->SubregionDropdown->width();
-		m_height = m_block->mBlock->SubregionDropdown->height();
+		m_width = m_block->mBlock->SubregionDropdownMaster->width();
+		m_height = m_block->mBlock->SubregionDropdownMaster->height();
 	}
 	else if (m_portFlags == ToolBoxPort) {
 		QGraphicsProxyWidget* pMyProxy = new QGraphicsProxyWidget(this);
-		
 		pMyProxy->setWidget(m_block->mBlock->ToolBox);
-
 		setPath(QPainterPath());
-
 		m_width = m_block->mBlock->ToolBox->width();
 		m_height = m_block->mBlock->ToolBox->height();
 	}
@@ -204,17 +201,17 @@ void QNEPort::setPortFlags(int f)
 	}
 	else if (m_portFlags == FeatureDropdownPort) {
 		QGraphicsProxyWidget* pMyProxy = new QGraphicsProxyWidget(this);
-		pMyProxy->setWidget(m_block->mBlock->FeatureDropdown);
+		pMyProxy->setWidget(m_block->mBlock->FeatureDropdownMaster);
 		setPath(QPainterPath());
-		m_width = m_block->mBlock->FeatureDropdown->width();
-		m_height = m_block->mBlock->FeatureDropdown->height();
+		m_width = m_block->mBlock->FeatureDropdownMaster->width();
+		m_height = m_block->mBlock->FeatureDropdownMaster->height();
 	}
 	else if (m_portFlags == SetDropdownPort) {
 		QGraphicsProxyWidget* pMyProxy = new QGraphicsProxyWidget(this);
-		pMyProxy->setWidget(m_block->mBlock->SetDropdown);
+		pMyProxy->setWidget(m_block->mBlock->SetDropdownMaster);
 		setPath(QPainterPath());
-		m_width = m_block->mBlock->SetDropdown->width();
-		m_height = m_block->mBlock->SetDropdown->height();
+		m_width = m_block->mBlock->SetDropdownMaster->width();
+		m_height = m_block->mBlock->SetDropdownMaster->height();
 	}
 
 }

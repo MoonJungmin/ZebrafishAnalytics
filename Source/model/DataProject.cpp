@@ -136,14 +136,14 @@ void DataProject::removeFeature(int index) {
 	step++;
 }
 
-void DataProject::AddSubregion(QString aPath) {
+int DataProject::AddSubregion(QString aPath) {
 	std::string path = aPath.toStdString();
 	Utils mUtil;
 	std::vector<std::string> list_line1 = mUtil.Split(path.c_str(), "/");
 	std::string name = list_line1[list_line1.size()-2];
-	
 	LayerSubregion temp(name, path);
 	mSubregion.push_back(temp);
+	return mSubregion.size() - 1;
 }
 
 void DataProject::removeSubregion(int index) {

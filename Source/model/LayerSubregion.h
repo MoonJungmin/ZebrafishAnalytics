@@ -11,6 +11,7 @@
 #include <QColor>
 #include <QDebug>
 #include <QTime>
+#include <QCryptographicHash>
 
 #include "Source/Utils.h"
 
@@ -25,18 +26,27 @@ public:
 
 	int SubregionIndex;
 	bool SubregionActivated = true;
+	bool SubregionVolumeStatus = false;
+
+	std::string SubregionID;
+
 
 	std::string SubregionName;
 	std::string SubregionPath;
 	std::string SubregionHeaderPath;
-	std::string IndexTablePath;
+	std::string TouchTablePath;
+	std::string IntersectTablePath;
+
 	QColor SubregionColor = QColor(23,55,88);
 	float SubregionOpacity = 0.0f;
 	double SubregionVolume = 0.0f;
 
 	QPushButton *SubregionColorBtn;
 
-	std::map<unsigned int, bool> IncludeIndex;
+	std::map<unsigned int, bool> TouchIndex;
+	std::map<unsigned int, bool> IntersectIndex;
+	std::map<unsigned int, bool> CompleteIndex;
+
 	std::list<subregion_layer> BlockList;
 
 	subregion_layer initializeBlock(block_info info);

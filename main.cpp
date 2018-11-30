@@ -28,6 +28,7 @@ int main(int argc, char *argv[])
 
 	// create our mainwindow instance
 	ZebrafishAnalytics *mainWindow = new ZebrafishAnalytics;
+	mGlobals.mainWindow = mainWindow;
 	// add the mainwindow to our custom frameless window
 	framelessWindow.setContent(mainWindow);
 	framelessWindow.show();
