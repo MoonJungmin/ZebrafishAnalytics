@@ -159,17 +159,10 @@ void QNEPort::setPortFlags(int f)
 	}
 	else if (m_portFlags == SubregionWidgetPort) {
 		QGraphicsProxyWidget* pMyProxy = new QGraphicsProxyWidget(this);
-		QLabel *icon_label = new QLabel;
-		icon_label->setStyleSheet(backgroundcolor_style);
-		QIcon icon("Resources/icon_subregion.png");
-		QPixmap pixmap = icon.pixmap(QSize(70, 70));
-		icon_label->setPixmap(pixmap);
-		pMyProxy->setWidget(icon_label);
-		qDebug() << "DataWidgetPort";
+		pMyProxy->setWidget(m_block->mBlock->SubregionInformationMaster);
 		setPath(QPainterPath());
-
-		m_width = 70;
-		m_height = 70;
+		m_width = m_block->mBlock->SubregionInformationMaster->width();
+		m_height = m_block->mBlock->SubregionInformationMaster->height();
 	}
 	else if (m_portFlags == DataSizePort) {
 		QGraphicsProxyWidget* pMyProxy = new QGraphicsProxyWidget(this);

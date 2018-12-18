@@ -2,7 +2,6 @@
 
 
 #include <QMainWindow>
-
 #include "Source/controller/TopToolbar.h"
 #include "Source/controller/TopInterface.h"
 #include "Source/controller/Contents.h"

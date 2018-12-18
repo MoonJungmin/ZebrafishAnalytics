@@ -16,13 +16,11 @@
 #include "Source/view/ViewGraphEditor.h"
 #include "Source/view/ViewVolumeGLWidget.h"
 
-#include "Source/model/process/ThreadCalcSubregionVolume.h"
 
 class ViewAxisGLWidget;
 class ViewGraphEditor;
 class ViewVolumeGLWidget;
 
-class ThreadCalcSubregionVolume;
 
 class Contents : public QObject
 {
@@ -68,7 +66,7 @@ private slots:
 	void handleDeleteBtn_feature();
 	void handleDeleteBtn_subregion();
 	void handleInfoBtn_subregion();
-	void handleCheckBox_subregion(int state);
+	//void handleCheckBox_subregion(int state);
 	void handleColorBtn_subregion();
 	void handleOpacity(int value);
 

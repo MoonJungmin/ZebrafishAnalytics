@@ -56,10 +56,11 @@ void ViewGraphEditor::addDataBucket(std::string name) {
 void ViewGraphEditor::addSubregion(std::string name) {
 	QNEBlock *b = new QNEBlock(0);
 	GraphScene->addItem(b);
-	b->setBlockFlagAndSize(name, QNEBlock::SubregionBlock, 310, 230, operation_node_color, this);
+	b->setBlockFlagAndSize(name, QNEBlock::SubregionBlock, 310, 400, operation_node_color, this);
 	b->addPort(name.c_str(), 0, 0, QNEPort::NamePort, 0, QNEPort::Left);
 	b->addPort("Operation(Subregion)", 0, 0, QNEPort::TypePort, 0, QNEPort::Left);
 	b->addPort("", 0, 0, QNEPort::DataSizePort, 0, QNEPort::Left);
+	b->addPort("", 0, 0, QNEPort::SubregionWidgetPort, 0, QNEPort::Center);
 	b->addPort("", 0, 0, QNEPort::SubregionDropdownPort, 0, QNEPort::Center);
 	b->addPort("", 0, 0, QNEPort::ToolBoxPort, 0, QNEPort::Right);
 	b->addInputPort("");

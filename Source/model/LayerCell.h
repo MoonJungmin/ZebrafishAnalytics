@@ -39,6 +39,11 @@ public:
 	int LoadBlockBySerialIndex(label_layer tempblock);
 	void removeBlock();
 
+	std::string DataType;
+	std::string DataPathXY;
+	std::string DataPathYZ;
+	std::string DataPathZX;
+
 private:
 
 	int DataSizeX = 0;
@@ -47,10 +52,7 @@ private:
 	int DataBlockSize = 0;
 	int DataLevel = 0;
 	
-	std::string DataType;
-	std::string DataPathXY;
-	std::string DataPathYZ;
-	std::string DataPathZX;
+
 	
 
 	void headerReader();

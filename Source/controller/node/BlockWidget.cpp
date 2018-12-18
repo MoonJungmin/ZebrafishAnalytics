@@ -15,7 +15,8 @@ void BlockWidget::initialize(std::string name, int aflags, int awidth, int aheig
 	BackgroundColor_style = "background-color : rgba(0,0,0,0)";
 	BlockFlag = aflags;
 	generate_ToolBox(aflags);
-
+	mThread = new ThreadSubregion;
+	connect(mThread, SIGNAL(subregion_information_update(QString)), this, SLOT(handleSubregionInformationUpdate(QString)));
 	mFont.setPointSize(8);
 	mFont.setBold(true);
 
@@ -37,7 +38,9 @@ void BlockWidget::initialize(std::string name, int aflags, int awidth, int aheig
 			generate_DataInputOutput(awidth, aheight);
 			break;
 		case SubregionBlock:
+			mThread->start();
 			CellIndexListOutput = CellIndexListInput;
+			generate_SubregionInformation(awidth, aheight);
 			generate_SubregionDropdown(awidth, aheight);
 			generate_DataInputOutput(awidth, aheight);
 			break;
@@ -192,8 +195,62 @@ void BlockWidget::generate_DataInputOutput(int width, int height) {
 	}
 	layout->addLayout(layout_output);
 
+	
 	DataInputOutput->setLayout(layout);
+
 }
+void BlockWidget::generate_SubregionInformation(int width, int height) {
+	SubregionInformationMaster = new QWidget;
+	SubregionInformationMaster->setFixedWidth(width - 20);
+	SubregionInformationMaster->setAttribute(Qt::WA_TranslucentBackground);
+
+	QVBoxLayout *layout = new QVBoxLayout;
+	QHBoxLayout *precision_layout = new QHBoxLayout;
+	precision_layout->setContentsMargins(10, 0, 0, 0);
+	QLabel *label0 = new QLabel;
+	label0->setText("Precision :");
+	mFont.setPointSize(8);
+	mFont.setBold(true);
+	label0->setFont(mFont);
+	precision_layout->addWidget(label0);
+	subreigon_precision = new QLabel;
+	subreigon_precision->setText("level 1");
+	mFont.setPointSize(8);
+	mFont.setBold(false);
+	subreigon_precision->setFont(mFont);
+	precision_layout->addWidget(subreigon_precision);
+
+	QHBoxLayout *volume_layout = new QHBoxLayout;
+	volume_layout->setContentsMargins(10, 0, 0, 0);
+	QLabel *label1 = new QLabel;
+	label1->setText("Volume :");
+	mFont.setPointSize(8);
+	mFont.setBold(true);
+	label1->setFont(mFont);
+	volume_layout->addWidget(label1);
+	subreigon_volume = new QLineEdit;
+	subreigon_volume->setText("0");
+	mFont.setPointSize(8);
+	mFont.setBold(false);
+	subreigon_volume->setFont(mFont);
+	volume_layout->addWidget(subreigon_volume);
+
+	QLabel *label2 = new QLabel;
+	label2->setText("voxel");
+	mFont.setPointSize(8);
+	mFont.setBold(true);
+	label2->setFont(mFont);
+	volume_layout->addWidget(label2);
+
+
+	layout->addLayout(precision_layout);
+	layout->addLayout(volume_layout);
+
+	SubregionInformationMaster->setLayout(layout);
+
+}
+
+
 
 void BlockWidget::generate_SubregionDropdown(int width, int height) {
 	SubregionDropdownMaster = new QWidget;
@@ -202,6 +259,16 @@ void BlockWidget::generate_SubregionDropdown(int width, int height) {
 	
 	QVBoxLayout *layout = new QVBoxLayout;
 	
+	SubregionProgressbarLog = new QLabel;
+	SubregionProgressbarLog->setText("Progress");
+	SubregionProgressbarLog->setFont(mFont);
+	layout->addWidget(SubregionProgressbarLog);
+
+	SubregionProgressbar = new QProgressBar;
+	connect(mThread, SIGNAL(progress_update(float)), this, SLOT(subregion_progess_update(float)));
+	connect(mThread, SIGNAL(progress_log_update(QString)), this, SLOT(subregion_progess_log_update(QString)));
+	layout->addWidget(SubregionProgressbar);
+
 	QLabel *label = new QLabel;
 	label->setText("Current Subregion");
 	label->setFont(mFont);
@@ -211,31 +278,108 @@ void BlockWidget::generate_SubregionDropdown(int width, int height) {
 	for each (LayerSubregion subregion in mGlobals.CurrentProject->mSubregion) {
 		SubregionDropdown->addItem(QString::fromStdString(subregion.SubregionName));
 	}
-	connect(SubregionDropdown, SIGNAL(currentIndexChanged(int)), this, SLOT(handleDropdownChange(int)));
+	//connect(SubregionDropdown, SIGNAL(currentIndexChanged(int)), this, SLOT(handleDropdownChange(int)));
 	layout->addWidget(SubregionDropdown);
-	
+
+
+	subregion_pos_x = new QLineEdit;
+	subregion_pos_y = new QLineEdit;
+	subregion_pos_z = new QLineEdit;
+	subregion_up_x = new QLineEdit;
+	subregion_up_y = new QLineEdit;
+	subregion_up_z = new QLineEdit;
+
+	QHBoxLayout *interface_pos_layout = new QHBoxLayout;
 	QLabel *label2 = new QLabel;
-	label2->setText("Select Option");
+	label2->setText("Pos X");
 	label2->setFont(mFont);
-	layout->addWidget(label2);
+	interface_pos_layout->addWidget(label2);
+	subregion_pos_x->setText(QString::fromStdString(std::to_string(plane_pos_x)));
+	interface_pos_layout->addWidget(subregion_pos_x);
+	
+	QLabel *label3 = new QLabel;
+	label3->setText("Pos Y");
+	label3->setFont(mFont);
+	interface_pos_layout->addWidget(label3);
+	subregion_pos_y->setText(QString::fromStdString(std::to_string(plane_pos_y)));
+	interface_pos_layout->addWidget(subregion_pos_y);
+
+	QLabel *label4 = new QLabel;
+	label4->setText("Pos Z");
+	label4->setFont(mFont);
+	interface_pos_layout->addWidget(label4);
+	subregion_pos_z->setText(QString::fromStdString(std::to_string(plane_pos_z)));
+	interface_pos_layout->addWidget(subregion_pos_z);
+
+	QHBoxLayout *interface_up_layout = new QHBoxLayout;
+	QLabel *label5 = new QLabel;
+	label5->setText("Up X");
+	label5->setFont(mFont);
+	interface_up_layout->addWidget(label5);
+	subregion_up_x->setText(QString::fromStdString(std::to_string(plane_up_x)));
+	interface_up_layout->addWidget(subregion_up_x);
+
+	QLabel *label6 = new QLabel;
+	label6->setText("Up Y");
+	label6->setFont(mFont);
+	interface_up_layout->addWidget(label6);
+	subregion_up_y->setText(QString::fromStdString(std::to_string(plane_up_y)));
+	interface_up_layout->addWidget(subregion_up_y);
+
+	QLabel *label7 = new QLabel;
+	label7->setText("Up Z");
+	label7->setFont(mFont);
+	interface_up_layout->addWidget(label7);
+	subregion_up_z->setText(QString::fromStdString(std::to_string(plane_up_z)));
+	interface_up_layout->addWidget(subregion_up_z);
+
+
+	QLabel *label8 = new QLabel;
+	label8->setText("Select Option");
+	label8->setFont(mFont);
+	layout->addWidget(label8);
 
 	SubregionSelectMethod = new QComboBox;
 	QStringList optionlist = { "Complete Overlap", "Intersection", "Touch" };
 	SubregionSelectMethod->addItems(optionlist);
-	connect(SubregionSelectMethod, SIGNAL(currentIndexChanged(int)), this, SLOT(handleDropdownChange(int)));
+	//connect(SubregionSelectMethod, SIGNAL(currentIndexChanged(int)), this, SLOT(handleDropdownChange(int)));
 	layout->addWidget(SubregionSelectMethod);
 
+
+
+	QPushButton *setbtn = new QPushButton;
+
+	setbtn->setText("Generate");
+	connect(setbtn, SIGNAL(released()), this, SLOT(handleSubregionSetBtn()));
+	layout->addLayout(interface_pos_layout);
+	layout->addLayout(interface_up_layout);
+	layout->addWidget(setbtn);
+	
 	SubregionDropdownMaster->setLayout(layout);
 }
 void BlockWidget::updatedSubregionList() {
+	int current_index = SubregionDropdown->currentIndex();
 	disconnect(SubregionDropdown, SIGNAL(currentIndexChanged(int)), this, SLOT(handleDropdownChange(int)));
 	SubregionDropdown->clear();
 	for each (LayerSubregion subregion in mGlobals.CurrentProject->mSubregion) {
 		SubregionDropdown->addItem(QString::fromStdString(subregion.SubregionName));
 	}
+	SubregionDropdown->setCurrentIndex(current_index);
 	connect(SubregionDropdown, SIGNAL(currentIndexChanged(int)), this, SLOT(handleDropdownChange(int)));
 }
 
+void BlockWidget::subregion_progess_update(float v) {
+	if (v > 99) {
+		SubregionProgressbar->setValue(100);
+	}
+	else {
+		SubregionProgressbar->setValue((int)v);
+	}
+}
+
+void BlockWidget::subregion_progess_log_update(QString str) {
+	SubregionProgressbarLog->setText(str);
+}
 
 void BlockWidget::generate_FeatureHistogram(int width, int height) {
 	FeatureHistogramMaster = new QWidget;
@@ -304,11 +448,13 @@ void BlockWidget::generate_FeatureDropdown(int width, int height) {
 }
 
 void BlockWidget::updatedFeatureList() {
+	int current = FeatureDropdown->currentIndex();
 	disconnect(FeatureDropdown, SIGNAL(currentIndexChanged(int)), this, SLOT(handleDropdownChange(int)));
 	FeatureDropdown->clear();
 	for each (DataFeature feature in mGlobals.CurrentProject->mFeature) {
 		FeatureDropdown->addItem(QString::fromStdString(feature.FeatureName));
 	}
+	FeatureDropdown->setCurrentIndex(current);
 	connect(FeatureDropdown, SIGNAL(currentIndexChanged(int)), this, SLOT(handleDropdownChange(int)));
 }
 
@@ -385,6 +531,63 @@ void BlockWidget::handleHistogramUpdate() {
 void BlockWidget::handleHistogramSetBtn() {
 	FeatureHistogram->update_release_box((float)histogram_start->text().toInt() / 100.0, (float)histogram_end->text().toInt() / 100.0);
 }
+void BlockWidget::handleSubregionSetBtn() {
+	//FeatureHistogram->update_release_box((float)histogram_start->text().toInt() / 100.0, (float)histogram_end->text().toInt() / 100.0);
+	qDebug() << "handleSubregionSetBtn";
+	plane_pos_x = stoi(subregion_pos_x->text().toStdString());
+	plane_pos_y = stoi(subregion_pos_y->text().toStdString());
+	plane_pos_z = stoi(subregion_pos_z->text().toStdString());
+	plane_up_x = stoi(subregion_up_x->text().toStdString());
+	plane_up_y = stoi(subregion_up_y->text().toStdString());
+	plane_up_z = stoi(subregion_up_z->text().toStdString());
+
+	int subregion_index = SubregionDropdown->currentIndex();
+	mThread->addJob(mGlobals.CurrentProject->mSubregion[subregion_index].SubregionID, this);
+
+
+	updatedInputList();
+}
+
+void BlockWidget::handleSubregionInformationUpdate(QString id) {
+	int subregion_index = SubregionDropdown->currentIndex();
+	subreigon_precision->setText("level " + QString::fromStdString(std::to_string(SubregionPrecision)));
+
+	std::stringstream ss;
+	ss << std::fixed << std::setprecision(2) << SubregionVolume;
+	std::string mystring = ss.str();
+	subreigon_volume->setText(QString::fromStdString(mystring));
+
+	//subreigon_precision->setText(QString::fromStdString());
+	
+
+	CellIndexListOutput.clear();
+	std::list<unsigned int>::iterator iter = CellIndexListInput.begin();
+	for (iter = CellIndexListInput.begin(); iter != CellIndexListInput.end(); ++iter) {
+		if (SubregionSelectMethod->currentIndex() == 0) {
+			std::map<unsigned int, bool>::iterator target_iter = CompleteIndex.end();
+			if (CompleteIndex.find(*iter) != target_iter) {
+				CellIndexListOutput.push_back(*iter);
+			}
+		}
+		else if (SubregionSelectMethod->currentIndex() == 1) {
+			std::map<unsigned int, bool>::iterator target_iter = IntersectIndex.end();
+			if (IntersectIndex.find(*iter) != target_iter) {
+				CellIndexListOutput.push_back(*iter);
+			}
+		}
+		else if (SubregionSelectMethod->currentIndex() == 2) {
+			std::map<unsigned int, bool>::iterator target_iter = TouchIndex.end();
+			if (TouchIndex.find(*iter) != target_iter) {
+				CellIndexListOutput.push_back(*iter);
+			}
+		}
+	}
+	int size_output = CellIndexListOutput.size();
+	count_output->setText(QString::fromStdString(std::to_string(size_output)) + " cells");
+	checkNextBlock();
+}
+
+
 void BlockWidget::addAnnotation(QString cmt) {
 	annotation temp;
 	temp.comment = cmt;
@@ -414,6 +617,12 @@ void BlockWidget::updatedCellColor() {
 		mGlobals.CurrentProject->mLayerCell->mCellList.at(*iter_selected-1).status = true;
 	}
 	mGlobals.CurrentProject->SelectedColor = DataColor;
+	
+	mGlobals.CurrentProject->mLayerBack->HeatmapColor.r = DataColor.redF();
+	mGlobals.CurrentProject->mLayerBack->HeatmapColor.g = DataColor.greenF();
+	mGlobals.CurrentProject->mLayerBack->HeatmapColor.b = DataColor.blueF();
+	mGlobals.CurrentProject->mLayerBack->HeatmapColor.a = 1.0;
+	mGlobals.CurrentProject->mLayerBack->HeatmapUpdated = true;
 }
 
 
@@ -430,28 +639,6 @@ void BlockWidget::updatedInputList() {
 	}
 	else if (BlockFlag == SubregionBlock) {
 		CellIndexListOutput.clear();
-		int subregion_index = SubregionDropdown->currentIndex();
-		std::list<unsigned int>::iterator iter = CellIndexListInput.begin();
-		for (iter = CellIndexListInput.begin(); iter != CellIndexListInput.end(); ++iter) {
-			if (SubregionSelectMethod->currentIndex() == 0) {
-				std::map<unsigned int, bool>::iterator target_iter = mGlobals.CurrentProject->mSubregion[subregion_index].CompleteIndex.end();
-				if (mGlobals.CurrentProject->mSubregion[subregion_index].CompleteIndex.find(*iter) != target_iter) {
-					CellIndexListOutput.push_back(*iter);
-				}
-			}
-			else if (SubregionSelectMethod->currentIndex() == 1) {
-				std::map<unsigned int, bool>::iterator target_iter = mGlobals.CurrentProject->mSubregion[subregion_index].IntersectIndex.end();
-				if (mGlobals.CurrentProject->mSubregion[subregion_index].IntersectIndex.find(*iter) != target_iter) {
-					CellIndexListOutput.push_back(*iter);
-				}
-			}
-			else if (SubregionSelectMethod->currentIndex() == 2) {
-				std::map<unsigned int, bool>::iterator target_iter = mGlobals.CurrentProject->mSubregion[subregion_index].TouchIndex.end();
-				if (mGlobals.CurrentProject->mSubregion[subregion_index].TouchIndex.find(*iter) != target_iter) {
-					CellIndexListOutput.push_back(*iter);
-				}
-			}
-		}
 		int size_output = CellIndexListOutput.size();
 		count_output->setText(QString::fromStdString(std::to_string(size_output)) + " cells");
 	}

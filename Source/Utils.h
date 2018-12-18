@@ -85,6 +85,13 @@ typedef struct {
 }subregion_layer;
 
 
+typedef struct {
+	float r;
+	float g;
+	float b;
+	float a;
+}float_color;
+
 
 typedef struct {
 	long long x;

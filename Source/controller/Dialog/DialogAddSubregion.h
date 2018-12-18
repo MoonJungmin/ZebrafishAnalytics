@@ -8,7 +8,7 @@
 #include <iostream>
 #include <string>
 #include "Source/global.h"
-#include "Source/model/process/ThreadCalcSubregionVolume.h"
+
 
 class DialogAddSubregion: public QDialog
 {

@@ -154,7 +154,7 @@ void ZebrafishAnalytics::handleOpenProject() {
 	///*DialogNewProject *md = new DialogNewProject(mWidget);
 	//md->exec();*/
 
-	mGlobals.CurrentProject->ProjectOpen("G:/TestProject.aproj");
+	mGlobals.CurrentProject->ProjectOpen("G:/Brain.aproj");
 
 }
 

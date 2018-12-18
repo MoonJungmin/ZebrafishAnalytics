@@ -18,5 +18,6 @@
         <file>Resources/glsl/vshader_3dview.glsl</file>
         <file>Resources/icon_info.png</file>
         <file>Resources/icon_statistics.png</file>
+        <file>Resources/Zebrafish_eye_filled.tf</file>
     </qresource>
 </RCC>

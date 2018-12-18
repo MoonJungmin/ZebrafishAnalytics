@@ -25,9 +25,6 @@ public:
 	~LayerSubregion();
 
 	int SubregionIndex;
-	bool SubregionActivated = true;
-	bool SubregionVolumeStatus = false;
-
 	std::string SubregionID;
 
 
@@ -39,14 +36,10 @@ public:
 
 	QColor SubregionColor = QColor(23,55,88);
 	float SubregionOpacity = 0.0f;
-	double SubregionVolume = 0.0f;
 
 	QPushButton *SubregionColorBtn;
 
-	std::map<unsigned int, bool> TouchIndex;
-	std::map<unsigned int, bool> IntersectIndex;
-	std::map<unsigned int, bool> CompleteIndex;
-
+	
 	std::list<subregion_layer> BlockList;
 
 	subregion_layer initializeBlock(block_info info);
@@ -57,7 +50,7 @@ public:
 	void removeBlock();
 
 
-private:
+
 	int DataSizeX = 0;
 	int DataSizeY = 0;
 	int DataSizeZ = 0;
@@ -68,6 +61,10 @@ private:
 	std::string DataPathXY;
 	std::string DataPathYZ;
 	std::string DataPathZX;
+
+
+private:
+
 
 	void readIndex();
 	void headerReader();

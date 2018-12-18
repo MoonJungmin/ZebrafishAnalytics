@@ -14,10 +14,12 @@
 #include "qneblock.h"
 #include "Source/view/ViewHeatmapGLWidget.h"
 #include "Source/view/ViewHistogramWidget.h"
+#include "Source/model/process/ThreadSubregion.h"
 
 class QNEBlock;
 class ViewHeatmapGLWidget;
 class ViewHistogramWidget;
+class ThreadSubregion;
 
 class BlockWidget : public QObject
 {
@@ -26,13 +28,16 @@ class BlockWidget : public QObject
 signals:
 	void deleteNode(QNEBlock *ptr);
 
+public slots:
+	void handleSubregionInformationUpdate(QString);
+
 public:
 	enum { OriginBlock = 1, DataBlock = 2, FeatureBlock = 3, SubregionBlock = 4, SimilarityBlock = 5, SetBlock = 6 };
 
 	BlockWidget(QObject *parent);
 	~BlockWidget();
 	void initialize(std::string name, int aflags, int awidth, int aheight, QColor acolor, QNEBlock *parent);
-
+	ThreadSubregion *mThread;
 	QColor BackgroundColor;
 	QString BackgroundColor_style;
 	QColor DataColor;
@@ -42,6 +47,7 @@ public:
 
 	QWidget *DataInputOutput;
 	
+	QWidget *SubregionInformationMaster;
 	QWidget *SubregionDropdownMaster;
 	QComboBox *SubregionDropdown;
 	QComboBox *SubregionSelectMethod;
@@ -81,6 +87,19 @@ public:
 
 	int BlockFlag;
 
+	int SubregionPrecision;
+	double SubregionVolume = 0.0f;
+	std::map<unsigned int, bool> TouchIndex;
+	std::map<unsigned int, bool> IntersectIndex;
+	std::map<unsigned int, bool> CompleteIndex;
+	int plane_pos_x = 0;
+	int plane_pos_y = 0;
+	int plane_pos_z = 0;
+	int plane_up_x = 1;
+	int plane_up_y = 0;
+	int plane_up_z = 0;
+
+
 private slots:
 	void handleBlockColorBtn();
 	void handleCloseBtn();
@@ -89,6 +108,11 @@ private slots:
 	void handleHistogramUpdate();
 	void handleStatisticsBtn();
 	void handleHistogramSetBtn();
+	void handleSubregionSetBtn();
+
+	void subregion_progess_update(float v);
+	void subregion_progess_log_update(QString);
+
 
 private:
 	QNEBlock * m_block;
@@ -100,10 +124,26 @@ private:
 	QLineEdit *histogram_start;
 	QLineEdit *histogram_end;
 
+	QLabel *subreigon_precision;
+	QLineEdit *subreigon_volume;
+	QLabel *SubregionProgressbarLog;
+	QProgressBar *SubregionProgressbar;
+	QLineEdit *subregion_pos_x;
+	QLineEdit *subregion_pos_y;
+	QLineEdit *subregion_pos_z;
+	QLineEdit *subregion_up_x;
+	QLineEdit *subregion_up_y;
+	QLineEdit *subregion_up_z;
+
+	/*bool SubregionActivated = true;
+	bool SubregionVolumeStatus = false;*/
+
+
 
 	void generate_ToolBox(int aflag);
 	void generate_DataHeatmap(int width, int height);
 	void generate_DataInputOutput(int width, int height);
+	void generate_SubregionInformation(int awidth, int aheight);
 	void generate_SubregionDropdown(int width, int height);
 	void generate_FeatureHistogram(int width, int height);
 	void generate_FeatureDropdown(int width, int height);
@@ -117,3 +157,4 @@ private:
 	QFont mFont;
 
 };
+

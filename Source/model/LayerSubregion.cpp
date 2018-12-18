@@ -34,7 +34,7 @@ LayerSubregion::LayerSubregion(std::string name, std::string path) {
 	qDebug() << QString::fromStdString(DataPathZX);
 
 	this->headerReader();
-	this->readIndex();
+	//this->readIndex();
 }
 
 LayerSubregion::~LayerSubregion() {
@@ -42,25 +42,25 @@ LayerSubregion::~LayerSubregion() {
 
 void LayerSubregion::readIndex() {
 	
-	std::ifstream mIfs;
-	mIfs.open(TouchTablePath);
-	while (!mIfs.eof()) {
-		unsigned int index;
-		mIfs >> index;
-		TouchIndex[index] = true;
-		CompleteIndex[index] = true;
-	}
-	mIfs.close();
+	//std::ifstream mIfs;
+	//mIfs.open(TouchTablePath);
+	//while (!mIfs.eof()) {
+	//	unsigned int index;
+	//	mIfs >> index;
+	//	TouchIndex[index] = true;
+	//	CompleteIndex[index] = true;
+	//}
+	//mIfs.close();
 
-	std::ifstream mIfs2;
-	mIfs2.open(IntersectTablePath);
-	while (!mIfs2.eof()) {
-		unsigned int index;
-		mIfs2 >> index;
-		IntersectIndex[index] = true;
-		CompleteIndex.erase(index);
-	}
-	mIfs2.close();
+	//std::ifstream mIfs2;
+	//mIfs2.open(IntersectTablePath);
+	//while (!mIfs2.eof()) {
+	//	unsigned int index;
+	//	mIfs2 >> index;
+	//	IntersectIndex[index] = true;
+	//	CompleteIndex.erase(index);
+	//}
+	//mIfs2.close();
 
 }
 

@@ -24,7 +24,17 @@ public:
 	
 	std::list<back_layer> BlockList;
 
-	
+	unsigned char *volumeRenderData;
+	int volumeRenderWidth;
+	int volumeRenderHeight;
+	int volumeRenderDepth;
+
+	std::vector<float_color> transferFunc;
+	float *HeatmapData;
+	bool HeatmapUpdated = false;
+	float_color HeatmapColor;
+	int HeatmapLevel = 3;
+
 	int checkBlockIndex(int idx_x, int idx_y, int idx_z, int level, int axis);
 	back_layer initializeBlock(block_info info);
 	int LoadBlockBySerialIndex(back_layer tempblock);
@@ -37,6 +47,8 @@ public:
 
 private:
 	void headerReader();
+	void LoadVolumeRenderingSource();
+	void LoadVolumeRenderingTF();
 
 	int DataSizeX = 0;
 	int DataSizeY = 0;

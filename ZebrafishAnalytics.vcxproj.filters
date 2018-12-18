@@ -180,16 +180,13 @@
     <ClCompile Include="Source\view\ViewVolumeGLWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\view\GeometryEngine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\controller\Dialog\DialogStatistics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\controller\Dialog\DialogInfoSubregion.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\model\process\ThreadCalcSubregionVolume.cpp">
+    <ClCompile Include="Source\model\process\ThreadSubregion.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -284,7 +281,7 @@
     <QtMoc Include="Source\controller\Dialog\DialogInfoSubregion.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="Source\model\process\ThreadCalcSubregionVolume.h">
+    <QtMoc Include="Source\model\process\ThreadSubregion.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -324,6 +321,7 @@
     <None Include="Resources\glsl\vshader_axisview.glsl" />
     <None Include="Resources\glsl\vshader_3dview.glsl" />
     <None Include="Resources\glsl\fshader_3dview.glsl" />
+    <None Include="Resources\Zebrafish_eye_filled.tf" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\controller\node\qneblock.h">
@@ -392,9 +390,7 @@
     <ClInclude Include="Source\view\histogram\Histogram.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\view\GeometryEngine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClInclude Include="Source\model\process\calculator_subregion.cuh" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Source\view\theme\Resource\theme\darkstyle\icon_close.png">
@@ -544,5 +540,8 @@
     <Image Include="Resources\icon_trash.png" />
     <Image Include="Resources\icon_statistics.png" />
     <Image Include="Resources\icon_info.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="Source\model\process\calculator_subregion.cu" />
   </ItemGroup>
 </Project>

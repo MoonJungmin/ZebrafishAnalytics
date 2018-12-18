@@ -34,6 +34,8 @@ Contents::Contents(QWidget *parent, QLayout *parent_layout)
 	splitter->addWidget(contents_left_tabwidget);
 	splitter->addWidget(contents_center_tabwidget);
 	parent_layout->addWidget(splitter);
+
+
 }
 
 
@@ -56,6 +58,8 @@ void Contents::CenterTabInit(QTabWidget *target, int width, int height) {
 	target->addTab(new QWidget(), "ZX");
 	target->addTab(new QWidget(), "3D");
 	target->addTab(new QWidget(), "Graph");
+
+
 }
 
 void Contents::replaceTab(QTabWidget * tabs, int index, QWidget * replacement, QString label)
@@ -87,12 +91,21 @@ void Contents::InitGLView() {
 	GL_ZXAxis_Main->setAxisIndex(3, 2);
 	connect(GL_ZXAxis_Main, SIGNAL(updateAll(int, bool)), this, SLOT(updateAllWidget(int, bool)));
 
+
+	//GL_Volume_Main->setBackgroundVolumeTF(mGlobals.CurrentProject->mLayerBack->transferFunc);
+
+
 	GL_Volume_Main = new ViewVolumeGLWidget;
+	GL_Volume_Sub = new ViewVolumeGLWidget;
 
 	replaceTab(contents_center_tabwidget, 1, GL_XYAxis_Main, "XY");
 	replaceTab(contents_center_tabwidget, 2, GL_YZAxis_Main, "YZ");
 	replaceTab(contents_center_tabwidget, 3, GL_ZXAxis_Main, "ZX");
 	replaceTab(contents_center_tabwidget, 4, GL_Volume_Main, "3D");
+
+	//GL_Volume_Main->setBackgroundVolume(mGlobals.CurrentProject->mLayerBack->volumeRenderData, width, height, depth);
+	//GL_Volume_Main->setBackgroundVolumeTF(mGlobals.CurrentProject->mLayerBack->transferFunc);
+
 
 	GL_XYAxis_Sub = new ViewAxisGLWidget;
 	GL_XYAxis_Sub->setAxisIndex(1, 3);
@@ -106,7 +119,7 @@ void Contents::InitGLView() {
 	GL_ZXAxis_Sub->setAxisIndex(3, 5);
 	connect(GL_ZXAxis_Sub, SIGNAL(updateAll(int, bool)), this, SLOT(updateAllWidget(int, bool)));
 
-	GL_Volume_Sub = new ViewVolumeGLWidget;
+	//GL_Volume_Sub = new ViewVolumeGLWidget;
 
 
 	QSplitter *view4_layout = new QSplitter;
@@ -127,6 +140,9 @@ void Contents::InitGLView() {
 	
 	
 	replaceTab(contents_center_tabwidget, 0, view4_layout, "4-View");
+
+
+	
 
 }
 
@@ -352,20 +368,16 @@ void Contents::subregion_updated() {
 		
 		iter->SubregionIndex = index;
 
-		ThreadCalcSubregionVolume *SubregionVolumeThread = new ThreadCalcSubregionVolume;
-		SubregionVolumeThread->addJob(iter->SubregionID);
-		SubregionVolumeThread->start();
-		
 		QLabel *name = new QLabel(mWidget);
 		name->setFont(font);
 		name->setText(QString::fromStdString(iter->SubregionName));
 
-		QPushButton *infoBtn = new QPushButton(mWidget);
-		infoBtn->setIcon(QIcon("Resources/icon_info.png"));
-		infoBtn->setObjectName(QString::fromStdString(std::to_string(index)));
-		infoBtn->setIconSize(QSize(15, 15));
-		infoBtn->setFixedSize(QSize(20, 20));
-		connect(infoBtn, SIGNAL(clicked()), this, SLOT(handleInfoBtn_subregion()));
+		//QPushButton *infoBtn = new QPushButton(mWidget);
+		//infoBtn->setIcon(QIcon("Resources/icon_info.png"));
+		//infoBtn->setObjectName(QString::fromStdString(std::to_string(index)));
+		//infoBtn->setIconSize(QSize(15, 15));
+		//infoBtn->setFixedSize(QSize(20, 20));
+		//connect(infoBtn, SIGNAL(clicked()), this, SLOT(handleInfoBtn_subregion()));
 
 
 		QPushButton *colorbtn = new QPushButton;
@@ -398,7 +410,7 @@ void Contents::subregion_updated() {
 		filler2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 		list_item_layout->addWidget(name);
 		list_item_layout->addWidget(filler2);
-		list_item_layout->addWidget(infoBtn);
+		//list_item_layout->addWidget(infoBtn);
 		list_item_layout->addWidget(slider);
 		list_item_layout->addWidget(colorbtn);
 		//list_item_layout->addWidget(CheckBox);
@@ -461,34 +473,6 @@ void Contents::handleInfoBtn_subregion() {
 	qDebug() << "info Button: subregion" << senderObjName;
 	mGlobals.mDialogManager->mDialogInfoSubregion->setIndexAndDraw(index);
 	mGlobals.mDialogManager->mDialogInfoSubregion->exec();
-}
-
-
-void Contents::handleCheckBox_subregion(int state) {
-	QObject *senderObj = sender(); // This will give Sender object
-	QString senderObjName = senderObj->objectName();
-	int index = std::stoi(senderObjName.toStdString());
-	qDebug() << state;
-	
-	if (state == 2) {
-		int count = 0;
-		std::vector<LayerSubregion>::iterator iter;
-		for (iter = mGlobals.CurrentProject->mSubregion.begin(); iter != mGlobals.CurrentProject->mSubregion.end(); ++iter) {
-			if (iter->SubregionActivated) {
-				++count;
-			}
-		}
-		if (count >= 10) {
-			QMessageBox::warning(0, "Error", "Up to 10 can be selected.");
-		}
-		else {
-			mGlobals.CurrentProject->mSubregion[index].SubregionActivated = true;
-		}		
-	}	
-	else {
-		mGlobals.CurrentProject->mSubregion[index].SubregionActivated = false;
-	}
-	//subregion_updated();
 }
 
 

@@ -1,50 +1,136 @@
-#pragma once
+#ifndef ViewVolumeGLWidget_H
+#define ViewVolumeGLWidget_H
+
 #include <QOpenGLWidget>
-#include <QOpenGLFunctions>
+#include <QOpenGLFunctions_4_3_Compatibility>
+#include <QOpenGLBuffer>
 #include <QMatrix4x4>
-#include <QQuaternion>
-#include <QVector2D>
-#include <QBasicTimer>
-#include <QOpenGLShaderProgram>
 #include <QOpenGLTexture>
+#include <QVector2D>
+#include <QMouseEvent>
+#include <QOpenGLShaderProgram>
+#include <QCoreApplication>
+#include <math.h>
+#include <QProcess>
+#include <QColorDialog>
+#include <QPainter>
+#include "Source/Utils.h"
+#include "Source/global.h"
 
-#include "geometryengine.h"
+QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 
-
-class GeometryEngine;
-
-class ViewVolumeGLWidget : public QOpenGLWidget, protected QOpenGLFunctions
+class ViewVolumeGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_4_3_Compatibility
 {
 	Q_OBJECT
 
 public:
-	explicit ViewVolumeGLWidget(QWidget *parent = 0);
+	ViewVolumeGLWidget(QWidget *parent = 0);
 	~ViewVolumeGLWidget();
 
+	QSize minimumSizeHint() const Q_DECL_OVERRIDE;
+	QSize sizeHint() const Q_DECL_OVERRIDE;
+
+	void setBackgroundVolume(unsigned char *data, int width, int height, int depth);
+	void setBackgroundVolumeTF(std::vector<float_color> transferfunction);
+	void setVolume(float *data, int width, int height, int depth, float_color color);
+	void updateVolume(float *data, int startX, int startY, int startZ, int width, int height, int depth);
+
+public slots:
+
+	void cleanup();
+signals:
+
+
 protected:
-	void mousePressEvent(QMouseEvent *e) override;
-	void mouseReleaseEvent(QMouseEvent *e) override;
-	void timerEvent(QTimerEvent *e) override;
+	void initializeGL() Q_DECL_OVERRIDE;
+	void paintGL() Q_DECL_OVERRIDE;
+	void resizeGL(int width, int height) Q_DECL_OVERRIDE;
+	void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+	void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+	void timerEvent(QTimerEvent *event) Q_DECL_OVERRIDE;
 
-	void initializeGL() override;
-	void resizeGL(int w, int h) override;
-	void paintGL() override;
 
-	void initShaders();
-	void initTextures();
+	QVector3D cross_product(QVector3D v1, QVector3D v2);
+	void keyPressEvent(QKeyEvent *event) Q_DECL_OVERRIDE;
+	void keyReleaseEvent(QKeyEvent *event) Q_DECL_OVERRIDE;
+
 
 private:
-	QBasicTimer timer;
-	QOpenGLShaderProgram program;
-	GeometryEngine *geometries;
+	unsigned char *t_data;
+	float *empty_data_for_test;
+	int w, h, d;
 
-	QOpenGLTexture *texture;
+	bool IsReadyBackgorundVolume;
+	bool IsReadyVolume;
 
-	QMatrix4x4 projection;
+	QPoint m_lastPos;
 
-	QVector2D mousePressPosition;
-	QVector3D rotationAxis;
-	qreal angularSpeed;
-	QQuaternion rotation;
+	QOpenGLShaderProgram *m_program;
+
+	GLuint Background_tex;
+	GLuint Heatmap_tex;
+
+	QVector3D box_min;
+	QVector3D box_max;
+
+
+	int con_eye_pos;
+	int con_box_min;
+	int con_box_max;
+	int con_up;
+	int con_center;
+
+	QString p_fps;
+	int fps;
+	int fps_start;
+
+	int con_tex;
+	int con_heatmap_tex;
+
+	QVector3D const_box_max;
+	QVector3D const_box_min;
+
+
+	int con_color_table;
+
+	GLuint color_tex;
+
+
+
+	int con_sample;
+	float sample;
+
+
+	int con_l_t;
+
+
+	QVector4D background_color;
+	int con_background_color;
+
+	QVector4D Heatmap_color;
+	int con_heatmap_color;
+
+
+
+	int con_specu, con_diffu, con_ambi, con_shin;
+
+	QVector2D shift;
+
+	QVector3D eye_position;
+	QVector3D center1;
+	QVector3D up;
+
+	QVector4D color_table[256];
+	int tog;
+	float l_t;
+	float scale;
+
+	float ambi, diffu, specu, shin;
+
+	float EYE;
+
+	int con_v_size;
+	bool shift_flag;
 };
 
+#endif
