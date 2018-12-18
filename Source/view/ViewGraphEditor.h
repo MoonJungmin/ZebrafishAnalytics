@@ -5,6 +5,7 @@
 #include <QLabel>
 #include <QSizePolicy>
 #include <QGraphicsScene>
+#include <QGraphicsView>
 #include <QFileDialog>
 #include <QColor>
 #include <QDebug>
@@ -20,6 +21,10 @@
 #include "Source/global.h"
 #include "Source/Utils.h"
 
+
+
+class QNodesEditor;
+class QNEBlock;
 
 
 class ViewGraphEditor : public QWidget

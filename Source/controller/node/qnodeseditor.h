@@ -27,8 +27,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #define QNODESEDITOR_H
 
 #include <QObject>
+#include <QGraphicsScene>
+#include <QGraphicsView>
+#include <QEvent>
+#include <QGraphicsSceneMouseEvent>
+
+#include "qneport.h"
+#include "qneconnection.h"
+#include "qneblock.h"
 
 class QGraphicsScene;
+class QGraphicsView;
 class QNEConnection;
 class QGraphicsItem;
 class QPointF;
@@ -41,7 +50,7 @@ public:
 	explicit QNodesEditor(QObject *parent = 0);
 	void removeThis(QGraphicsItem * ptr);
 
-	void install(QGraphicsScene *scene);
+	void install(QGraphicsScene *scene, QGraphicsView *view);
 
 	bool eventFilter(QObject *, QEvent *);
 
@@ -52,7 +61,15 @@ private:
 	QGraphicsItem *itemAt(const QPointF&);
 
 private:
+
+	void set_modifiers(Qt::KeyboardModifiers modifiers);
+	void set_zoom_factor_base(double value);
+
+	Qt::KeyboardModifiers _modifiers;
+	double _zoom_factor_base;
+	QPointF target_scene_pos, target_viewport_pos;
 	QGraphicsScene *scene;
+	QGraphicsView *view;
 	QNEConnection *conn;
 	// QNEBlock *selBlock;
 };

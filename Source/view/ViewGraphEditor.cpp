@@ -21,7 +21,9 @@ void ViewGraphEditor::initialize(QLayout *parent_layout) {
 	GraphView->setRenderHint(QPainter::Antialiasing, true);
 	
 	GraphEditor = new QNodesEditor(this);
-	GraphEditor->install(GraphScene);
+	GraphEditor->install(GraphScene, GraphView);
+
+	
 
 	parent_layout->addWidget(GraphView);
 }

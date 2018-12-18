@@ -25,26 +25,22 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 #include "qnodeseditor.h"
 
-#include <QGraphicsScene>
-#include <QEvent>
-#include <QGraphicsSceneMouseEvent>
 
-#include "qneport.h"
-#include "qneconnection.h"
-#include "qneblock.h"
 
 QNodesEditor::QNodesEditor(QObject *parent) :
     QObject(parent)
 {
-	
+	_modifiers = Qt::ControlModifier;
+	_zoom_factor_base = 1.0015;
 	conn = 0;
 }
 
-void QNodesEditor::install(QGraphicsScene *s)
+void QNodesEditor::install(QGraphicsScene *s, QGraphicsView *v)
 {
 	
 	s->installEventFilter(this);
 	scene = s;
+	view = v;
 }
 
 QGraphicsItem* QNodesEditor::itemAt(const QPointF &pos)
@@ -58,12 +54,64 @@ QGraphicsItem* QNodesEditor::itemAt(const QPointF &pos)
 	return 0;
 }
 
+void QNodesEditor::set_modifiers(Qt::KeyboardModifiers modifiers) {
+	_modifiers = modifiers;
+
+}
+
+void QNodesEditor::set_zoom_factor_base(double value) {
+	_zoom_factor_base = value;
+}
+
+
 bool QNodesEditor::eventFilter(QObject *o, QEvent *e)
 {
 	QGraphicsSceneMouseEvent *me = (QGraphicsSceneMouseEvent*) e;
 
 	switch ((int) e->type())
 	{
+	case QEvent::KeyPress: {
+
+		double factor;
+		QKeyEvent* key_event = static_cast<QKeyEvent*>(e);
+		QWheelEvent* wheel_event = static_cast<QWheelEvent*>(e);
+		if (key_event->key() == Qt::Key_Plus || key_event->key() == Qt::Key_Equal) {
+			qDebug() << "plus";
+			factor = qPow(1.00015, 400);
+			qDebug() << factor;
+
+
+			auto targetViewportPos = wheel_event->pos();
+			auto targetScenePos = view->mapToScene(wheel_event->pos());
+
+			view->scale(factor, factor);
+			view->centerOn(targetScenePos);
+			QPointF deltaViewportPos = targetViewportPos - QPointF(view->viewport()->width() / 2.0, view->viewport()->height() / 2.0);
+			QPointF viewportCenter = view->mapFromScene(targetScenePos) - deltaViewportPos;
+			view->centerOn(view->mapToScene(viewportCenter.toPoint()));
+
+
+		}
+		else if (key_event->key() == Qt::Key_Minus || key_event->key() == Qt::Key_Underscore) {
+			factor = qPow(1/1.00015, 400);
+			qDebug() << "minus";
+			qDebug() << factor;
+
+			auto targetViewportPos = wheel_event->pos();
+			auto targetScenePos = view->mapToScene(wheel_event->pos());
+
+			view->scale(factor, factor);
+			view->centerOn(targetScenePos);
+			QPointF deltaViewportPos = targetViewportPos - QPointF(view->viewport()->width() / 2.0, view->viewport()->height() / 2.0);
+			QPointF viewportCenter = view->mapFromScene(targetScenePos) - deltaViewportPos;
+			view->centerOn(view->mapToScene(viewportCenter.toPoint()));
+			
+		}
+
+
+		return true;
+	}
+
 	case QEvent::GraphicsSceneMousePress:
 	{
 
@@ -106,6 +154,7 @@ bool QNodesEditor::eventFilter(QObject *o, QEvent *e)
 	}
 	case QEvent::GraphicsSceneMouseMove:
 	{
+		
 		if (conn)
 		{
 			conn->setPos2(me->scenePos());
@@ -113,6 +162,7 @@ bool QNodesEditor::eventFilter(QObject *o, QEvent *e)
 			return true;
 		}
 		break;
+
 	}
 	case QEvent::GraphicsSceneMouseRelease:
 	{
