@@ -76,6 +76,8 @@ private:
 	bool bindCellLayer(block_info info);
 	int bindSubregionLayer(block_info info);
 
+	unsigned int getCellIndexbyMousePos(QPointF pos);
+
 	QColor clearColor;
 	QPoint lastPos;
 	QMatrix4x4 projMatrix;

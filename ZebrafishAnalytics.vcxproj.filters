@@ -195,6 +195,9 @@
     <ClCompile Include="Source\model\UnitManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\controller\Dialog\DialogCellInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="ZebrafishAnalytics.h">
@@ -291,6 +294,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="Source\controller\Contents_ProjectInfo.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Source\controller\Dialog\DialogCellInfo.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

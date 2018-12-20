@@ -137,7 +137,10 @@ void Contents::InitGLView() {
 	second_lay->addWidget(GL_ZXAxis_Sub);
 	second_lay->addWidget(GL_Volume_Sub);
 
-
+	QList<int> sizes;
+	sizes << 720 << 720;
+	second_lay->setSizes(sizes);
+	first_lay->setSizes(sizes);
 
 	view4_layout->addWidget(first_lay);
 	view4_layout->addWidget(second_lay);

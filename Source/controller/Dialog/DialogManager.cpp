@@ -31,5 +31,6 @@ void DialogManager::initializeDialog() {
 	mDialogAnnotation = new DialogAnnotation(mWidget);
 	mDialogStatistics = new DialogStatistics(mWidget);
 	mDialogInfoSubregion = new DialogInfoSubregion(mWidget);
+	mDialogCellInfo = new DialogCellInfo(mWidget);
 }
 

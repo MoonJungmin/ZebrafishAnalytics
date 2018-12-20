@@ -509,13 +509,79 @@ void ViewAxisGLWidget::resizeGL(int width, int height)
 	emit update_view_state(mGlobals.CurrentProject->ViewPos_X, mGlobals.CurrentProject->ViewPos_Y, mGlobals.CurrentProject->ViewPos_Z, mGlobals.CurrentProject->ViewZoomLevel);
 }
 
+unsigned int ViewAxisGLWidget::getCellIndexbyMousePos(QPointF pos) {
+	block_info BlockInfo = calcBlockIndex();
+
+	for (int x = BlockInfo.start_x; x < BlockInfo.end_x; ++x) {
+		for (int y = BlockInfo.start_y; y < BlockInfo.end_y; ++y) {
+			BlockInfo.x = x;
+			BlockInfo.y = y;
+			
+			int stat = mGlobals.CurrentProject->mLayerCell->checkBlockIndex(BlockInfo.x, BlockInfo.y, BlockInfo.z, BlockInfo.level, BlockInfo.axis);
+
+			if (stat != -1) {
+				std::list<label_layer>::iterator iter_lb = mGlobals.CurrentProject->mLayerCell->BlockList.begin();
+				std::advance(iter_lb, stat);
+				//BlockInfo.size = mGlobals.CurrentProject->DataBlockSize;
+
+				float posXmin = (float)(BlockInfo.size * BlockInfo.x);
+				float posXmax = (float)(BlockInfo.size * BlockInfo.x + BlockInfo.size);
+				float posYmin = (float)(BlockInfo.size * BlockInfo.y);
+				float posYmax = (float)(BlockInfo.size * BlockInfo.y + BlockInfo.size);
+
+				float targetX;
+				float targetY;
+				if (AxisCode == 1) {
+					targetX = mGlobals.CurrentProject->ViewPos_X + pos.x() - (WidgetWidth / 2);
+					targetY = mGlobals.CurrentProject->ViewPos_Y + pos.y() - (WidgetHeight / 2);
+				}
+				else if (AxisCode == 2) {
+					targetX = mGlobals.CurrentProject->ViewPos_Z + pos.x() - (WidgetWidth / 2);
+					targetY = mGlobals.CurrentProject->ViewPos_Y + pos.y() - (WidgetHeight / 2);
+				}
+				else if (AxisCode == 3) {
+					targetX = mGlobals.CurrentProject->ViewPos_X + pos.x() - (WidgetWidth / 2);
+					targetY = mGlobals.CurrentProject->ViewPos_Z + pos.y() - (WidgetHeight / 2);
+				}
+				
+				//qDebug() << posXmin << " " << posXmax << " " << targetX;
+				//qDebug() << posYmin << " " << posYmax << " " << targetY;
+				if (posXmin < targetX && posXmax > targetX && posYmin < targetY && posYmax > targetY) {
+					/*qDebug() << "This Block!!!!!";
+					qDebug() << posXmin << " " << posXmax << " " << targetX;
+					qDebug() << posYmin << " " << posYmax << " " << targetY;*/
+
+					int tX = (targetX - posXmin) / pow(2, (int)mGlobals.CurrentProject->ViewZoomLevel);
+					int tY = (targetY - posYmin) / pow(2, (int)mGlobals.CurrentProject->ViewZoomLevel);
+
+					return iter_lb->data[tY*mGlobals.CurrentProject->DataBlockSize + tX];
+
+				}
+				
+			}
+
+		}
+	}
+	
+	return 0;
+
+}
+
 void ViewAxisGLWidget::mousePressEvent(QMouseEvent *event)
 {
 	//qDebug() << "mouse Press GL";
 	lastPos = event->pos();
 
 	if (CtrlKeyFlag) {
-		qDebug() << "Ctrl key pressed";
+		qDebug() << "Ctrl key pressed (" << event->x() << " " << event->y() << ")";
+		QPointF pos(event->x(), event->y());
+		unsigned int index = getCellIndexbyMousePos(pos);
+		if (index != 0) {
+			CtrlKeyFlag = false;
+			mGlobals.mDialogManager->mDialogCellInfo->setIndexAndDraw(index);
+			mGlobals.mDialogManager->mDialogCellInfo->exec();
+
+		}
 	}
 
 }
