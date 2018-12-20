@@ -15,7 +15,6 @@ Contents::Contents(QWidget *parent, QLayout *parent_layout)
 	QSplitter * splitter = new QSplitter(mWidget);
 
 	contents_left_tabwidget = new QTabWidget(mWidget);
-
 	contents_center_tabwidget = new QTabWidget(mWidget);
 
 
@@ -33,6 +32,11 @@ Contents::Contents(QWidget *parent, QLayout *parent_layout)
 
 	splitter->addWidget(contents_left_tabwidget);
 	splitter->addWidget(contents_center_tabwidget);
+
+	QList<int> sizes;
+	sizes << 480 << 1440;
+	splitter->setSizes(sizes);
+
 	parent_layout->addWidget(splitter);
 
 
@@ -157,69 +161,8 @@ void Contents::InitGraph() {
 }
 
 void Contents::InitProjectInfo() {
-	QVBoxLayout *layout = new QVBoxLayout;
-	QHBoxLayout *proj_name_layout = new QHBoxLayout;
-	QHBoxLayout *proj_path_layout = new QHBoxLayout;
-	QHBoxLayout *proj_back_layout = new QHBoxLayout;
-	QHBoxLayout *proj_cell_layout = new QHBoxLayout;
-
-	QLabel *proj_name_label = new QLabel(mWidget);
-	proj_name_label->setAlignment(Qt::AlignCenter);
-	proj_name_label->setFixedSize(100, 30);
-	proj_name_label->setText("Project Name");
-	ProjectName = new QLineEdit(mWidget);
-	ProjectName->setReadOnly(true);
-	ProjectName->setText(mGlobals.CurrentProject->ProjectName);
-	proj_name_layout->addWidget(proj_name_label);
-	proj_name_layout->addWidget(ProjectName);
-
-	QLabel *proj_path_label = new QLabel(mWidget);
-	proj_path_label->setAlignment(Qt::AlignCenter);
-	proj_path_label->setFixedSize(100, 30);
-	proj_path_label->setText("Project Name");
-	ProjectPath = new QLineEdit(mWidget);
-	ProjectPath->setReadOnly(true);
-	ProjectPath->setText(mGlobals.CurrentProject->ProjectPath);
-	proj_path_layout->addWidget(proj_path_label);
-	proj_path_layout->addWidget(ProjectPath);
-
-
-	QLabel *proj_back_label = new QLabel(mWidget);
-	proj_back_label->setAlignment(Qt::AlignCenter);
-	proj_back_label->setFixedSize(100, 30);
-	proj_back_label->setText("EM Path");
-	BackPath = new QLineEdit(mWidget);
-	BackPath->setReadOnly(true);
-	BackPath->setText(QString::fromStdString(mGlobals.CurrentProject->mLayerBack->BackgroundPath));
-	proj_back_layout->addWidget(proj_back_label);
-	proj_back_layout->addWidget(BackPath);
-
-
-	QLabel *proj_cell_label = new QLabel(mWidget);
-	proj_cell_label->setAlignment(Qt::AlignCenter);
-	proj_cell_label->setFixedSize(100, 30);
-	proj_cell_label->setText("Cell Path");
-	CellPath = new QLineEdit(mWidget);
-	CellPath->setReadOnly(true);
-	CellPath->setText(QString::fromStdString(mGlobals.CurrentProject->mLayerCell->CellPath));
-	proj_cell_layout->addWidget(proj_cell_label);
-	proj_cell_layout->addWidget(CellPath);
-
-
-	QHBoxLayout *filler_layout = new QHBoxLayout;
-	QWidget *filler = new QWidget;
-	filler->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-	filler_layout->addWidget(filler);
-
-
-	layout->addLayout(proj_name_layout);
-	layout->addLayout(proj_path_layout);
-	layout->addLayout(proj_back_layout);
-	layout->addLayout(proj_cell_layout);
-	layout->addLayout(filler_layout);
-		
 	QWidget *ProjectInfo_Container = new QWidget;
-	ProjectInfo_Container->setLayout(layout);
+	Contents_ProjectInfo *master = new Contents_ProjectInfo(ProjectInfo_Container);
 	replaceTab(contents_left_tabwidget, 0, ProjectInfo_Container, "Project Information");
 }
 void Contents::InitSubregionFeatureList() {
@@ -278,6 +221,7 @@ void Contents::InitSubregionFeatureList() {
 	QWidget *SubregionFeatureList_Container = new QWidget;
 	SubregionFeatureList_Container->setLayout(layout);
 	replaceTab(contents_left_tabwidget, 1, SubregionFeatureList_Container, "Subregion & Feature");
+	feature_updated();
 }
 
 void Contents::updateColorBox(QPushButton *target, QColor color) {

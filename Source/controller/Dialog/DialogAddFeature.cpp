@@ -85,6 +85,32 @@ DialogAddFeature::DialogAddFeature(QWidget *parent) : QDialog(parent)
 	featurepath_layout->addWidget(FindBtn);
 
 
+	QHBoxLayout *featuretype_layout = new QHBoxLayout;
+	QLabel *label_featuretype = new QLabel(this);
+	label_featuretype->setText("Feature Type   ");
+	label_featuretype->setFont(right_font);
+	FeatureType = new QComboBox(this);
+	
+	FeatureType->addItems(combomenu);
+	FeatureType->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+		
+	featuretype_layout->addWidget(label_featuretype);
+	featuretype_layout->addWidget(FeatureType);
+
+
+	//QHBoxLayout *featureunit_layout = new QHBoxLayout;
+	//QLabel *label_featureunit = new QLabel(this);
+	//label_featureunit->setText("Feature Unit   ");
+	//label_featureunit->setFont(right_font);
+	//FeatureUnit = new QComboBox(this);
+	//
+	//FeatureUnit->addItems(mGlobals.gUnitList);
+	//FeatureUnit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
+	//featureunit_layout->addWidget(label_featureunit);
+	//featureunit_layout->addWidget(FeatureUnit);
+
+	
 
 	QHBoxLayout *filler_layout = new QHBoxLayout;
 	QWidget *filler = new QWidget;
@@ -111,6 +137,8 @@ DialogAddFeature::DialogAddFeature(QWidget *parent) : QDialog(parent)
 	right_layout->addLayout(featurename_layout);*/
 	featurepath_layout->setMargin(10);
 	right_layout->addLayout(featurepath_layout);
+	featuretype_layout->setMargin(10);
+	right_layout->addLayout(featuretype_layout);
 
 	right_layout->addLayout(filler_layout);
 
@@ -143,7 +171,7 @@ void DialogAddFeature::done(int val)
 void DialogAddFeature::accept()
 {
 	qDebug("Accept.");
-	mGlobals.CurrentProject->AddFeature(FeaturePath->text());
+	mGlobals.CurrentProject->AddFeature(FeaturePath->text(), FeatureType->currentIndex());
 	emit updatedFeature();
 	this->hide();
 }

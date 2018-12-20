@@ -5,9 +5,10 @@
 DataFeature::DataFeature() {
 }
 
-DataFeature::DataFeature(std::string name, std::string path) {
+DataFeature::DataFeature(std::string name, std::string path, int type) {
 	qDebug() << "DataFeature : " << QString::fromStdString(name) << " " << QString::fromStdString(path);
 	FeatureName = name;
+	FeatureType = type;
 	std::ifstream mIfs;
 	mIfs.open(path);
 	while (!mIfs.eof()) {

@@ -6,6 +6,17 @@ DataProject::DataProject()
 {
 	SelectedColor = QColor(55, 55, 55);
 	UnSelectedColor = QColor(125, 11, 11);
+	QString a;
+	UnitList.append("nm");
+
+	a = QChar(0x00B5);
+	a += "m";
+	UnitList.append(a);
+
+
+	UnitList.append("mm");
+	
+
 }
 DataProject::~DataProject()
 {
@@ -52,7 +63,17 @@ void DataProject::ProjectOpen(QString aProjPath) {
 	QString aLayerLBPath = QString::fromStdString(list_line4.back());
 	qDebug() << aLayerLBPath;
 	mLayerCell = new LayerCell(aLayerLBPath.toStdString());
-	
+	//
+	//AddFeature(QString::fromStdString(mLayerCell->CellPath) + "MorphologicalFeature/volume.dat");
+	//AddFeature(QString::fromStdString(mLayerCell->CellPath) + "MorphologicalFeature/surfacearea.dat");
+	//AddFeature(QString::fromStdString(mLayerCell->CellPath) + "MorphologicalFeature/sphericity.dat");
+	//AddFeature(QString::fromStdString(mLayerCell->CellPath) + "MorphologicalFeature/position_z.dat");
+	//AddFeature(QString::fromStdString(mLayerCell->CellPath) + "MorphologicalFeature/position_y.dat");
+	//AddFeature(QString::fromStdString(mLayerCell->CellPath) + "MorphologicalFeature/position_x.dat");
+	//AddFeature(QString::fromStdString(mLayerCell->CellPath) + "MorphologicalFeature/intensity.dat");
+	//AddFeature(QString::fromStdString(mLayerCell->CellPath) + "MorphologicalFeature/eccentricity.dat");
+
+
 	ProjectStatus = true;
 	ProjectSizeLoad();
 }
@@ -112,7 +133,7 @@ void DataProject::ProjectSizeLoad() {
 	emit project_on();
 }
 
-void DataProject::AddFeature(QString aPath) {
+void DataProject::AddFeature(QString aPath, int aType) {
 	std::string path = aPath.toStdString();
 	Utils mUtil;
 	std::vector<std::string> list_line1 = mUtil.Split(path.c_str(), "/");
@@ -120,7 +141,7 @@ void DataProject::AddFeature(QString aPath) {
 	std::string name = list_line2.front();
 
 
-	DataFeature temp(name, path);
+	DataFeature temp(name, path, aType);
 	mFeature.push_back(temp);
 }
 

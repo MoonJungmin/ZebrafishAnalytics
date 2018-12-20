@@ -30,6 +30,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 QNodesEditor::QNodesEditor(QObject *parent) :
     QObject(parent)
 {
+
+
 	_modifiers = Qt::ControlModifier;
 	_zoom_factor_base = 1.0015;
 	conn = 0;

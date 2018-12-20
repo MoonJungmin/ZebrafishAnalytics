@@ -36,8 +36,10 @@ private:
 	QWidget * pWidget;
 
 
-	QLineEdit * FeatureName;
+	QComboBox * FeatureType;
+	QComboBox *	FeatureUnit;
 	QLineEdit * FeaturePath;
+	QStringList combomenu = { "Constant", "Linear measure", "Square measure", "Cubic measure" };
 
 
 };

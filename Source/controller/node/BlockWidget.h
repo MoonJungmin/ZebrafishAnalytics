@@ -48,6 +48,7 @@ public:
 	QWidget *DataInputOutput;
 	
 	QWidget *SubregionInformationMaster;
+	QLabel *subregion_volume_unit;
 	QWidget *SubregionDropdownMaster;
 	QComboBox *SubregionDropdown;
 	QComboBox *SubregionSelectMethod;

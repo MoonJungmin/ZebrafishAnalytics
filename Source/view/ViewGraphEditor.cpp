@@ -18,7 +18,8 @@ void ViewGraphEditor::initialize(QLayout *parent_layout) {
 	GraphView = new QGraphicsView();
 	GraphView->setScene(GraphScene);
 	
-	GraphView->setRenderHint(QPainter::Antialiasing, true);
+	GraphView->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform | QPainter::HighQualityAntialiasing);
+
 	
 	GraphEditor = new QNodesEditor(this);
 	GraphEditor->install(GraphScene, GraphView);

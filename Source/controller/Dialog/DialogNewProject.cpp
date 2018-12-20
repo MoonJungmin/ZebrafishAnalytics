@@ -137,24 +137,24 @@ DialogNewProject::DialogNewProject(QWidget *parent):QDialog(parent)
 
 
 
-	QHBoxLayout *analytics_location_layout = new QHBoxLayout;
+	//QHBoxLayout *analytics_location_layout = new QHBoxLayout;
 
-	QLabel *analytics_location = new QLabel(this);
-	analytics_location->setText("Analytics Result Location");
-	analytics_location->setFont(right_font);
+	//QLabel *analytics_location = new QLabel(this);
+	//analytics_location->setText("Analytics Result Location");
+	//analytics_location->setFont(right_font);
 
-	analytics_location_edit = new QLineEdit(this);
-	analytics_location_edit->setPlaceholderText("If you have Analytics result, type your analytics result location");
-	analytics_location_edit->setFocus();
+	//analytics_location_edit = new QLineEdit(this);
+	//analytics_location_edit->setPlaceholderText("If you have Analytics result, type your analytics result location");
+	//analytics_location_edit->setFocus();
 
-	QPushButton * analytics_location_find_btn = new QPushButton(this);
-	analytics_location_find_btn->setText("Find");
-	connect(analytics_location_find_btn, SIGNAL(released()), this, SLOT(find_open_analytics()));
+	//QPushButton * analytics_location_find_btn = new QPushButton(this);
+	//analytics_location_find_btn->setText("Find");
+	//connect(analytics_location_find_btn, SIGNAL(released()), this, SLOT(find_open_analytics()));
 
 
-	analytics_location_layout->addWidget(analytics_location);
-	analytics_location_layout->addWidget(analytics_location_edit);
-	analytics_location_layout->addWidget(analytics_location_find_btn);
+	//analytics_location_layout->addWidget(analytics_location);
+	//analytics_location_layout->addWidget(analytics_location_edit);
+	//analytics_location_layout->addWidget(analytics_location_find_btn);
 
 
 
@@ -186,8 +186,8 @@ DialogNewProject::DialogNewProject(QWidget *parent):QDialog(parent)
 	right_layout->addLayout(background_location_layout);
 	label_location_layout->setMargin(10);
 	right_layout->addLayout(label_location_layout);
-	analytics_location_layout->setMargin(10);
-	right_layout->addLayout(analytics_location_layout);
+	//analytics_location_layout->setMargin(10);
+	//right_layout->addLayout(analytics_location_layout);
 	right_layout->addLayout(filler_layout);
 	right_layout->addLayout(btn_layout);
 

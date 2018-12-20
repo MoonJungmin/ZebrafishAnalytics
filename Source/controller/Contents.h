@@ -15,12 +15,12 @@
 #include "Source/view/ViewAxisGLWidget.h"
 #include "Source/view/ViewGraphEditor.h"
 #include "Source/view/ViewVolumeGLWidget.h"
-
+#include "Source/controller/Contents_ProjectInfo.h"
 
 class ViewAxisGLWidget;
 class ViewGraphEditor;
 class ViewVolumeGLWidget;
-
+class Contents_ProjectInfo;
 
 class Contents : public QObject
 {

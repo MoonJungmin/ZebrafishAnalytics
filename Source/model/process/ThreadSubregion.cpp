@@ -184,7 +184,8 @@ void ThreadSubregion::run()
 			std::string str = "Calculating " + SubregionID + "- level" + std::to_string(i+1) + " ";
 			//mGlobals.mainWindow->statusBar()->showMessage(QString::fromStdString(str));
 			qDebug() << QString::fromStdString(str);
-			long long int volume = getVolume(i);
+			double multi_value = (mGlobals.CurrentProject->ResolutionX * mGlobals.CurrentProject->ResolutionY * mGlobals.CurrentProject->ResolutionZ);
+			double volume = getVolume(i) * multi_value;
 			volume = volume * pow(2, i) * pow(2, i);
 			qDebug() << volume;
 

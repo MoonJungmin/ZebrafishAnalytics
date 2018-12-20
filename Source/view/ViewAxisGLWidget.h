@@ -53,8 +53,10 @@ protected:
 	void mouseReleaseEvent(QMouseEvent *event) override;
 	void wheelEvent(QWheelEvent *event) override;
 	void keyPressEvent(QKeyEvent* event) override;
+	void keyReleaseEvent(QKeyEvent *event) override;
 
 private:
+	bool CtrlKeyFlag = false;
 	bool paintState = false;
 	int WidgetWidth = 0;
 	int WidgetHeight = 0;

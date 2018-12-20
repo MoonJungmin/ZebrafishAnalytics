@@ -165,6 +165,7 @@ void ZebrafishAnalytics::handleProjectOn() {
 	mContents->InitGraph();
 	mContents->InitProjectInfo();
 	mContents->InitSubregionFeatureList();
+	
 	connectAll();
 }
 

@@ -5,7 +5,44 @@ Globals mGlobals;
 
 Globals::Globals()
 {
+	
 	CurrentProject = new DataProject;
+	QString a;
+	gUnitList.append("(Constant)");
+	gUnitList.append("nm");
+	a = "nm";
+	a += QChar(0x00B2);
+	gUnitList.append(a);
+	
+	a = "nm";
+	a += QChar(0x00B3);
+	gUnitList.append(a);
+
+	a = QChar(0x00B5);
+	a += "m";
+	gUnitList.append(a);
+	
+	a = QChar(0x00B5);
+	a += "m";
+	a += QChar(0x00B2);
+	gUnitList.append(a);
+
+	a = QChar(0x00B5);
+	a += "m";
+	a += QChar(0x00B3);
+	gUnitList.append(a);
+	
+	gUnitList.append("mm");
+	a = "mm";
+	a += QChar(0x00B2);
+	gUnitList.append(a);
+
+	a = "mm";
+	a += QChar(0x00B3);
+	gUnitList.append(a);
+
+
+	//gUnitList.append("(Constant)");
 }
 
 

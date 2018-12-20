@@ -33,20 +33,20 @@ TopToolbar::TopToolbar(QWidget *parent, QLayout *parent_layout)
 	m_button4->setFixedSize(QSize(30, 30));
 	connect(m_button4, SIGNAL(released()), this, SLOT(handleAddNode()));
 
-	QPushButton *m_button5 = new QPushButton("M", mWidget);
-	m_button5->setFixedSize(QSize(30, 30));
-	connect(m_button5, SIGNAL(released()), mWidget, SLOT(handleButton()));
+	//QPushButton *m_button5 = new QPushButton("M", mWidget);
+	//m_button5->setFixedSize(QSize(30, 30));
+	//connect(m_button5, SIGNAL(released()), mWidget, SLOT(handleButton()));
 
-	QPushButton *m_button6 = new QPushButton("M", mWidget);
-	m_button6->setFixedSize(QSize(30, 30));
-	connect(m_button6, SIGNAL(released()), mWidget, SLOT(handleButton()));
+	//QPushButton *m_button6 = new QPushButton("M", mWidget);
+	//m_button6->setFixedSize(QSize(30, 30));
+	//connect(m_button6, SIGNAL(released()), mWidget, SLOT(handleButton()));
 
 	parent_layout->addWidget(m_button1);
 	parent_layout->addWidget(m_button2);
 	parent_layout->addWidget(m_button3);
 	parent_layout->addWidget(m_button4);
-	parent_layout->addWidget(m_button5);
-	parent_layout->addWidget(m_button6);
+	//parent_layout->addWidget(m_button5);
+	//parent_layout->addWidget(m_button6);
 }
 
 TopToolbar::~TopToolbar()

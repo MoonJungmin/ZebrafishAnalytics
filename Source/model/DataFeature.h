@@ -18,13 +18,20 @@
 class DataFeature
 {
 public:
+	enum {
+		TypeConstant = 0,
+		TypeLinear = 1,
+		TypeSquare = 2,
+		TypeCubic = 3
+	};
 	DataFeature();
-	DataFeature(std::string name, std::string path);
+	DataFeature(std::string name, std::string path, int type);
 	~DataFeature();
 
 	void setFeatureValue(unsigned int index, double value);
 
 	std::string FeatureName;
+	int FeatureType;
 	std::map<unsigned int, double> FeatureMap;
 		
 };

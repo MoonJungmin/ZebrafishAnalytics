@@ -33,10 +33,19 @@ public:
 	QColor SelectedColor;
 	QColor UnSelectedColor;
 
+	QStringList UnitList;
+
 	std::vector<DataFeature> mFeature;
 	
 	std::vector<LayerSubregion> mSubregion;
 	//std::list<int> mActivatedSubregionIndex;
+
+	double ResolutionX = 120;
+	double ResolutionY = 120;
+	double ResolutionZ = 120;
+	int ResolutionUnitX = 0;
+	int ResolutionUnitY = 0;
+	int ResolutionUnitZ = 0;
 
 	int DataSizeX = 0;
 	int DataSizeY = 0;
@@ -56,7 +65,7 @@ public:
 	void ProjectOpen(QString aProjPath);
 	void ProjectSave(QString aProjPath);
 
-	void AddFeature(QString aPath);
+	void AddFeature(QString aPath, int aType);
 	void removeFeature(int index);
 	int AddSubregion(QString aPath);
 	void removeSubregion(int index);

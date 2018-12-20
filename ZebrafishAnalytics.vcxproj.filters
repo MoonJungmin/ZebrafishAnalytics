@@ -189,6 +189,12 @@
     <ClCompile Include="Source\model\process\ThreadSubregion.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\controller\Contents_ProjectInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\model\UnitManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="ZebrafishAnalytics.h">
@@ -282,6 +288,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="Source\model\process\ThreadSubregion.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Source\controller\Contents_ProjectInfo.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -391,6 +400,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\model\process\calculator_subregion.cuh" />
+    <ClInclude Include="Source\model\UnitManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Source\view\theme\Resource\theme\darkstyle\icon_close.png">

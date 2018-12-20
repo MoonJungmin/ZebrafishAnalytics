@@ -76,8 +76,16 @@ void DialogStatistics::generateStatistics(QString name, std::list<unsigned int> 
 	QLineEdit *count_label_c = new QLineEdit;
 	count_label_c->setText(QString::fromStdString(std::to_string(CellIndexList->size())));
 	count_label_c->setFont(small_contents_font);
+
+	QLabel *count_label_u = new QLabel;
+	count_label_u->setText("cells");
+	count_label_u->setAlignment(Qt::AlignCenter);
+	count_label_u->setFixedSize(50, 30);
+	count_label_u->setFont(small_font);
+
 	count_layout->addWidget(count_label_t);
 	count_layout->addWidget(count_label_c);
+	count_layout->addWidget(count_label_u);
 	layout->addLayout(count_layout);
 
 	if (CellIndexList->size() > 0) {
@@ -85,6 +93,44 @@ void DialogStatistics::generateStatistics(QString name, std::list<unsigned int> 
 		std::vector<DataFeature>::iterator iter = mGlobals.CurrentProject->mFeature.begin();
 		for (iter; iter != mGlobals.CurrentProject->mFeature.end(); ++iter) {
 			statistic stat = getBasicStatistic(index);
+			int type = iter->FeatureType;
+			QString unit_str;
+			if (type == 0) {
+				unit_str = "constant";
+			}
+			else if (type == 1) {
+				if (mGlobals.CurrentProject->ResolutionUnitX == 0) {
+					unit_str = mGlobals.gUnitList[1];
+				}
+				else if (mGlobals.CurrentProject->ResolutionUnitX == 1) {
+					unit_str = mGlobals.gUnitList[4];
+				}
+				else if (mGlobals.CurrentProject->ResolutionUnitX == 2) {
+					unit_str = mGlobals.gUnitList[7];
+				}				
+			}
+			else if (type == 2) {
+				if (mGlobals.CurrentProject->ResolutionUnitX == 0) {
+					unit_str = mGlobals.gUnitList[2];
+				}
+				else if (mGlobals.CurrentProject->ResolutionUnitX == 1) {
+					unit_str = mGlobals.gUnitList[5];
+				}
+				else if (mGlobals.CurrentProject->ResolutionUnitX == 2) {
+					unit_str = mGlobals.gUnitList[8];
+				}
+			}
+			else if (type == 3) {
+				if (mGlobals.CurrentProject->ResolutionUnitX == 0) {
+					unit_str = mGlobals.gUnitList[3];
+				}
+				else if (mGlobals.CurrentProject->ResolutionUnitX == 1) {
+					unit_str = mGlobals.gUnitList[6];
+				}
+				else if (mGlobals.CurrentProject->ResolutionUnitX == 2) {
+					unit_str = mGlobals.gUnitList[9];
+				}
+			}
 
 			QLabel *hline = new QLabel(this);
 			hline->setFrameStyle(QFrame::HLine | QFrame::Plain);
@@ -101,8 +147,14 @@ void DialogStatistics::generateStatistics(QString name, std::list<unsigned int> 
 			QLineEdit *feature_min_label_c = new QLineEdit;
 			feature_min_label_c->setText(QString::fromStdString(std::to_string(stat.min)));
 			feature_min_label_c->setFont(small_contents_font);
+			QLabel *feature_min_label_u = new QLabel;
+			feature_min_label_u->setText(unit_str);
+			feature_min_label_u->setAlignment(Qt::AlignCenter);
+			feature_min_label_u->setFixedSize(50, 30);
+			feature_min_label_u->setFont(small_font);
 			feature_min_layout->addWidget(feature_min_label_t);
 			feature_min_layout->addWidget(feature_min_label_c);
+			feature_min_layout->addWidget(feature_min_label_u);
 
 			QHBoxLayout * feature_max_layout = new QHBoxLayout;
 			QLabel *feature_max_label_t = new QLabel;
@@ -111,8 +163,14 @@ void DialogStatistics::generateStatistics(QString name, std::list<unsigned int> 
 			QLineEdit *feature_max_label_c = new QLineEdit;
 			feature_max_label_c->setText(QString::fromStdString(std::to_string(stat.max)));
 			feature_max_label_c->setFont(small_contents_font);
+			QLabel *feature_max_label_u = new QLabel;
+			feature_max_label_u->setText(unit_str);
+			feature_max_label_u->setAlignment(Qt::AlignCenter);
+			feature_max_label_u->setFixedSize(50, 30);
+			feature_max_label_u->setFont(small_font);
 			feature_max_layout->addWidget(feature_max_label_t);
 			feature_max_layout->addWidget(feature_max_label_c);
+			feature_max_layout->addWidget(feature_max_label_u);
 
 			QHBoxLayout * feature_mean_layout = new QHBoxLayout;
 			QLabel *feature_mean_label_t = new QLabel;
@@ -121,8 +179,14 @@ void DialogStatistics::generateStatistics(QString name, std::list<unsigned int> 
 			QLineEdit *feature_mean_label_c = new QLineEdit;
 			feature_mean_label_c->setText(QString::fromStdString(std::to_string(stat.mean)));
 			feature_mean_label_c->setFont(small_contents_font);
+			QLabel *feature_mean_label_u = new QLabel;
+			feature_mean_label_u->setText(unit_str);
+			feature_mean_label_u->setAlignment(Qt::AlignCenter);
+			feature_mean_label_u->setFixedSize(50, 30);
+			feature_mean_label_u->setFont(small_font);
 			feature_mean_layout->addWidget(feature_mean_label_t);
 			feature_mean_layout->addWidget(feature_mean_label_c);
+			feature_mean_layout->addWidget(feature_mean_label_u);
 
 			QHBoxLayout * feature_var_layout = new QHBoxLayout;
 			QLabel *feature_var_label_t = new QLabel;
@@ -131,8 +195,14 @@ void DialogStatistics::generateStatistics(QString name, std::list<unsigned int> 
 			QLineEdit *feature_var_label_c = new QLineEdit;
 			feature_var_label_c->setText(QString::fromStdString(std::to_string(stat.variance)));
 			feature_var_label_c->setFont(small_contents_font);
+			QLabel *feature_var_label_u = new QLabel;
+			feature_var_label_u->setText("");
+			feature_var_label_u->setAlignment(Qt::AlignCenter);
+			feature_var_label_u->setFixedSize(50, 30);
+			feature_var_label_u->setFont(small_font);
 			feature_var_layout->addWidget(feature_var_label_t);
 			feature_var_layout->addWidget(feature_var_label_c);
+			feature_var_layout->addWidget(feature_var_label_u);
 
 			QHBoxLayout * feature_sum_layout = new QHBoxLayout;
 			QLabel *feature_sum_label_t = new QLabel;
@@ -141,12 +211,18 @@ void DialogStatistics::generateStatistics(QString name, std::list<unsigned int> 
 			QLineEdit *feature_sum_label_c = new QLineEdit;
 			feature_sum_label_c->setText(QString::fromStdString(std::to_string(stat.sum)));
 			feature_sum_label_c->setFont(small_contents_font);
+			QLabel *feature_sum_label_u = new QLabel;
+			feature_sum_label_u->setText(unit_str);
+			feature_sum_label_u->setAlignment(Qt::AlignCenter);
+			feature_sum_label_u->setFixedSize(50, 30);
+			feature_sum_label_u ->setFont(small_font);
 			feature_sum_layout->addWidget(feature_sum_label_t);
 			feature_sum_layout->addWidget(feature_sum_label_c);
+			feature_sum_layout->addWidget(feature_sum_label_u);
 
 			QHBoxLayout * feature_five_layout = new QHBoxLayout;
 			QLabel *feature_five_label_t = new QLabel;
-			feature_five_label_t->setText("Five Number Summary : ");
+			feature_five_label_t->setText("Five Number Summary(" + unit_str +")  : ");
 			feature_five_label_t->setFont(small_font);
 			feature_five_layout->addWidget(feature_five_label_t);
 			for (int i = 0; i < 5; ++i) {
@@ -195,8 +271,26 @@ statistic DialogStatistics::getBasicStatistic(int findex) {
 	result.max = -999999999;
 	result.min = 999999999;
 
+	int type = mGlobals.CurrentProject->mFeature[findex].FeatureType;
+	
+	double multi_value;
+	if (type == 0) {
+		multi_value = 1;
+	}
+	else if (type == 1) {
+		multi_value = (mGlobals.CurrentProject->ResolutionX * mGlobals.CurrentProject->ResolutionY * mGlobals.CurrentProject->ResolutionZ) / 3;
+	}
+	else if (type == 2) {
+		multi_value = (mGlobals.CurrentProject->ResolutionX * mGlobals.CurrentProject->ResolutionY);
+	}
+	else if (type == 3) {
+		multi_value = (mGlobals.CurrentProject->ResolutionX * mGlobals.CurrentProject->ResolutionY * mGlobals.CurrentProject->ResolutionZ);
+	}
+
+
+
 	for (iter = CellIndexList->begin(); iter != CellIndexList->end(); ++iter) {
-		double value = mGlobals.CurrentProject->mFeature[findex].FeatureMap[*iter];
+		double value = mGlobals.CurrentProject->mFeature[findex].FeatureMap[*iter] * multi_value;
 		for_five.push_back(value);
 		if (result.max <= value) { result.max = value; }
 		if (result.min >= value) { result.min = value; }

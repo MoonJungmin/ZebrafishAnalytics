@@ -235,12 +235,12 @@ void BlockWidget::generate_SubregionInformation(int width, int height) {
 	subreigon_volume->setFont(mFont);
 	volume_layout->addWidget(subreigon_volume);
 
-	QLabel *label2 = new QLabel;
-	label2->setText("voxel");
+	subregion_volume_unit = new QLabel;
+	subregion_volume_unit->setText("");
 	mFont.setPointSize(8);
 	mFont.setBold(true);
-	label2->setFont(mFont);
-	volume_layout->addWidget(label2);
+	subregion_volume_unit->setFont(mFont);
+	volume_layout->addWidget(subregion_volume_unit);
 
 
 	layout->addLayout(precision_layout);
@@ -553,10 +553,23 @@ void BlockWidget::handleSubregionInformationUpdate(QString id) {
 	subreigon_precision->setText("level " + QString::fromStdString(std::to_string(SubregionPrecision)));
 
 	std::stringstream ss;
-	ss << std::fixed << std::setprecision(2) << SubregionVolume;
+	ss << std::fixed << std::setprecision(4) << SubregionVolume;
 	std::string mystring = ss.str();
 	subreigon_volume->setText(QString::fromStdString(mystring));
 
+	QString unit_str;
+	if (mGlobals.CurrentProject->ResolutionUnitX == 0) {
+		unit_str = mGlobals.gUnitList[3];
+	}
+	else if (mGlobals.CurrentProject->ResolutionUnitX == 1) {
+		unit_str = mGlobals.gUnitList[6];
+	}
+	else if (mGlobals.CurrentProject->ResolutionUnitX == 2) {
+		unit_str = mGlobals.gUnitList[9];
+	}
+
+	subregion_volume_unit->setText(unit_str);
+	
 	//subreigon_precision->setText(QString::fromStdString());
 	
 

@@ -513,6 +513,11 @@ void ViewAxisGLWidget::mousePressEvent(QMouseEvent *event)
 {
 	//qDebug() << "mouse Press GL";
 	lastPos = event->pos();
+
+	if (CtrlKeyFlag) {
+		qDebug() << "Ctrl key pressed";
+	}
+
 }
 
 void ViewAxisGLWidget::mouseMoveEvent(QMouseEvent *event)
@@ -615,5 +620,16 @@ void ViewAxisGLWidget::keyPressEvent(QKeyEvent* event) {
 		emit updateAll(GLView_Index, false);
 		update();
 	}
+	else if (event->key() == Qt::Key_Control) {
+		CtrlKeyFlag = true;
+	}
+}
+
+
+void ViewAxisGLWidget::keyReleaseEvent(QKeyEvent* event) {
+	if (event->key() == Qt::Key_Control) {
+		CtrlKeyFlag = false;
+	}
+	
 }
 

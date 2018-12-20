@@ -48,6 +48,8 @@ public:
 
 	ZebrafishAnalytics *mainWindow;
 
+
+	QStringList gUnitList;
 	Globals();
 	~Globals();
 
