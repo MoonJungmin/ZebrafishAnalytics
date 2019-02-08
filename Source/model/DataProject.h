@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <list>
+#include <QVector3D>
 #include <cmath>
 
 #include "Source/model/LayerBackground.h"
@@ -70,6 +71,9 @@ public:
 	int AddSubregion(QString aPath);
 	void removeSubregion(int index);
 
+
+	QVector3D planeNormal;
+	QVector3D planePoint;
 
 	DataProject();
 	~DataProject();

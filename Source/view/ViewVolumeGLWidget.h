@@ -34,6 +34,7 @@ public:
 	void setBackgroundVolumeTF(std::vector<float_color> transferfunction);
 	void setVolume(float *data, int width, int height, int depth, float_color color);
 	void updateVolume(float *data, int startX, int startY, int startZ, int width, int height, int depth);
+	void updatePlaneInfo(QVector3D normal, QVector3D point);
 
 public slots:
 
@@ -131,6 +132,9 @@ private:
 
 	int con_v_size;
 	bool shift_flag;
+
+	int con_planeNormal;
+	int con_planePoint;
 };
 
 #endif

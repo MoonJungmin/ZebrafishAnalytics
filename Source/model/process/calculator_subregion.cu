@@ -18,57 +18,60 @@ __global__ void _cuda_parallel_sum(unsigned char *in, int num_elements, int *sum
 	__shared__ int buffer[WARP_SIZE];
 	int globalIdx = blockIdx.x * blockDim.x + threadIdx.x;
 	int tile_size = (int)information[0] * (int)information[0];
+	int level_size = _pow_(2, (int)information[11]);
 	//information : block_width, tablesize, pos_x,y,z , up_x,y,z , global_x,y,z
+	if ((globalIdx / tile_size) % level_size == 0) {
 
-	float vx = -1 * information[2] + (information[8] + ((int)(globalIdx % tile_size) % (int)information[0]));
-	float vy = -1 * information[3] + (information[9] + ((int)(globalIdx % tile_size) / (int)information[0]));
-	float vz = -1 * information[4] + (information[10] + (globalIdx / tile_size));
-	float ux = information[5];
-	float uy = information[6];
-	float uz = information[7];
+		float vx = -1 * information[2] + (information[8] + ((int)(globalIdx % tile_size) % (int)information[0]));
+		float vy = -1 * information[3] + (information[9] + ((int)(globalIdx % tile_size) / (int)information[0]));
+		float vz = -1 * information[4] + (information[10] + (globalIdx / tile_size)) / level_size;
+		float ux = information[5];
+		float uy = information[6];
+		float uz = information[7];
 
 
-	int lane = threadIdx.x % WARP_SIZE;
-	int temp;
-	while (globalIdx < num_elements)
-	{
-		// All threads in a block of 1024 take an element
-
-		if (ux * vx + uy * vy + uz * vz > 0) {
-			temp = in[globalIdx] > 0 ? 1 : 0;
-		}
-		else {
-			temp = 0;
-		}
-		
-		// All warps in this block (32) compute the sum of all
-		// threads in their warp
-		for (int delta = WARP_SIZE / 2; delta > 0; delta /= 2)
+		int lane = threadIdx.x % WARP_SIZE;
+		int temp;
+		while (globalIdx < num_elements)
 		{
-			temp += __shfl_xor(temp, delta);
-		}
-		// Write all 32 of these partial sums to shared memory
-		if (lane == 0)
-		{
-			buffer[threadIdx.x / WARP_SIZE] = temp;
-		}
-		__syncthreads();
-		// Add the remaining 32 partial sums using a single warp
-		if (threadIdx.x < WARP_SIZE)
-		{
-			temp = buffer[threadIdx.x];
+			// All threads in a block of 1024 take an element
+
+			if (ux * vx + uy * vy + uz * vz >= 0) {
+				temp = in[globalIdx] > 0 ? 1 : 0;
+			}
+			else {
+				temp = 0;
+			}
+
+			// All warps in this block (32) compute the sum of all
+			// threads in their warp
 			for (int delta = WARP_SIZE / 2; delta > 0; delta /= 2)
 			{
 				temp += __shfl_xor(temp, delta);
 			}
+			// Write all 32 of these partial sums to shared memory
+			if (lane == 0)
+			{
+				buffer[threadIdx.x / WARP_SIZE] = temp;
+			}
+			__syncthreads();
+			// Add the remaining 32 partial sums using a single warp
+			if (threadIdx.x < WARP_SIZE)
+			{
+				temp = buffer[threadIdx.x];
+				for (int delta = WARP_SIZE / 2; delta > 0; delta /= 2)
+				{
+					temp += __shfl_xor(temp, delta);
+				}
+			}
+			if (threadIdx.x == 0)
+			{
+				atomicAdd(sum, temp);
+			}
+			// Jump ahead 1024 * #SMs to the next region of numbers to sum
+			globalIdx += blockDim.x * gridDim.x;
+			__syncthreads();
 		}
-		if (threadIdx.x == 0)
-		{
-			atomicAdd(sum, temp);
-		}
-		// Jump ahead 1024 * #SMs to the next region of numbers to sum
-		globalIdx += blockDim.x * gridDim.x;
-		__syncthreads();
 	}
 
 }
@@ -79,21 +82,23 @@ __global__ void _touch_test(const unsigned char * subregion, unsigned int *cell,
 	// Get our global thread ID
 	int id = blockIdx.x*blockDim.x + threadIdx.x;
 	int tile_size = (int)information[0] * (int)information[0];
-	//int level_size = _pow_(2, (int)information[11]);
+	int level_size = _pow_(2, (int)information[11]);
 	//information : block_width, tablesize, pos_x,y,z , up_x,y,z , global_x,y,z
+	if ((id / tile_size) % level_size == 0) {
 
-	float vx = -1 * information[2] + (information[8] + ((int)(id % tile_size) % (int)information[0]));
-	float vy = -1 * information[3] + (information[9] + ((int)(id % tile_size) / (int)information[0]));
-	float vz = -1 * information[4] + (information[10] + (id / tile_size));
-	float ux = information[5];
-	float uy = information[6];
-	float uz = information[7];
+		float vx = -1 * information[2] + (information[8] + ((int)(id % tile_size) % (int)information[0]));
+		float vy = -1 * information[3] + (information[9] + ((int)(id % tile_size) / (int)information[0]));
+		float vz = -1 * information[4] + (information[10] + (id / tile_size)) / level_size;
+		float ux = information[5];
+		float uy = information[6];
+		float uz = information[7];
 
-	if (ux * vx + uy * vy + uz * vz > 0) {
-		if (subregion[id] > 0){
-			if (cell[id] != 0) {
-				table[cell[id]] = 1;
-				cell[id] = 0;
+		if (ux * vx + uy * vy + uz * vz >= 0) {
+			if (subregion[id] > 0) {
+				if (cell[id] != 0) {
+					table[cell[id]] = 1;
+					cell[id] = 0;
+				}
 			}
 		}
 	}
@@ -106,21 +111,26 @@ __global__ void _intersect_test(unsigned int *cell, int *table, int *itable, con
 	int id = blockIdx.x*blockDim.x + threadIdx.x;
 	int tile_size = (int)information[0] * (int)information[0];
 	//information : block_width, tablesize, pos_x,y,z , up_x,y,z , global_x,y,z
-	//int level_size = _pow_(2, (int)information[11]);
-	float vx = -1 * information[2] + (information[8] + ((int)(id % tile_size) % (int)information[0]));
-	float vy = -1 * information[3] + (information[9] + ((int)(id % tile_size) / (int)information[0]));
-	float vz = -1 * information[4] + (information[10] + (id / tile_size));
-	float ux = information[5];
-	float uy = information[6];
-	float uz = information[7];
+	int level_size = _pow_(2, (int)information[11]);
 
-	if (ux * vx + uy * vy + uz * vz > 0) {
-		if (cell[id] != 0) {
-			if (table[cell[id]] == 1) {
-				itable[cell[id]] = 1;
+	if ((id / tile_size) % level_size == 0) {
+		float vx = -1 * information[2] + (information[8] + ((int)(id % tile_size) % (int)information[0]));
+		float vy = -1 * information[3] + (information[9] + ((int)(id % tile_size) / (int)information[0]));
+		float vz = -1 * information[4] + (information[10] + (id / tile_size)) / level_size;
+		float ux = information[5];
+		float uy = information[6];
+		float uz = information[7];
+
+		if (ux * vx + uy * vy + uz * vz >= 0) {
+			if (cell[id] != 0) {
+				if (table[cell[id]] == 1) {
+					itable[cell[id]] = 1;
+				}
 			}
 		}
 	}
+
+	
 }
 
 extern "C"

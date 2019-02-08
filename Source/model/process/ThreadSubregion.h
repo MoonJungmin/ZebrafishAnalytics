@@ -47,12 +47,12 @@ private:
 	std::string SubregionPath;
 	std::string SubregionID;
 
-	int pos_x;
-	int pos_y;
-	int pos_z;
-	int up_x;
-	int up_y;
-	int up_z;
+	float pos_x;
+	float pos_y;
+	float pos_z;
+	float up_x;
+	float up_y;
+	float up_z;
 
 	std::map<unsigned int, bool> include_map;
 	std::map<unsigned int, bool> intersect_map;

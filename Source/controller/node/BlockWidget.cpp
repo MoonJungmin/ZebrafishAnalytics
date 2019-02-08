@@ -201,6 +201,7 @@ void BlockWidget::generate_DataInputOutput(int width, int height) {
 }
 void BlockWidget::generate_SubregionInformation(int width, int height) {
 	SubregionInformationMaster = new QWidget;
+	
 	SubregionInformationMaster->setFixedWidth(width - 20);
 	SubregionInformationMaster->setAttribute(Qt::WA_TranslucentBackground);
 
@@ -294,21 +295,21 @@ void BlockWidget::generate_SubregionDropdown(int width, int height) {
 	label2->setText("Pos X");
 	label2->setFont(mFont);
 	interface_pos_layout->addWidget(label2);
-	subregion_pos_x->setText(QString::fromStdString(std::to_string(plane_pos_x)));
+	subregion_pos_x->setText(QString::number(plane_pos_x, 'g', 4));
 	interface_pos_layout->addWidget(subregion_pos_x);
 	
 	QLabel *label3 = new QLabel;
 	label3->setText("Pos Y");
 	label3->setFont(mFont);
 	interface_pos_layout->addWidget(label3);
-	subregion_pos_y->setText(QString::fromStdString(std::to_string(plane_pos_y)));
+	subregion_pos_y->setText(QString::number(plane_pos_y, 'g', 4));
 	interface_pos_layout->addWidget(subregion_pos_y);
 
 	QLabel *label4 = new QLabel;
 	label4->setText("Pos Z");
 	label4->setFont(mFont);
 	interface_pos_layout->addWidget(label4);
-	subregion_pos_z->setText(QString::fromStdString(std::to_string(plane_pos_z)));
+	subregion_pos_z->setText(QString::number(plane_pos_z, 'g', 4));
 	interface_pos_layout->addWidget(subregion_pos_z);
 
 	QHBoxLayout *interface_up_layout = new QHBoxLayout;
@@ -316,21 +317,21 @@ void BlockWidget::generate_SubregionDropdown(int width, int height) {
 	label5->setText("Up X");
 	label5->setFont(mFont);
 	interface_up_layout->addWidget(label5);
-	subregion_up_x->setText(QString::fromStdString(std::to_string(plane_up_x)));
+	subregion_up_x->setText(QString::number(plane_up_x, 'g', 4));
 	interface_up_layout->addWidget(subregion_up_x);
 
 	QLabel *label6 = new QLabel;
 	label6->setText("Up Y");
 	label6->setFont(mFont);
 	interface_up_layout->addWidget(label6);
-	subregion_up_y->setText(QString::fromStdString(std::to_string(plane_up_y)));
+	subregion_up_y->setText(QString::number(plane_up_y, 'g', 4));
 	interface_up_layout->addWidget(subregion_up_y);
 
 	QLabel *label7 = new QLabel;
 	label7->setText("Up Z");
 	label7->setFont(mFont);
 	interface_up_layout->addWidget(label7);
-	subregion_up_z->setText(QString::fromStdString(std::to_string(plane_up_z)));
+	subregion_up_z->setText(QString::number(plane_up_z, 'g', 4));
 	interface_up_layout->addWidget(subregion_up_z);
 
 
@@ -391,37 +392,64 @@ void BlockWidget::generate_FeatureHistogram(int width, int height) {
 	label->setFont(mFont);
 	layout->addWidget(label);
 	
-	histogram_start = new QLineEdit;
-	histogram_start->setText("0");
-	histogram_end = new QLineEdit;
-	histogram_end->setText("0");
+	histogram_start_percent = new QLineEdit;
+	histogram_start_percent->setText("0");
+	histogram_end_percent= new QLineEdit;
+	histogram_end_percent->setText("0");
+	histogram_start_value = new QLineEdit;
+	histogram_start_value->setText("0");
+	histogram_end_value = new QLineEdit;
+	histogram_end_value->setText("0");
+
+
 	QWidget *FeatureHistBox = new QWidget;
 	FeatureHistBox->setContentsMargins(1, 1, 1, 1);
 	FeatureHistogram = new ViewHistogramWidget(FeatureHistBox);
-	FeatureHistogram->setInterface(histogram_start, histogram_end);
+	FeatureHistogram->setInterface_percent(histogram_start_percent, histogram_end_percent);
+	FeatureHistogram->setInterface_value(histogram_start_value, histogram_end_value);
 	FeatureHistogram->setRenderingSize(width-11, 100);
 	FeatureHistogram->setData(0, &CellIndexListInput, &CellIndexListOutput);
 	connect(FeatureHistogram, SIGNAL(OutputUpdated()), this, SLOT(handleHistogramUpdate()));
 	layout->addWidget(FeatureHistBox);
 
-	QHBoxLayout *interface_layout = new QHBoxLayout;
+	QHBoxLayout *percent_layout = new QHBoxLayout;
 	QLabel *label2 = new QLabel;
 	label2->setText("Start(%)");
 	label2->setFont(mFont);
-	interface_layout->addWidget(label2);
-	interface_layout->addWidget(histogram_start);
+	percent_layout->addWidget(label2);
+	percent_layout->addWidget(histogram_start_percent);
 	QLabel *label3 = new QLabel;
 	label3->setText("End(%)");
 	label3->setFont(mFont);
-	interface_layout->addWidget(label3);
-	interface_layout->addWidget(histogram_end);
-	QPushButton *setbtn = new QPushButton;
+	percent_layout->addWidget(label3);
+	percent_layout->addWidget(histogram_end_percent);
+	QPushButton *setbtn1 = new QPushButton;
+	setbtn1->setText("Set");
+	connect(setbtn1, SIGNAL(released()), this, SLOT(handleHistogramSetBtn_Percent()));
+	percent_layout->addWidget(setbtn1);
+
+
+	QHBoxLayout *value_layout = new QHBoxLayout;
+	QLabel *label4 = new QLabel;
+	label4->setText("Start(v)");
+	label4->setFont(mFont);
+	value_layout->addWidget(label4);
+	value_layout->addWidget(histogram_start_value);
+	QLabel *label5 = new QLabel;
+	label5->setText("End(v)");
+	label5->setFont(mFont);
+	value_layout->addWidget(label5);
+	value_layout->addWidget(histogram_end_value);
+	QPushButton *setbtn2 = new QPushButton;
+	setbtn2->setText("Set");
+	connect(setbtn2, SIGNAL(released()), this, SLOT(handleHistogramSetBtn_Value()));
+	value_layout->addWidget(setbtn2);
+
 	
-	setbtn->setText("Set");
-	connect(setbtn, SIGNAL(released()), this, SLOT(handleHistogramSetBtn()));
-	interface_layout->addWidget(setbtn);
-	
-	layout->addLayout(interface_layout);
+	layout->addLayout(percent_layout);
+	layout->addLayout(value_layout);
+
+
 	FeatureHistogramMaster->setLayout(layout);
 }
 
@@ -528,18 +556,30 @@ void BlockWidget::handleHistogramUpdate() {
 	count_output->setText(QString::fromStdString(std::to_string(size_output)) + " cells");
 	checkNextBlock();
 }
-void BlockWidget::handleHistogramSetBtn() {
-	FeatureHistogram->update_release_box((float)histogram_start->text().toInt() / 100.0, (float)histogram_end->text().toInt() / 100.0);
+void BlockWidget::handleHistogramSetBtn_Percent() {
+	FeatureHistogram->update_release_box((double)histogram_start_percent->text().toInt() / 100.0, (double)histogram_end_percent->text().toInt() / 100.0, 0);
 }
+void BlockWidget::handleHistogramSetBtn_Value() {
+	FeatureHistogram->update_release_box(histogram_start_value->text().toDouble(), histogram_end_value->text().toDouble(), 1);
+}
+
 void BlockWidget::handleSubregionSetBtn() {
 	//FeatureHistogram->update_release_box((float)histogram_start->text().toInt() / 100.0, (float)histogram_end->text().toInt() / 100.0);
 	qDebug() << "handleSubregionSetBtn";
-	plane_pos_x = stoi(subregion_pos_x->text().toStdString());
-	plane_pos_y = stoi(subregion_pos_y->text().toStdString());
-	plane_pos_z = stoi(subregion_pos_z->text().toStdString());
-	plane_up_x = stoi(subregion_up_x->text().toStdString());
-	plane_up_y = stoi(subregion_up_y->text().toStdString());
-	plane_up_z = stoi(subregion_up_z->text().toStdString());
+	plane_pos_x = stod(subregion_pos_x->text().toStdString());
+	plane_pos_y = stod(subregion_pos_y->text().toStdString());
+	plane_pos_z = stod(subregion_pos_z->text().toStdString());
+	plane_up_x = stod(subregion_up_x->text().toStdString());
+	plane_up_y = stod(subregion_up_y->text().toStdString());
+	plane_up_z = stod(subregion_up_z->text().toStdString());
+
+	mGlobals.CurrentProject->planeNormal[0] = (float)plane_up_x;
+	mGlobals.CurrentProject->planeNormal[1] = (float)plane_up_y;
+	mGlobals.CurrentProject->planeNormal[2] = (float)plane_up_z;
+	mGlobals.CurrentProject->planePoint[0] = (float)plane_pos_x / (float)mGlobals.CurrentProject->DataSizeX;
+	mGlobals.CurrentProject->planePoint[1] = (float)plane_pos_y / (float)mGlobals.CurrentProject->DataSizeY;
+	mGlobals.CurrentProject->planePoint[2] = (float)plane_pos_z / (float)mGlobals.CurrentProject->DataSizeZ;
+	
 
 	int subregion_index = SubregionDropdown->currentIndex();
 	mThread->addJob(mGlobals.CurrentProject->mSubregion[subregion_index].SubregionID, this);

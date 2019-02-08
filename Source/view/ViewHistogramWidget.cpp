@@ -13,10 +13,16 @@ ViewHistogramWidget::ViewHistogramWidget(QWidget *parent)
 ViewHistogramWidget::~ViewHistogramWidget()
 {
 }
-void ViewHistogramWidget::setInterface(QLineEdit *s, QLineEdit *e) {
-	start_edit = s;
-	end_edit = e;
+void ViewHistogramWidget::setInterface_percent(QLineEdit *s, QLineEdit *e) {
+	start_edit_percent = s;
+	end_edit_percent = e;
 }
+void ViewHistogramWidget::setInterface_value(QLineEdit *s, QLineEdit *e) {
+	start_edit_value = s;
+	end_edit_value = e;
+}
+
+
 void ViewHistogramWidget::setRenderingSize(int width, int height) {
 	mWidth = width;
 	mHeight = height;
@@ -85,8 +91,8 @@ void ViewHistogramWidget::redraw() {
 	chart->legend()->hide();
 	//chart->createDefaultAxes(); 
 	HistogramViewer *chartView = new HistogramViewer(chart);
-	connect(chartView, SIGNAL(update_move_pos(float, float)), this, SLOT(update_move_box(float, float)));
-	connect(chartView, SIGNAL(update_release_pos(float, float)), this, SLOT(update_release_box(float, float)));
+	connect(chartView, SIGNAL(update_move_pos(double, double, int)), this, SLOT(update_move_box(double, double, int)));
+	connect(chartView, SIGNAL(update_release_pos(double, double, int)), this, SLOT(update_release_box(double, double, int)));
 	connect(chartView, SIGNAL(clear_mouse()), this, SLOT(clear_box()));
 
 	chartView->setRenderHint(QPainter::Antialiasing);
@@ -107,55 +113,116 @@ void ViewHistogramWidget::clear_box() {
 	//emit focusedHist(mIndex);
 }
 
-void ViewHistogramWidget::update_release_box(float start, float end) {
+void ViewHistogramWidget::update_release_box(double start, double end, int flag) {
 	qDebug() << "update_release_box";
-	if (start < 0) start = 0;
-	if (end > 1) end = 1.0;
 
-	int start_idx = mBarsets.length() * start;
-	int end_idx = mBarsets.length() * end;
+	if (flag == 0) {
+		if (start < 0) start = 0;
+		if (end > 1) end = 1.0;
 
-	HistStartIdx = start_idx;
-	HistEndIdx = end_idx;
+		int start_idx = mBarsets.length() * start;
+		int end_idx = mBarsets.length() * end;
 
-	Utils mUtil;
-	for (int i = 0; i < start_idx; ++i) {
-		mBarsets.at(i)->setColor(QColor("white"));
-	}
-	mOutput->clear();
-	for (int i = start_idx; i < end_idx; ++i) {
-		mBarsets.at(i)->setColor(QColor("#3A79A0"));
-		std::list<unsigned int>::iterator iter = HistogramData[i].begin();
-		for (iter = HistogramData[i].begin(); iter != HistogramData[i].end(); ++iter) {
-			mOutput->push_back(*iter);
+		HistStartIdx = start_idx;
+		HistEndIdx = end_idx;
+
+		Utils mUtil;
+		for (int i = 0; i < start_idx; ++i) {
+			mBarsets.at(i)->setColor(QColor("white"));
 		}
+		mOutput->clear();
+		for (int i = start_idx; i < end_idx; ++i) {
+			mBarsets.at(i)->setColor(QColor("#3A79A0"));
+			std::list<unsigned int>::iterator iter = HistogramData[i].begin();
+			for (iter = HistogramData[i].begin(); iter != HistogramData[i].end(); ++iter) {
+				mOutput->push_back(*iter);
+			}
+		}
+
+		for (int i = end_idx; i < mBarsets.length(); ++i) {
+			mBarsets.at(i)->setColor(QColor("white"));
+		}
+
+		//updateCellColor();
+		start_edit_percent->setText(QString::fromStdString(to_string((int)(start * 100))));
+		end_edit_percent->setText(QString::fromStdString(to_string((int)(end * 100))));
+
+		//double start_data = (double) *HistogramData[start_idx].begin();
+		//double end_data = (double) *HistogramData[end_idx-1].end();
+
+		//start_edit_value->setText(QString::number(start_data,'g', 4));
+		//end_edit_value->setText(QString::number(end_data, 'g', 4));
+
+		emit OutputUpdated();
 	}
+	else if (flag == 1) {
+		if (start < mDataMinimum) start = mDataMinimum;
+		if (end > mDataMaximum) end = mDataMaximum;
 
-	for (int i = end_idx; i < mBarsets.length(); ++i) {
-		mBarsets.at(i)->setColor(QColor("white"));
+		int start_idx = (start - mDataMinimum) / mDataStep;
+		int end_idx = (end - mDataMinimum) / mDataStep;
+
+		HistStartIdx = start_idx;
+		HistEndIdx = end_idx;
+
+		Utils mUtil;
+		for (int i = 0; i < start_idx; ++i) {
+			mBarsets.at(i)->setColor(QColor("white"));
+		}
+		mOutput->clear();
+		for (int i = start_idx; i < end_idx; ++i) {
+			mBarsets.at(i)->setColor(QColor("#3A79A0"));
+			std::list<unsigned int>::iterator iter = HistogramData[i].begin();
+			for (iter = HistogramData[i].begin(); iter != HistogramData[i].end(); ++iter) {
+				mOutput->push_back(*iter);
+			}
+		}
+
+		for (int i = end_idx; i < mBarsets.length(); ++i) {
+			mBarsets.at(i)->setColor(QColor("white"));
+		}
+
+		//updateCellColor();
+		start_edit_value->setText(QString::number(start, 'g', 4));
+		end_edit_value->setText(QString::number(end, 'g', 4));
+
+
+		emit OutputUpdated();
 	}
-
-	//updateCellColor();
-	start_edit->setText(QString::fromStdString(to_string((int)(start * 100))));
-	end_edit->setText(QString::fromStdString(to_string((int)(end * 100))));
-
-
-	emit OutputUpdated();
 
 }
 
-void ViewHistogramWidget::update_move_box(float start, float end) {
-	qDebug() << "update_move_box";
-	if (start < 0) start = 0;
-	if (end > 1) end = 1.0;
 
-	int start_idx = mBarsets.length() * start;
-	int end_idx = mBarsets.length() * end;
-	
-	Utils mUtil;
-	for (int i = start_idx; i < end_idx; ++i) {
-		mBarsets.at(i)->setColor(QColor("#3A79A0"));
+void ViewHistogramWidget::update_move_box(double start, double end, int flag) {
+	qDebug() << "update_move_box";
+	if (flag == 0) {
+		if (start < 0) start = 0;
+		if (end > 1) end = 1.0;
+
+		int start_idx = mBarsets.length() * start;
+		int end_idx = mBarsets.length() * end;
+
+		Utils mUtil;
+		for (int i = start_idx; i < end_idx; ++i) {
+			mBarsets.at(i)->setColor(QColor("#3A79A0"));
+		}
 	}
+	else if (flag == 1) {
+		if (start < mDataMinimum) start = mDataMinimum;
+		if (end > mDataMaximum) end = mDataMaximum;
+
+		int start_idx = (start - mDataMinimum) / mDataStep;
+		int end_idx = (end - mDataMinimum) / mDataStep;
+
+		HistStartIdx = start_idx;
+		HistEndIdx = end_idx;
+		
+		Utils mUtil;
+		for (int i = start_idx; i < end_idx; ++i) {
+			mBarsets.at(i)->setColor(QColor("#3A79A0"));
+		}
+	}
+	
 
 }
 //

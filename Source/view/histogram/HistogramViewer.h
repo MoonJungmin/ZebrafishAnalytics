@@ -22,8 +22,8 @@ protected:
 	void keyPressEvent(QKeyEvent *event);
 
 signals:
-	void update_move_pos(float s, float e);
-	void update_release_pos(float s, float e);
+	void update_move_pos(double s, double e, int f);
+	void update_release_pos(double s, double e, int f);
 	void clear_mouse();
 
 private:
@@ -31,8 +31,8 @@ private:
 
 	bool isPressed;
 	int chartWidth;
-	float XStartPos;
-	float XEndPos;
+	double XStartPos;
+	double XEndPos;
 };
 
 #endif

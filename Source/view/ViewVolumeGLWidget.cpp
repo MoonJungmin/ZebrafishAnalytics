@@ -72,7 +72,7 @@ ViewVolumeGLWidget::ViewVolumeGLWidget(QWidget *parent)
 	scale = 1;
 	startTimer(30);
 	QWidget::setFocusPolicy(Qt::ClickFocus);
-	
+
 	qDebug() << "volume create";
 }
 
@@ -210,6 +210,10 @@ void ViewVolumeGLWidget::initializeGL()
 	con_background_color = m_program->uniformLocation("background_color");
 	con_heatmap_color = m_program->uniformLocation("heatmap_color");
 
+	mGlobals.CurrentProject->planeNormal = QVector3D(0, 0, 1);
+	mGlobals.CurrentProject->planePoint = QVector3D(0, 0, 0);
+	con_planeNormal = m_program->uniformLocation("plane_normal");
+	con_planePoint = m_program->uniformLocation("plane_point");
 
 	//m_program->release();
 
@@ -236,14 +240,14 @@ void ViewVolumeGLWidget::paintGL()
 		float max = -999999;
 		for (int i = 0; i < mGlobals.CurrentProject->mLayerCell->mCellList.size(); ++i) {
 			if (mGlobals.CurrentProject->mLayerCell->mCellList.at(i).status) {
-				float cx = (float)(mGlobals.CurrentProject->mLayerCell->mCellList.at(i).maxbox.x + mGlobals.CurrentProject->mLayerCell->mCellList.at(i).minbox.x)/2.0;
-				float cy = (float)(mGlobals.CurrentProject->mLayerCell->mCellList.at(i).maxbox.y + mGlobals.CurrentProject->mLayerCell->mCellList.at(i).minbox.y)/2.0;
-				float cz = (float)(mGlobals.CurrentProject->mLayerCell->mCellList.at(i).maxbox.z + mGlobals.CurrentProject->mLayerCell->mCellList.at(i).minbox.z)/2.0;
+				float cx = (float)(mGlobals.CurrentProject->mLayerCell->mCellList.at(i).maxbox.x + mGlobals.CurrentProject->mLayerCell->mCellList.at(i).minbox.x) / 2.0;
+				float cy = (float)(mGlobals.CurrentProject->mLayerCell->mCellList.at(i).maxbox.y + mGlobals.CurrentProject->mLayerCell->mCellList.at(i).minbox.y) / 2.0;
+				float cz = (float)(mGlobals.CurrentProject->mLayerCell->mCellList.at(i).maxbox.z + mGlobals.CurrentProject->mLayerCell->mCellList.at(i).minbox.z) / 2.0;
 
 				cx = (cx / (float)mGlobals.CurrentProject->DataSizeX) * (float)w;
 				cy = (cy / (float)mGlobals.CurrentProject->DataSizeY) * (float)h;
 				cz = (cz / (float)mGlobals.CurrentProject->DataSizeZ) * (float)d;
-				
+
 				mGlobals.CurrentProject->mLayerBack->HeatmapData[(int)cz*w*h + (int)cy*w + (int)cx] += 1.0;
 				if (max < mGlobals.CurrentProject->mLayerBack->HeatmapData[(int)cz*w*h + (int)cy*w + (int)cx]) {
 					max = mGlobals.CurrentProject->mLayerBack->HeatmapData[(int)cz*w*h + (int)cy*w + (int)cx];
@@ -263,8 +267,8 @@ void ViewVolumeGLWidget::paintGL()
 	}
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-	
+
+
 
 
 	QVector3D box_t(w, h, d);
@@ -293,7 +297,8 @@ void ViewVolumeGLWidget::paintGL()
 	m_program->setUniformValue(con_background_color, background_color);
 	m_program->setUniformValue(con_heatmap_color, Heatmap_color);
 
-
+	m_program->setUniformValue(con_planeNormal, mGlobals.CurrentProject->planeNormal);
+	m_program->setUniformValue(con_planePoint, mGlobals.CurrentProject->planePoint);
 
 	glBegin(GL_QUADS);
 	glVertex3f(-1, -1, 1);
@@ -304,10 +309,10 @@ void ViewVolumeGLWidget::paintGL()
 
 	m_program->release();
 
-	    QPainter painter(this);
-	    painter.setPen(QColor(255-background_color.x()*255,255-background_color.y()*255,255-background_color.z()*255));
-	    painter.drawText(30, 30, "FPS: " + p_fps);
-	    painter.end();
+	QPainter painter(this);
+	painter.setPen(QColor(255 - background_color.x() * 255, 255 - background_color.y() * 255, 255 - background_color.z() * 255));
+	painter.drawText(30, 30, "FPS: " + p_fps);
+	painter.end();
 
 }
 
@@ -394,4 +399,8 @@ void ViewVolumeGLWidget::keyReleaseEvent(QKeyEvent *event)
 		shift_flag = false;
 
 	}
+}
+void ViewVolumeGLWidget::updatePlaneInfo(QVector3D normal, QVector3D point) {
+//	planeNormal = normal;
+//	planePoint = point;
 }

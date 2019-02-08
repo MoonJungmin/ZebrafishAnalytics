@@ -28,10 +28,10 @@ void HistogramViewer::mouseMoveEvent(QMouseEvent *event)
 	XEndPos = (float)event->x() / (float)chart()->geometry().width();
 	qDebug() << XStartPos << " " << XEndPos;
 	if (XStartPos > XEndPos) {
-		emit update_move_pos(XEndPos, XStartPos);
+		emit update_move_pos(XEndPos, XStartPos, 0);
 	}
 	else {
-		emit update_move_pos(XStartPos, XEndPos);
+		emit update_move_pos(XStartPos, XEndPos, 0);
 	}
 	
 	QChartView::mouseMoveEvent(event);
@@ -46,10 +46,10 @@ void HistogramViewer::mouseReleaseEvent(QMouseEvent *event)
 
 	XEndPos = (float)event->x() / (float)chart()->geometry().width();
 	if (XStartPos > XEndPos) {
-		emit update_release_pos(XEndPos, XStartPos);
+		emit update_release_pos(XEndPos, XStartPos, 0);
 	}
 	else {
-		emit update_release_pos(XStartPos, XEndPos);
+		emit update_release_pos(XStartPos, XEndPos, 0);
 	}
 	QChartView::mouseReleaseEvent(event);
 }
@@ -60,7 +60,7 @@ void HistogramViewer::keyPressEvent(QKeyEvent *event)
 		case Qt::Key_Space:
 			XStartPos = 0;
 			XEndPos = 1.0;
-			emit update_release_pos(XStartPos, XEndPos);
+			emit update_release_pos(XStartPos, XEndPos, 0);
 			break;
 		case Qt::Key_Escape:
 			emit clear_mouse();

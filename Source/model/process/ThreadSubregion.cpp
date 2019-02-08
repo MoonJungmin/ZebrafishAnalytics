@@ -42,13 +42,13 @@ void ThreadSubregion::addJob(std::string id, BlockWidget *parent) {
 		}
 	}
 
-	pos_x = parent->plane_pos_x;
-	pos_y = parent->plane_pos_y;
-	pos_z = parent->plane_pos_z;
+	pos_x = (float)parent->plane_pos_x;
+	pos_y = (float)parent->plane_pos_y;
+	pos_z = (float)parent->plane_pos_z;
 
-	up_x = parent->plane_up_x;
-	up_y = parent->plane_up_y;
-	up_z = parent->plane_up_z;
+	up_x = (float)parent->plane_up_x;
+	up_y = (float)parent->plane_up_y;
+	up_z = (float)parent->plane_up_z;
 
 
 	include_map.clear();
@@ -95,7 +95,7 @@ long long int ThreadSubregion::getVolume(int level) {
 	information[1] = mGlobals.CurrentProject->mLayerCell->MaxCellCount + 1;
 	information[2] = pos_x / pow(2, level);
 	information[3] = pos_y / pow(2, level);
-	information[4] = pos_z;
+	information[4] = pos_z / pow(2, level);
 	information[5] = up_x;
 	information[6] = up_y;
 	information[7] = up_z;

@@ -93,12 +93,12 @@ public:
 	std::map<unsigned int, bool> TouchIndex;
 	std::map<unsigned int, bool> IntersectIndex;
 	std::map<unsigned int, bool> CompleteIndex;
-	int plane_pos_x = 0;
-	int plane_pos_y = 0;
-	int plane_pos_z = 0;
-	int plane_up_x = 1;
-	int plane_up_y = 0;
-	int plane_up_z = 0;
+	double plane_pos_x = 0;
+	double plane_pos_y = 0;
+	double plane_pos_z = 0;
+	double plane_up_x = 1;
+	double plane_up_y = 0;
+	double plane_up_z = 0;
 
 
 private slots:
@@ -108,7 +108,8 @@ private slots:
 	void handleDropdownChange(int index);
 	void handleHistogramUpdate();
 	void handleStatisticsBtn();
-	void handleHistogramSetBtn();
+	void handleHistogramSetBtn_Percent();
+	void handleHistogramSetBtn_Value();
 	void handleSubregionSetBtn();
 
 	void subregion_progess_update(float v);
@@ -122,8 +123,13 @@ private:
 	QLabel *count_input2;
 	QLabel *count_output;
 
-	QLineEdit *histogram_start;
-	QLineEdit *histogram_end;
+	QLineEdit *histogram_start_percent;
+	QLineEdit *histogram_end_percent;
+	QLineEdit *histogram_start_value;
+	QLineEdit *histogram_end_value;
+
+
+
 
 	QLabel *subreigon_precision;
 	QLineEdit *subreigon_volume;

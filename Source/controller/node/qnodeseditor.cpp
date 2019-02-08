@@ -72,7 +72,7 @@ bool QNodesEditor::eventFilter(QObject *o, QEvent *e)
 
 	switch ((int) e->type())
 	{
-	case QEvent::KeyPress: {
+	/*case QEvent::KeyPress: {
 
 		double factor;
 		QKeyEvent* key_event = static_cast<QKeyEvent*>(e);
@@ -112,7 +112,7 @@ bool QNodesEditor::eventFilter(QObject *o, QEvent *e)
 
 
 		return true;
-	}
+	}*/
 
 	case QEvent::GraphicsSceneMousePress:
 	{
